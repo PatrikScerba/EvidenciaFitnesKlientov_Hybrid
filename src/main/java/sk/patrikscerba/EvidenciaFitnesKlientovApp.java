@@ -4,6 +4,8 @@ import sk.patrikscerba.dao.DatabazaPripojenie;
 import sk.patrikscerba.dao.KlientDao;
 import sk.patrikscerba.dao.KlientDaoImpl;
 import sk.patrikscerba.model.Klient;
+import sk.patrikscerba.servis.XMLZapisServis;
+
 import java.sql.Connection;
 import java.time.LocalDate;
 import java.util.List;
@@ -27,7 +29,7 @@ public class EvidenciaFitnesKlientovApp {
         }
 
         // otestovanie CRUD operácií
-        KlientDao klientDao = new KlientDaoImpl();
+       // KlientDao klientDao = new KlientDaoImpl();
 
         /*
         ------  otestovanie uloženie klienta do databázy ------------
@@ -104,6 +106,23 @@ public class EvidenciaFitnesKlientovApp {
                 "klient neexistuje alebo bol vymazaný! ");
     */
 
+        XMLZapisServis xmlZapisServis = new XMLZapisServis();
+
+        // otestovanie uloženia klienta do XML súboru
+        Klient klient1 = new Klient();
+        klient1.setId(10);
+        klient1.setKrstneMeno("Patrik");
+        klient1.setPriezvisko("Jain");
+        klient1.setEmail("PatrikJain@test.com");
+        klient1.setTelefonneCislo("0909124456");
+        klient1.setAdresa("Michalovce 1");
+        klient1.setDatumNarodenia(LocalDate.of(2000, 5, 20));
+        klient1.setDatumRegistracie(LocalDate.now());
+
+
+        xmlZapisServis.ulozKlienta(klient1);
+
+        System.out.println("Klient bol uložený do XML súboru.");
     }
 }
 
