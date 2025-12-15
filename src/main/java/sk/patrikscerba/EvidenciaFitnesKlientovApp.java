@@ -1,116 +1,20 @@
 package sk.patrikscerba;
 
-import sk.patrikscerba.dao.DatabazaPripojenie;
-import sk.patrikscerba.dao.KlientDao;
-import sk.patrikscerba.dao.KlientDaoImpl;
 import sk.patrikscerba.model.Klient;
+import sk.patrikscerba.servis.XMLNacitanieServis;
 import sk.patrikscerba.servis.XMLZapisServis;
-
-import java.sql.Connection;
-import java.time.LocalDate;
-import java.util.List;
 
 public class EvidenciaFitnesKlientovApp {
     public static void main(String[] args) {
-        testDbConnection();
-    }
 
-    //Overí pripojenie k databáze a vypíše výsledok do konzoly
-    private static void testDbConnection() {
-        try(Connection connection = DatabazaPripojenie.getConnection()){
-            if (connection != null){
-                System.out.println("Pripojenie úspešné");
-
-            }else {
-                System.out.println("pripojenie zlyhalo");
-            }
-        }catch (Exception e ){
-            System.out.println("chyba pri pripájaní " + e.getMessage());
-        }
-
-        // otestovanie CRUD operácií
-       // KlientDao klientDao = new KlientDaoImpl();
+        //DOČASNÉ  MANUÁLNE TESTOVANIE XML SERVISOV
 
         /*
-        ------  otestovanie uloženie klienta do databázy ------------
-
-        Klient novyKlient = new Klient();
-
-        novyKlient.setKrstneMeno("PatrikTest");
-        novyKlient.setPriezvisko("ScerbaTest");
-        novyKlient.setDatumNarodenia(LocalDate.of(1990, 1, 15));
-        novyKlient.setTelefonneCislo("0900123456");
-        novyKlient.setAdresa("Kosice 1");
-        novyKlient.setEmail("test@patrik.sk");
-
-        novyKlient.setKrstneMeno("PatrikTest2");
-        novyKlient.setPriezvisko("ScerbaTest2");
-        novyKlient.setDatumNarodenia(LocalDate.of(1990, 1, 15));
-        novyKlient.setTelefonneCislo("0900123456");
-        novyKlient.setAdresa("Kosice 1");
-        novyKlient.setEmail("test@patrik.sk");
-
-        int id = klientDao.ulozKlienta(novyKlient);
-        System.out.println("Uložené ID: " + id);
-
-       ------- otetovanie načítanie klienta z databázy -------
-
-       Klient nacitanyKlient = klientDao.najdiKlientaPodlaId(id);
-       System.out.println("Načítaný klient: "
-              + nacitanyKlient.getId() + " | "
-              + nacitanyKlient.getKrstneMeno() + " "
-              + nacitanyKlient.getPriezvisko() + " | "
-              + nacitanyKlient.getEmail());
-
-        ------- otestovanie načítania všetkých klientov z databázy ------
-
-        List<Klient>klienti = klientDao.ziskajVsetkychKlientov();
-
-        System.out.println("Počet klientov:" + klienti.size());
-
-        for (Klient klient : klienti){
-            System.out.println(
-                    klient.getId() + " |" +
-                    klient.getKrstneMeno() + " " +
-                    klient.getPriezvisko() + " " +
-                    klient.getEmail() + " " +
-                    klient.getDatumRegistracie()
-            );
-        }
-
-        ------ otestovanie aktualizovanie klienta a uloženie do databázy -------
-
-        Klient klient = klientDao.najdiKlientaPodlaId(3); // existujúce ID
-
-        if (klient == null) {
-            System.out.println("Klient neexistuje");
-            return;
-        }
-        klient.setTelefonneCislo("0911222333");
-        klient.setEmail("update@test.sk");
-        klient.setAdresa("Michalovce – update");
-
-        boolean uspesne = klientDao.aktualizujKlienta(klient);
-
-        System.out.println(uspesne
-                ? "Klient bol úspešne aktualizovaný"
-                : "Aktualizácia zlyhala");
-
-        ------ otestovanie vymazanie klienta z databázy -------
-
-        int idVymazanieKlienta = 7;
-        int klientVymazany = idVymazanieKlienta;
-
-        boolean vymazanie = klientDao.vymazatKlienta(idVymazanieKlienta);
-        System.out.println(vymazanie ? "Klient s Id" + " " + klientVymazany + " " + "sa vymazal!" :
-                "klient neexistuje alebo bol vymazaný! ");
-    */
-
+        // otestovanie uloženia klienta do XML súboru
         XMLZapisServis xmlZapisServis = new XMLZapisServis();
 
-        // otestovanie uloženia klienta do XML súboru
         Klient klient1 = new Klient();
-        klient1.setId(10);
+        klient1.setId(6);
         klient1.setKrstneMeno("Patrik");
         klient1.setPriezvisko("Jain");
         klient1.setEmail("PatrikJain@test.com");
@@ -119,10 +23,124 @@ public class EvidenciaFitnesKlientovApp {
         klient1.setDatumNarodenia(LocalDate.of(2000, 5, 20));
         klient1.setDatumRegistracie(LocalDate.now());
 
-
         xmlZapisServis.ulozKlienta(klient1);
 
         System.out.println("Klient bol uložený do XML súboru.");
+
+        //  testovanie načítania klientov z XML súboru
+        XMLNacitanieServis xmlNacitanieServis = new XMLNacitanieServis();
+
+        List<Klient> klienti = xmlNacitanieServis.nacitajKlientovZoXML();
+
+        System.out.println("Počet načítaných klientov z XML: " + klienti.size());
+
+        for (Klient klient : klienti) {
+            System.out.println(klient.getId() + "|"
+                    + klient.getKrstneMeno() + " "
+                    + klient.getPriezvisko() + " | "
+                    + klient.getDatumNarodenia() + " | "
+                    + klient.getDatumRegistracie() + " | "
+                    + klient.getEmail());
+
+        /*
+        // testovanie vymazania klienta z XML súboru podľa ID
+        XMLZapisServis xmlZapisServis = new XMLZapisServis();
+
+        int idKlientaNaVymazanie = 1;
+
+        try {
+            xmlZapisServis.vymazatKlientaPodlaId(idKlientaNaVymazanie);
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
+        System.out.println("Klient s ID " + idKlientaNaVymazanie + " bol vymazaný z XML súboru.");
+
+
+        // testovanie hľadania klienta v XML podľa ID
+        XMLNacitanieServis xmlNacitanieServis = new XMLNacitanieServis();
+
+        int testId = 2; // ID, ktoré chceš otestovať
+
+        Klient klient = xmlNacitanieServis.najdiKlientaVXmlPodlaId(testId);
+
+        if (klient == null) {
+            System.out.println("Klient s ID " + testId + " nebol nájdený.");
+        } else {
+            System.out.println("Klient nájdený:");
+            System.out.println("ID: " + klient.getId());
+            System.out.println("Meno: " + klient.getKrstneMeno() + " " + klient.getPriezvisko());
+            System.out.println("Email: " + klient.getEmail());
+            System.out.println("Telefón: " + klient.getTelefonneCislo());
+            System.out.println("Dátum registrácie: " + klient.getDatumRegistracie());
+
+         */
+
+        // testovanie aktualizácie klienta v XML súbore
+        XMLNacitanieServis nacitanie = new XMLNacitanieServis();
+        XMLZapisServis zapis = new XMLZapisServis();
+
+        int testId = 4;
+
+        // 1) Načítanie pôvodného klienta
+        Klient povodny = nacitanie.najdiKlientaVXmlPodlaId(testId);
+
+        if (povodny == null) {
+            System.out.println("Klient s ID " + testId + " neexistuje v XML.");
+            return;
+        }
+        System.out.println("=== PÔVODNÝ KLIENT ===");
+        vypisKlienta(povodny);
+
+        // 2) Vytvorenie aktualizovaného klienta
+        Klient aktualizovany = new Klient(
+                povodny.getId(),
+                povodny.getKrstneMeno(),
+                povodny.getPriezvisko(),
+                povodny.getDatumNarodenia(),
+                "0900 111 222",
+                povodny.getAdresa(),
+                "Patrik.update@gmail.com",
+                povodny.getDatumRegistracie()
+        );
+
+        // 3) Aktualizovanie do XML súboru
+        boolean ok = false;
+        try {
+            ok = zapis.aktualizujKlientaVXml(aktualizovany);
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
+        System.out.println(ok
+                ? "Update prebehol."
+                : "Update NEPREBEHOL (ID sa nenašlo).");
+
+        // 4) Overenie – znovu načítanie klienta z XML a vypísanie
+        Klient poZmene = nacitanie.najdiKlientaVXmlPodlaId(testId);
+
+        System.out.println("====== KLIENT PO ZMENE ======");
+        vypisKlienta(poZmene);
     }
-}
+
+    // testovanie vypísanie údajov klienta do konzoly
+    private static void vypisKlienta(Klient k) {
+        System.out.println("ID: " + k.getId());
+        System.out.println("Meno: " + k.getKrstneMeno() + " " + k.getPriezvisko());
+        System.out.println("Dátum nar.: " + k.getDatumNarodenia());
+        System.out.println("Telefón: " + k.getTelefonneCislo());
+        System.out.println("Adresa: " + k.getAdresa());
+        System.out.println("Email: " + k.getEmail());
+        System.out.println("Registrácia: " + k.getDatumRegistracie());
+        System.out.println("----------------------------");
+        }
+    }
+
+
+
+
+
+
+
+
+
+
 
