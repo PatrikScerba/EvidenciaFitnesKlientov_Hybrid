@@ -3,7 +3,6 @@ package sk.patrikscerba.servis;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import sk.patrikscerba.model.Klient;
-
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.transform.OutputKeys;
@@ -15,6 +14,7 @@ import javax.xml.transform.stream.StreamResult;
 import java.io.File;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.util.List;
 
 public class XMLZapisServis {
 
@@ -106,7 +106,72 @@ public class XMLZapisServis {
 
         transformer.transform(new DOMSource(document), new StreamResult(file));
     }
+
+    // Uloženie všetkých klientov do XML (pre aktualizáciu a mazanie)
+    private void ulozVsetkychKlientov(List<Klient> klienti) throws Exception {
+
+        Path xmlCesta = Path.of(PRIECINOK_DATA, SUBOR_KLIENTI_XML);
+        File xmlSubor = xmlCesta.toFile();
+
+        DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
+        DocumentBuilder builder = factory.newDocumentBuilder();
+        Document document = builder.newDocument();
+
+        Element root = document.createElement("klienti");
+        document.appendChild(root);
+
+        for (Klient k : klienti) {
+
+            Element klientElement = document.createElement("klient");
+            root.appendChild(klientElement);
+
+            pridajElement(document, klientElement, "id", String.valueOf(k.getId()));
+            pridajElement(document, klientElement, "krstneMeno", k.getKrstneMeno());
+            pridajElement(document, klientElement, "priezvisko", k.getPriezvisko());
+            pridajElement(document, klientElement, "email", k.getEmail());
+            pridajElement(document, klientElement, "telefonneCislo", k.getTelefonneCislo());
+            pridajElement(document, klientElement, "adresa", k.getAdresa());
+
+            pridajElement(document, klientElement, "datumNarodenia",
+                    k.getDatumNarodenia() != null ? k.getDatumNarodenia().toString() : "");
+
+            pridajElement(document, klientElement, "datumRegistracie",
+                    k.getDatumRegistracie() != null ? k.getDatumRegistracie().toString() : "");
+        }
+        zapisXML(document, xmlSubor);
+    }
+
+    // Aktualizácia klienta
+    public boolean aktualizujKlientaVXml(Klient aktualizovany) throws Exception{
+        XMLNacitanieServis xmlNacitanieServis = new XMLNacitanieServis();
+        List<Klient> klienti = xmlNacitanieServis.nacitajKlientovZoXML();
+
+        for (int i = 0; i < klienti.size(); i++) {
+
+            if (klienti.get(i).getId() == aktualizovany.getId()) {
+                klienti.set(i, aktualizovany);
+                ulozVsetkychKlientov(klienti);
+                return true;
+            }
+        }
+        return false;
+
+    }
+
+    // Vymazanie klienta podľa ID
+    public void vymazatKlientaPodlaId(int klientId) throws Exception {
+        XMLNacitanieServis xmlNacitanieServis = new XMLNacitanieServis();
+        List<Klient> klienti = xmlNacitanieServis.nacitajKlientovZoXML();
+
+        // odstránenie klienta podľa ID
+        klienti.removeIf(k -> k.getId() == klientId);
+
+        // uloženie aktualizovaného zoznamu späť do XML
+        ulozVsetkychKlientov(klienti);
+    }
 }
+
+
 
 
 
