@@ -17,4 +17,14 @@ public class DatabazaPripojenie {
     public static Connection getConnection() throws SQLException {
         return DriverManager.getConnection(URL, USER, PASSWORD);
     }
+
+    //Test pripojenia k databáze
+    public static boolean testConnection() {
+        try (Connection connection = getConnection()) {
+            return connection != null && !connection.isClosed();
+        } catch (Exception e) {
+            return false;
+
+        }
+    }
 }
