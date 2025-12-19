@@ -22,4 +22,25 @@ public class KlientHybridServis {
         //Online rezim - nacitanie z databazy
         return klientDao.ziskajVsetkychKlientov();
     }
+
+    // Vyhľadanie klienta podľa ID s podporou hybridného režimu (DB / XML)
+    public Klient najdiKlientaPodlaId(int id)throws SQLException {
+
+        //Ak systém OFFLINE ide priamo cez XML
+        if (SystemRezim.isOffline()){
+            return xmlNacitanieServis.najdiKlientaVXmlPodlaId(id);
+        }
+
+        // online režim - databáza primárne
+        try{
+            return klientDao.najdiKlientaPodlaId(id);
+        }catch (SQLException e ){
+
+            // DB nedostupná, prepni do offline režimu a skús načítať z XML
+            SystemRezim.setOffline(true);
+            return xmlNacitanieServis.najdiKlientaVXmlPodlaId(id);
+        }
+    }
 }
+
+

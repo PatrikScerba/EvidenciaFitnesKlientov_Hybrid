@@ -66,7 +66,7 @@ public class KlientDaoImpl implements KlientDao {
 
     // Nájde klienta podľa ID (ak neexistuje, vráti null)
     @Override
-    public Klient najdiKlientaPodlaId(int id) {
+    public Klient najdiKlientaPodlaId(int id)throws SQLException {
 
         String sql = "SELECT * FROM klienti WHERE id = ?";
 

@@ -1,6 +1,8 @@
 package sk.patrikscerba.dao;
 
 import sk.patrikscerba.model.Klient;
+
+import java.sql.SQLException;
 import java.util.List;
 
 public interface KlientDao {
@@ -8,7 +10,7 @@ public interface KlientDao {
     int ulozKlienta(Klient klient);
 
 
-    Klient najdiKlientaPodlaId(int id);
+    Klient najdiKlientaPodlaId(int id) throws SQLException;
 
     List<Klient> ziskajVsetkychKlientov();
 
