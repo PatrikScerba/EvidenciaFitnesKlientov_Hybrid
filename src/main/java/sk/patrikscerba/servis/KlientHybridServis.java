@@ -41,6 +41,15 @@ public class KlientHybridServis {
             return xmlNacitanieServis.najdiKlientaVXmlPodlaId(id);
         }
     }
+
+    // Registrácia nového klienta je povolená len v online režime
+    public  int registrujKlienta(Klient klient )throws SQLException {
+        if (SystemRezim.isOffline()){
+
+            throw  new IllegalStateException("Registrácia klienta nie je možná v offline režime.");
+        }
+        return klientDao.ulozKlienta(klient);
+    }
 }
 
 
