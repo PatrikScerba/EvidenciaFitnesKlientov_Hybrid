@@ -2,21 +2,21 @@ package sk.patrikscerba;
 
 import sk.patrikscerba.model.Klient;
 import sk.patrikscerba.servis.KlientHybridServis;
-import sk.patrikscerba.servis.SystemRezim;
+import sk.patrikscerba.system.SystemRezim;
 import java.time.LocalDate;
 
 public class EvidenciaFitnesKlientovApp {
     public static void main(String[] args) {
 
         /*
-        boolean dostupnaDatabaza = sk.patrikscerba.dao.DatabazaPripojenie.testConnection();
+        boolean dostupnaDatabaza = sk.patrikscerba.io.db.DatabazaPripojenie.testConnection();
 
         if (!dostupnaDatabaza){
 
-            sk.patrikscerba.servis.SystemRezim.setOffline(true);
+            sk.patrikscerba.system.SystemRezim.setOffline(true);
             System.out.println("Databáza nie je  nedostupná. Offline režim.");
         }else {
-            sk.patrikscerba.servis.SystemRezim.setOffline(false);
+            sk.patrikscerba.system.SystemRezim.setOffline(false);
             System.out.println("Databáza je dostupná. Online režim.");
         }
     }

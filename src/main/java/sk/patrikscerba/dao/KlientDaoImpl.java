@@ -1,5 +1,6 @@
 package sk.patrikscerba.dao;
 
+import sk.patrikscerba.io.db.DatabazaPripojenie;
 import sk.patrikscerba.model.Klient;
 
 import java.sql.Connection;
