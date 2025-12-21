@@ -66,7 +66,7 @@ public class KlientDaoImpl implements KlientDao {
 
     // Nájde klienta podľa ID (ak neexistuje, vráti null)
     @Override
-    public Klient najdiKlientaPodlaId(int id)throws SQLException {
+    public Klient najdiKlientaPodlaId(int id){
 
         String sql = "SELECT * FROM klienti WHERE id = ?";
 
@@ -114,7 +114,7 @@ public class KlientDaoImpl implements KlientDao {
 
     // Aktualizuje existujúceho klienta podľa ID (vracia true/false podľa toho, či sa niečo zmenilo)
     @Override
-    public boolean aktualizujKlienta(Klient klient) {
+    public boolean aktualizujKlienta(Klient klient){
 
         String sql = """
                 UPDATE klienti SET
@@ -130,7 +130,7 @@ public class KlientDaoImpl implements KlientDao {
         try (Connection connection = databazaPripojenie.getConnection();
              PreparedStatement preparedStatement = connection.prepareStatement(sql)) {
 
-            //Napĺnenie hodnôt do UPDATE podľa poradia "?"
+            //Napĺnenie hodnôt do UPDATE podľa poradia
             preparedStatement.setString(1, klient.getKrstneMeno());
             preparedStatement.setString(2, klient.getPriezvisko());
             preparedStatement.setDate(3, Date.valueOf(klient.getDatumNarodenia()));
