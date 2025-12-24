@@ -180,7 +180,7 @@ public class KlientDaoImpl implements KlientDao {
         String adresa = resultSet.getString("adresa");
 
         // Dátum registrácie je v databáze default (CURRENT_DATE)
-        //ale pre istotu je ošetrenie  null (ak by vrátila prázdnu hodnotu)
+        //ale pre istotu je ošetrenie null (ak by vrátila prázdnu hodnotu)
         LocalDate datumRegistracie = null;
         Date registracnyDatum = resultSet.getDate("datum_registracie");
         if (registracnyDatum != null) {
@@ -189,5 +189,49 @@ public class KlientDaoImpl implements KlientDao {
 
         // Objekt Klient s všetkými údajmi
         return new Klient(id, krstneMeno, priezvisko, datumNarodenia, telefonneCislo, adresa, email, datumRegistracie);
+    }
+
+    // Overí, či klient s daným ID existuje v DB
+    public boolean existujeKlient(int klientId){
+
+        String sql = "SELECT 1 FROM klienti WHERE id = ? LIMIT 1";
+
+        try (Connection connection = DatabazaPripojenie.getConnection();
+             PreparedStatement ps = connection.prepareStatement(sql)) {
+
+            ps.setInt(1, klientId);
+
+            try (ResultSet rs = ps.executeQuery()) {
+                return rs.next(); // true = existuje
+            }
+
+        } catch (Exception e) {
+            System.err.println("Chyba pri overeni klienta v DB: " + e.getMessage());
+            return false;
+        }
+    }
+
+    // Načíta len krstné meno a priezvisko klienta podľa ID (použité pre logovanie)
+    public Klient nacitajIdentituKlienta(int klientId) {
+        String sql = "SELECT krstne_meno, priezvisko FROM klienti WHERE id = ? LIMIT 1";
+
+        try (Connection connection = DatabazaPripojenie.getConnection();
+             PreparedStatement preparedStatement = connection.prepareStatement(sql)) {
+
+            preparedStatement.setInt(1, klientId);
+
+            try (ResultSet resultSet = preparedStatement.executeQuery()) {
+                if (resultSet.next()) {
+                    Klient klient = new Klient(klientId);
+                    klient.setKrstneMeno(resultSet.getString("krstne_meno"));
+                    klient.setPriezvisko(resultSet.getString("priezvisko"));
+                    return klient;
+                }
+            }
+
+        } catch (Exception e) {
+            System.err.println("Chyba pri nacitani identity klienta z DB: " + e.getMessage());
+        }
+        return null;
     }
 }
