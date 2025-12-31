@@ -11,10 +11,14 @@ import javax.xml.parsers.DocumentBuilderFactory;
 import java.io.File;
 import java.nio.file.Path;
 import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
 
 public class XMLNacitanieServis {
+
+    private static final DateTimeFormatter FORMAT_DB = DateTimeFormatter.ofPattern("yyyy-MM-dd");
+    private static final DateTimeFormatter FORMAT_V1 = DateTimeFormatter.ofPattern("dd.MM.yyyy");
 
     private static final  String PRIECINOK_DATA  = "data";
     private static final  String SUBOR_KLIENTI_XML = "klienti.xml";
@@ -57,8 +61,12 @@ public class XMLNacitanieServis {
                 LocalDate datumNarodenia = LocalDate.parse(getText(element, "datumNarodenia"));
                 LocalDate datumRegistracie= LocalDate.parse(getText(element, "datumRegistracie"));
 
+                LocalDate permanentkaPlatnaDo = parseDate(getText(element, "permanentkaPlatnaDo"));
+
                 Klient klient = new Klient(id, krstneMeno, priezvisko, datumNarodenia,
                         telefonneCislo, adresa, email, datumRegistracie);
+
+                klient.setPermanentkaPlatnaDo(permanentkaPlatnaDo);
 
                 klienti.add(klient);
             }
@@ -89,6 +97,23 @@ public class XMLNacitanieServis {
             return nodeList.item(0).getTextContent().trim();
         }
         return "";
+    }
+
+    // Pomocná metóda na parsovanie dátumu z rôznych formátov
+    private LocalDate parseDate (String text ){
+        if (text == null || text.isEmpty()) return null;
+
+        try {
+            return LocalDate.parse(text, FORMAT_DB);
+        } catch (Exception ignored) {
+        }
+
+        try {
+            return LocalDate.parse(text, FORMAT_V1);
+        } catch (Exception ignored) {
+        }
+
+        return null;
     }
 }
 

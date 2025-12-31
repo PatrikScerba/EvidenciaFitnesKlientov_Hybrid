@@ -75,6 +75,9 @@ public class XMLZapisServis {
             pridajElement(document, klientElement, "datumRegistracie",
                     klient.getDatumRegistracie() != null ? klient.getDatumRegistracie().toString() : "");
 
+            pridajElement(document, klientElement, "permanentkaPlatnaDo",
+                    klient.getPermanentkaPlatnaDo() != null ? klient.getPermanentkaPlatnaDo().toString() : "-");
+
             // Pridanie elementu do root elementu
             root.appendChild(klientElement);
 
@@ -137,6 +140,9 @@ public class XMLZapisServis {
 
             pridajElement(document, klientElement, "datumRegistracie",
                     k.getDatumRegistracie() != null ? k.getDatumRegistracie().toString() : "");
+
+            pridajElement(document, klientElement,  "permanentkaPlatnaDo",
+                    k.getPermanentkaPlatnaDo() != null ? k.getPermanentkaPlatnaDo().toString() : "-");
         }
         zapisXML(document, xmlSubor);
     }

@@ -13,6 +13,7 @@ public class Klient {
     private String adresa;
     private String email;
     private LocalDate datumRegistracie;
+    private LocalDate permanentkaPlatnaDo;
 
 
     public Klient(){
@@ -31,7 +32,9 @@ public class Klient {
         this.datumRegistracie = datumRegistracie;
 
     }
-
+    public Klient(int id) {
+        this.id = id;
+    }
 
     public int getId() {
         return id;
@@ -95,6 +98,12 @@ public class Klient {
 
     public void setEmail(String email) {
         this.email = email;
+    }
+    public LocalDate getPermanentkaPlatnaDo(){
+        return permanentkaPlatnaDo;
+    }
+    public void setPermanentkaPlatnaDo(LocalDate permanentkaPlatnaDo){
+        this.permanentkaPlatnaDo = permanentkaPlatnaDo;
     }
 }
 
