@@ -1,5 +1,6 @@
 package sk.patrikscerba.dao;
 
+import com.mysql.cj.exceptions.CJConnectionFeatureNotAvailableException;
 import sk.patrikscerba.io.db.DatabazaPripojenie;
 import sk.patrikscerba.model.Klient;
 
@@ -187,8 +188,13 @@ public class KlientDaoImpl implements KlientDao {
             datumRegistracie = registracnyDatum.toLocalDate();
         }
 
-        // Objekt Klient s všetkými údajmi
-        return new Klient(id, krstneMeno, priezvisko, datumNarodenia, telefonneCislo, adresa, email, datumRegistracie);
+        Date sqlPermanentka = resultSet.getDate("permanentka_platna_do");
+        LocalDate permanentkaPlatnaDo = (sqlPermanentka != null) ? sqlPermanentka.toLocalDate() : null;
+
+        Klient klient = new Klient(id, krstneMeno, priezvisko, datumNarodenia, telefonneCislo, adresa, email, datumRegistracie);
+        klient.setPermanentkaPlatnaDo(permanentkaPlatnaDo);
+
+        return klient;
     }
 
     // Overí, či klient s daným ID existuje v DB
@@ -196,7 +202,7 @@ public class KlientDaoImpl implements KlientDao {
 
         String sql = "SELECT 1 FROM klienti WHERE id = ? LIMIT 1";
 
-        try (Connection connection = DatabazaPripojenie.getConnection();
+        try (Connection connection = databazaPripojenie.getConnection();
              PreparedStatement ps = connection.prepareStatement(sql)) {
 
             ps.setInt(1, klientId);
@@ -215,7 +221,7 @@ public class KlientDaoImpl implements KlientDao {
     public Klient nacitajIdentituKlienta(int klientId) {
         String sql = "SELECT krstne_meno, priezvisko FROM klienti WHERE id = ? LIMIT 1";
 
-        try (Connection connection = DatabazaPripojenie.getConnection();
+        try (Connection connection = databazaPripojenie.getConnection();
              PreparedStatement preparedStatement = connection.prepareStatement(sql)) {
 
             preparedStatement.setInt(1, klientId);
@@ -231,6 +237,49 @@ public class KlientDaoImpl implements KlientDao {
 
         } catch (Exception e) {
             System.err.println("Chyba pri nacitani identity klienta z DB: " + e.getMessage());
+        }
+        return null;
+    }
+
+    // Aktualizuje platnosť permanentky klienta
+    @Override
+    public boolean aktualizujPermanentkuPlatnuDo(int id, LocalDate platnaDo) {
+        String sql = "UPDATE klienti SET permanentka_platna_do = ? WHERE id = ?";
+
+        try (Connection connection = databazaPripojenie.getConnection();
+             PreparedStatement preparedStatement = connection.prepareStatement(sql)) {
+
+            if (platnaDo == null) {
+                preparedStatement.setNull(1, java.sql.Types.DATE);
+            } else {
+                preparedStatement.setDate(1, java.sql.Date.valueOf(platnaDo));
+            }
+
+            preparedStatement.setInt(2, id);
+            return preparedStatement.executeUpdate() > 0;
+
+        } catch (SQLException e) {
+            throw new RuntimeException("Chyba pri aktualizácii platnosti permanentky: " + e.getMessage(), e);
+        }
+    }
+
+    // Získa dátum platnosti permanentky klienta podľa ID
+    public LocalDate ziskajPermanentkuPlatnuDoDB(int klientId) {
+        String sql = "SELECT permanentka_platna_do FROM klienti WHERE id = ?";
+
+        try (Connection connection = databazaPripojenie.getConnection();
+             PreparedStatement preparedStatement = connection.prepareStatement(sql)) {
+
+            preparedStatement.setInt(1, klientId);
+
+            try (ResultSet resultSet = preparedStatement.executeQuery()) {
+                if (resultSet.next()) {
+                    Date d = resultSet.getDate("permanentka_platna_do");
+                    return (d != null) ? d.toLocalDate() : null;
+                }
+            }
+        } catch (Exception e) {
+            return null;
         }
         return null;
     }
