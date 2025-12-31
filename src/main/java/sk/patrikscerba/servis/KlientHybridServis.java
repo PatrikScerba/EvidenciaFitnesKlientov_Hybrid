@@ -6,7 +6,7 @@ import sk.patrikscerba.io.xml.XMLNacitanieServis;
 import sk.patrikscerba.io.xml.XMLZapisServis;
 import sk.patrikscerba.model.Klient;
 import sk.patrikscerba.system.SystemRezim;
-
+import java.time.LocalDate;
 import java.util.List;
 
 
@@ -16,13 +16,14 @@ public class KlientHybridServis {
     private final XMLZapisServis xmlZapisServis = new XMLZapisServis();
     private final XMLNacitanieServis xmlNacitanieServis = new XMLNacitanieServis();
 
+    // Získanie všetkých klientov s podporou hybridného režimu (DB / XML)
     public List<Klient> ziskajVsetkychKlientov() {
 
         //Ofline rezim - nacitanie z XML suboru
         if (SystemRezim.isOffline()) {
             return xmlNacitanieServis.nacitajKlientovZoXML();
         }
-        //Online rezim - nacitanie z databazy
+        //Online režim-načítanie z databázy
         return klientDao.ziskajVsetkychKlientov();
     }
 
@@ -40,7 +41,6 @@ public class KlientHybridServis {
         } catch (RuntimeException e) {
 
             // DB nedostupná, prepni do offline režimu a skús načítať z XML
-            SystemRezim.setOffline(true);
             return xmlNacitanieServis.najdiKlientaVXmlPodlaId(id);
         }
     }
@@ -58,7 +58,6 @@ public class KlientHybridServis {
         return id;
     }
 
-
     // Aktualizácia klienta je povolená len v online režime
     public boolean aktualizujKlienta(Klient klient) {
         if (SystemRezim.isOffline()) {
@@ -73,6 +72,22 @@ public class KlientHybridServis {
             throw new IllegalStateException("Vymazanie klienta nie je možná v offline režime.");
         }
         return klientDao.vymazatKlienta(id);
+    }
+
+    // Nastavenie platnosti permanentky je povolené len v online režime
+    public boolean nastavPermanentkuPlatnuDo(int klientId, LocalDate platnaDo) {
+
+        if (SystemRezim.isOffline()) {
+            throw new IllegalStateException("Nastavenie permanentky nie je možné v offline režime.");
+        }
+        Klient klient = klientDao.najdiKlientaPodlaId(klientId);
+
+        // Skontroluj, či je klient registrovaný
+        if (klient == null || klient.getDatumRegistracie() == null) {
+            throw new IllegalStateException("Klient nie je registrovaný – nemožno priradiť permanentku.");
+        }
+
+        return klientDao.aktualizujPermanentkuPlatnuDo(klientId, platnaDo);
     }
 }
 
