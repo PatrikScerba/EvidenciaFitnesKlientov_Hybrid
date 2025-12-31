@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Hostiteľ: 127.0.0.1
--- Čas generovania: St 10.Dec 2025, 16:10
+-- Čas generovania: St 31.Dec 2025, 21:10
 -- Verzia serveru: 10.4.32-MariaDB
 -- Verzia PHP: 8.2.12
 
@@ -20,8 +20,6 @@ SET time_zone = "+00:00";
 --
 -- Databáza: `fk_evidencia_hybrid`
 --
-CREATE DATABASE IF NOT EXISTS `fk_evidencia_hybrid` DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci;
-USE `fk_evidencia_hybrid`;
 
 -- --------------------------------------------------------
 
@@ -37,7 +35,8 @@ CREATE TABLE `klienti` (
   `telefonne_cislo` varchar(15) DEFAULT NULL,
   `email` varchar(100) DEFAULT NULL,
   `adresa` varchar(255) DEFAULT NULL,
-  `datum_registracie` date DEFAULT curdate()
+  `datum_registracie` date DEFAULT curdate(),
+  `permanentka_platna_do` date DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
