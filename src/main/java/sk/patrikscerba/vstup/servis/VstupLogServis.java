@@ -2,7 +2,6 @@ package sk.patrikscerba.vstup.servis;
 
 import java.io.FileWriter;
 import java.io.IOException;
-import java.nio.file.Path;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 
@@ -16,7 +15,7 @@ public class VstupLogServis {
 
     //Zapíše správu do log súboru
     public static void zapisLog(String sprava) {
-        System.out.println("LOG_SUBOR = " + Path.of(LOG_SUBOR).toAbsolutePath());
+
         try (FileWriter writer = new FileWriter(LOG_SUBOR, true)) {
 
             String cas = LocalDateTime.now().format(FORMATTER);

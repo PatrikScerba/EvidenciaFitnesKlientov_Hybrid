@@ -17,19 +17,25 @@ public class VstupServis {
     private final VstupXmlServis vstupXmlServis = new VstupXmlServis();
     private final XMLNacitanieServis xmlNacitanieServis = new XMLNacitanieServis();
     private final KlientDaoImpl klientDao = new KlientDaoImpl();
+    private final PermanentkaVstupServis permanentkaVstupServis = new PermanentkaVstupServis();
 
     // kontrola vstupu klienta
     public boolean skontrolujVstup(int klientId) {
 
         Klient klient = ziskajKlienta(klientId);
         if (klient == null) {
-            zapisNeuspesnyVstup(klientId, "Klient neexistuje");
+            zapisNeuspesnyVstup(klient, klientId, "Klient neexistuje");
+            return false;
+        }
+
+        if (!maPlatnuPermanentku(klientId)) {
+            zapisNeuspesnyVstup(klient, klientId, "Neplatná alebo chýbajúca permanentka");
             return false;
         }
 
         //Duplicitný vstup-klient môže vstúpiť len raz denne
         if (malDnesVstup(klientId)) {
-            zapisNeuspesnyVstup(klientId, "Klient už dnes mal vstup");
+            zapisNeuspesnyVstup(klient, klientId, "Klient už dnes mal vstup");
             return false;
         }
 
@@ -88,7 +94,6 @@ public class VstupServis {
             System.out.println("ZAPIS: ONLINE -> XML CACHE OK | klientId=" + klientId);
 
         } catch (Exception e) {
-            System.out.println("CHYBA: DB zapis zlyhal -> zapisujem len XML | klientId=" + klientId);
             e.printStackTrace();
 
             // fallback: aspoň XML nech je offline stopa
@@ -96,11 +101,39 @@ public class VstupServis {
         }
     }
 
-    // Zápis neúspešného vstupu
-    private void zapisNeuspesnyVstup(int klientId, String dovod) {
-        System.out.println("[NEÚSPEŠNÝ VSTUP] Klient ID: " + klientId + " | Dôvod: " + dovod);
+    // Logovanie neúspešných pokusov o vstup
+    public void zapisNeuspesnyVstup(Klient klient, int klientId, String dovod) {
+
+        // ONLINE: ak nemáme meno/priezvisko, dotiahni ich z DB len pre log
+        if (!SystemRezim.isOffline()) {
+            if (klient == null || klient.getKrstneMeno() == null || klient.getPriezvisko() == null) {
+                Klient identita = klientDao.nacitajIdentituKlienta(klientId);
+                if (identita != null) {
+                    klient = identita;
+                }
+            }
+        }
+
+        String identita = (klient != null)
+                ? (" | meno=" + klient.getKrstneMeno() + " | priezvisko=" + klient.getPriezvisko())
+                : "";
+
+        VstupLogServis.zapisLog("NEUSPECH | klientId=" + klientId + identita + " | dovod=" + dovod +
+                " | rezim=" + (SystemRezim.isOffline() ? "OFFLINE_XML" : "DB"));
+    }
+
+    // Skontroluje platnosť permanentky (OFFLINE = XML, ONLINE = DB)
+    private boolean maPlatnuPermanentku(int klientId) {
+        LocalDate platnaDo;
+
+        if (SystemRezim.isOffline()) {
+            Klient k = xmlNacitanieServis.najdiKlientaVXmlPodlaId(klientId);
+            if (k == null) return false;
+            platnaDo = k.getPermanentkaPlatnaDo();
+        } else {
+            platnaDo = klientDao.ziskajPermanentkuPlatnuDoDB(klientId); // doplníme v DAO
+        }
+
+        return permanentkaVstupServis.jePlatnaPermanentka(platnaDo);
     }
 }
-
-
-

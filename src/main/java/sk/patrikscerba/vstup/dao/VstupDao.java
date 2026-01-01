@@ -8,21 +8,27 @@ import java.time.LocalDate;
 
 
 public class VstupDao {
+    private final DatabazaPripojenie databazaPripojenie;
+
+    // Konštruktor - inicializuje DB pripojenie
+    public VstupDao() {
+        this.databazaPripojenie = new DatabazaPripojenie();
+    }
 
     // Zaznamenanie vstupu klienta do databázy
     public void zapisVstup(int klientId, LocalDate datum) {
         String sql = "INSERT INTO vstupy(klient_id, datum) VALUES (?, ? )";
 
-        try (Connection connection = DatabazaPripojenie.getConnection();
+        try (Connection connection = databazaPripojenie.getConnection();
              PreparedStatement preparedStatement = connection.prepareStatement(sql)) {
 
             preparedStatement.setInt(1, klientId);
             preparedStatement.setDate(2, java.sql.Date.valueOf(datum));
 
-
             preparedStatement.executeUpdate();
 
         } catch (Exception e) {
+
             System.err.println("Chyba pri zápise vstupu do DB: " + e.getMessage());
         }
     }
@@ -32,16 +38,19 @@ public class VstupDao {
 
         String sql = "SELECT COUNT(*) FROM vstupy WHERE klient_id = ? AND datum = ?";
 
-        try(Connection connection = DatabazaPripojenie.getConnection();
+        try(Connection connection = databazaPripojenie.getConnection();
             PreparedStatement preparedStatement = connection.prepareStatement(sql)){
 
             preparedStatement.setInt(1, klientId);
             preparedStatement.setDate(2, java.sql.Date.valueOf(datum));
 
-            ResultSet resultSet = preparedStatement.executeQuery();
-            resultSet.next();
+            try(ResultSet resultSet = preparedStatement.executeQuery()){
+                if (resultSet.next()) {
+                    return resultSet.getInt(1) > 0;
+                }
+            }
+            return false;
 
-            return resultSet.getInt(1) > 0;
         } catch (Exception e){
             System.err.println("Chyba pri kontrole dnešného vstupu: " + e.getMessage());
             return false;
