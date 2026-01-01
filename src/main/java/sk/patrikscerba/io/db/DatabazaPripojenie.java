@@ -14,13 +14,13 @@ public class DatabazaPripojenie {
     private static final String PASSWORD = "";
 
     // Vráti pripojenie k databáze
-    public static Connection getConnection() throws SQLException {
+    public Connection getConnection() throws SQLException {
         return DriverManager.getConnection(URL, USER, PASSWORD);
     }
 
     //Test pripojenia k databáze
     public static boolean testConnection() {
-        try (Connection connection = getConnection()) {
+        try (Connection connection = new DatabazaPripojenie().getConnection()) {
             return connection != null && !connection.isClosed();
         } catch (Exception e) {
             return false;
