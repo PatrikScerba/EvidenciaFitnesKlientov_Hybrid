@@ -1,76 +1,77 @@
 package sk.patrikscerba;
 
+import sk.patrikscerba.dao.KlientDaoImpl;
+import sk.patrikscerba.io.xml.XMLNacitanieServis;
 import sk.patrikscerba.model.Klient;
 import sk.patrikscerba.servis.KlientHybridServis;
 import sk.patrikscerba.system.SystemRezim;
+import sk.patrikscerba.vstup.servis.PermanentkaVstupServis;
+import sk.patrikscerba.vstup.servis.VstupServis;
 import java.time.LocalDate;
 
+
 public class EvidenciaFitnesKlientovApp {
+
     public static void main(String[] args) {
 
-        /*
-        boolean dostupnaDatabaza = sk.patrikscerba.io.db.DatabazaPripojenie.testConnection();
+         //---------------TESTY Vstupov --------------------
+        //--------TESTY Vstupov + permanentka --------------
 
-        if (!dostupnaDatabaza){
+//        SystemRezim.setOffline(false);
+//
+//        KlientHybridServis hybrid = new KlientHybridServis();
+//
+//// 1) ---------registrácia bez permanentky------------
+//
+//        Klient test = new Klient();
+//        test.setKrstneMeno("Marian");
+//        test.setPriezvisko("Hroznyyyy");
+//        test.setEmail("db@test.sk");
+//        test.setTelefonneCislo("0999999999");
+//        test.setAdresa("Kosice");
+//        test.setDatumNarodenia(LocalDate.of(1990, 8, 1));
+//
+//        int id = hybrid.registrujKlienta(test);
+//        System.out.println("DB+XML registrácia OK (id): " + id);
+//
+////      ------------- update permanentky (samostatne)------------
+//
+//        LocalDate platnaDo = LocalDate.now().plusDays(30);
+//        boolean okPerm = hybrid.nastavPermanentkuPlatnuDo(id, platnaDo);
+//        System.out.println("DB+XML update permanentky OK: " + okPerm);
+//
+//
+////      -------------- kontrola XML (rýchlo načítaním)------------
+//        XMLNacitanieServis xml = new XMLNacitanieServis();
+//        Klient zXml = xml.najdiKlientaVXmlPodlaId(id);
+//        System.out.println("XML permanentka: " + (zXml != null ? zXml.getPermanentkaPlatnaDo() : "NULL"));
 
-            sk.patrikscerba.system.SystemRezim.setOffline(true);
-            System.out.println("Databáza nie je  nedostupná. Offline režim.");
-        }else {
-            sk.patrikscerba.system.SystemRezim.setOffline(false);
-            System.out.println("Databáza je dostupná. Online režim.");
-        }
-    }
 
-         */
+//        SystemRezim.setOffline(false);
+//
+//        KlientHybridServis hybrid = new KlientHybridServis();
+//
+////      --------existujúci klient ID (KLIENT, ktorý je v DB + XML)------------
+//        int klientId = 54;
+//
+////        ---------nový dátum permanentky------------
+//        LocalDate novaPlatnost = LocalDate.now().plusDays(60);
+//
+//        System.out.println("TEST: aktualizácia permanentky (DB + XML)");
+//
+//        boolean ok = hybrid.nastavPermanentkuPlatnuDo(klientId, novaPlatnost);
+//
+//        System.out.println("Update OK: " + ok);
+//        System.out.println("Očakávaná platnosť: " + novaPlatnost);
 
-        KlientHybridServis klientServis = new KlientHybridServis();
 
-        //Test registrácie
-        Klient klient = new Klient(
-                0,
-                "Patrik",
-                "Castle",
-                LocalDate.of(1990, 5, 15),
-                "0918123456",
-                "PatrikCastle@gmail.com",
-                "Košice",
-                LocalDate.now()
 
-        );
 
-        //online režim
-        try {
-            SystemRezim.setOffline(false);
-            int id = klientServis.registrujKlienta(klient);
-            System.out.println("Klient registrovaný s ID: " + id);
 
-        } catch (Exception e) {
-            System.out.println("Online registrácia zlyhala: " + e.getMessage());
-        }
 
-        //offline režim
-        try {
-            SystemRezim.setOffline(true);
-            klientServis.registrujKlienta(klient);
-            System.out.println("Registrácia v offline režime nemôže prejsť");
 
-        } catch (IllegalStateException e) {
-            System.out.println("Offline test ok: " + e.getMessage());
-
-        } catch (Exception e) {
-            System.out.println("Iná chyba: " + e.getMessage());
-        }
     }
 }
-
-
-
-
-
-
-
-
-
 
 
 
