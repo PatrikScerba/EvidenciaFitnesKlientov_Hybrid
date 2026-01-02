@@ -87,7 +87,21 @@ public class KlientHybridServis {
             throw new IllegalStateException("Klient nie je registrovaný – nemožno priradiť permanentku.");
         }
 
-        return klientDao.aktualizujPermanentkuPlatnuDo(klientId, platnaDo);
+        // Aktualizuj platnosť permanentky v databáze
+        boolean databazaOnlineOk =  klientDao.aktualizujPermanentkuPlatnuDo(klientId, platnaDo);
+
+        if (!databazaOnlineOk) {
+            return false;
+        }
+        klient.setPermanentkaPlatnaDo(platnaDo);
+
+        try {
+            xmlZapisServis.aktualizujKlientaVXml(klient);
+        } catch (Exception e) {
+            throw new RuntimeException("Chyba pri aktualizácii permanentky v XML.", e);
+        }
+
+        return true;
     }
 }
 

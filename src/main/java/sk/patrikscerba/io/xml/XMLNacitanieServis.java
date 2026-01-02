@@ -58,8 +58,8 @@ public class XMLNacitanieServis {
                 String telefonneCislo = getText(element, "telefonneCislo");
                 String adresa = getText(element, "adresa");
 
-                LocalDate datumNarodenia = LocalDate.parse(getText(element, "datumNarodenia"));
-                LocalDate datumRegistracie= LocalDate.parse(getText(element, "datumRegistracie"));
+                LocalDate datumNarodenia = parseDate(getText(element, "datumNarodenia"));
+                LocalDate datumRegistracie = parseDate(getText(element, "datumRegistracie"));
 
                 LocalDate permanentkaPlatnaDo = parseDate(getText(element, "permanentkaPlatnaDo"));
 
@@ -112,7 +112,6 @@ public class XMLNacitanieServis {
             return LocalDate.parse(text, FORMAT_V1);
         } catch (Exception ignored) {
         }
-
         return null;
     }
 }
