@@ -1,6 +1,8 @@
 package sk.patrikscerba.dao;
 
 import sk.patrikscerba.model.Klient;
+
+import java.time.LocalDate;
 import java.util.List;
 
 public interface KlientDao {
@@ -14,4 +16,6 @@ public interface KlientDao {
     boolean aktualizujKlienta(Klient klient);
 
     boolean vymazatKlienta(int id);
+
+    boolean aktualizujPermanentkuPlatnuDo(int id, LocalDate platnaDo);
 }

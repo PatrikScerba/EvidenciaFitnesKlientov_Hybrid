@@ -2,6 +2,7 @@ package sk.patrikscerba.servis;
 
 import sk.patrikscerba.dao.KlientDao;
 import sk.patrikscerba.dao.KlientDaoImpl;
+import sk.patrikscerba.io.log.AppLogServis;
 import sk.patrikscerba.io.xml.XMLNacitanieServis;
 import sk.patrikscerba.io.xml.XMLZapisServis;
 import sk.patrikscerba.model.Klient;
@@ -15,6 +16,7 @@ public class KlientHybridServis {
     private final KlientDao klientDao = new KlientDaoImpl();
     private final XMLZapisServis xmlZapisServis = new XMLZapisServis();
     private final XMLNacitanieServis xmlNacitanieServis = new XMLNacitanieServis();
+    private  final AppLogServis appLog = new AppLogServis();
 
     // Získanie všetkých klientov s podporou hybridného režimu (DB / XML)
     public List<Klient> ziskajVsetkychKlientov() {
@@ -40,6 +42,8 @@ public class KlientHybridServis {
             return klientDao.najdiKlientaPodlaId(id);
         } catch (RuntimeException e) {
 
+            appLog.error("DB chyba pri najdiKlientaPodlaId, fallback na XML | klientId=" + id, e);
+
             // DB nedostupná, prepni do offline režimu a skús načítať z XML
             return xmlNacitanieServis.najdiKlientaVXmlPodlaId(id);
         }
@@ -54,7 +58,13 @@ public class KlientHybridServis {
         int id = klientDao.ulozKlienta(klient);
 
         klient.setId(id);
+        try{
         xmlZapisServis.ulozKlienta(klient);
+
+        } catch (Exception e){
+            appLog.error("Zlyhal zápis klienta do XML po uložení do DB | klientId=" + id, e);
+            throw e;
+        }
         return id;
     }
 
@@ -91,6 +101,7 @@ public class KlientHybridServis {
         boolean databazaOnlineOk =  klientDao.aktualizujPermanentkuPlatnuDo(klientId, platnaDo);
 
         if (!databazaOnlineOk) {
+            appLog.warn("Databáza neaktualizovala platnosť permanentky, zrušenie operácie | klientId=" + klientId);
             return false;
         }
         klient.setPermanentkaPlatnaDo(platnaDo);
@@ -98,7 +109,9 @@ public class KlientHybridServis {
         try {
             xmlZapisServis.aktualizujKlientaVXml(klient);
         } catch (Exception e) {
-            throw new RuntimeException("Chyba pri aktualizácii permanentky v XML.", e);
+
+            appLog.error("Chyba pri aktualizácii permanentky v XML | klientId=" + klientId, e);
+            throw new IllegalStateException("Chyba pri aktualizácii permanentky v XML.", e);
         }
 
         return true;

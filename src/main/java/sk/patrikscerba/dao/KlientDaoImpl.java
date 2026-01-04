@@ -2,6 +2,7 @@ package sk.patrikscerba.dao;
 
 import com.mysql.cj.exceptions.CJConnectionFeatureNotAvailableException;
 import sk.patrikscerba.io.db.DatabazaPripojenie;
+import sk.patrikscerba.io.log.AppLogServis;
 import sk.patrikscerba.model.Klient;
 
 import java.sql.Connection;
@@ -19,7 +20,7 @@ import java.util.List;
 //Trieda zabezpečuje databázové operácie nad klientmi a mapovanie databázových dát na objekt Klient.
 public class KlientDaoImpl implements KlientDao {
 
-
+    private final AppLogServis applog = new AppLogServis();
     private final DatabazaPripojenie databazaPripojenie;
 
     // Konštruktor - inicializuje pripojenie k databáze
@@ -187,7 +188,6 @@ public class KlientDaoImpl implements KlientDao {
         if (registracnyDatum != null) {
             datumRegistracie = registracnyDatum.toLocalDate();
         }
-
         Date sqlPermanentka = resultSet.getDate("permanentka_platna_do");
         LocalDate permanentkaPlatnaDo = (sqlPermanentka != null) ? sqlPermanentka.toLocalDate() : null;
 
@@ -195,6 +195,7 @@ public class KlientDaoImpl implements KlientDao {
         klient.setPermanentkaPlatnaDo(permanentkaPlatnaDo);
 
         return klient;
+
     }
 
     // Overí, či klient s daným ID existuje v DB
@@ -212,7 +213,7 @@ public class KlientDaoImpl implements KlientDao {
             }
 
         } catch (Exception e) {
-            System.err.println("Chyba pri overeni klienta v DB: " + e.getMessage());
+            applog.error("Chyba pri overeni klienta v DB: ", e);
             return false;
         }
     }
@@ -236,7 +237,7 @@ public class KlientDaoImpl implements KlientDao {
             }
 
         } catch (Exception e) {
-            System.err.println("Chyba pri nacitani identity klienta z DB: " + e.getMessage());
+            applog.error("Chyba pri nacitani identity klienta z DB: ", e);
         }
         return null;
     }

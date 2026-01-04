@@ -1,6 +1,7 @@
 package sk.patrikscerba.vstup.servis;
 
 import sk.patrikscerba.dao.KlientDaoImpl;
+import sk.patrikscerba.io.log.AppLogServis;
 import sk.patrikscerba.io.vstup.VstupXmlServis;
 import sk.patrikscerba.io.xml.XMLNacitanieServis;
 import sk.patrikscerba.model.Klient;
@@ -18,6 +19,7 @@ public class VstupServis {
     private final XMLNacitanieServis xmlNacitanieServis = new XMLNacitanieServis();
     private final KlientDaoImpl klientDao = new KlientDaoImpl();
     private final PermanentkaVstupServis permanentkaVstupServis = new PermanentkaVstupServis();
+    private final AppLogServis appLog = new AppLogServis();
 
     // kontrola vstupu klienta
     public boolean skontrolujVstup(int klientId) {
@@ -80,21 +82,21 @@ public class VstupServis {
 
             // OFFLINE -> iba XML
             vstupXmlServis.zapisVstupXML(klientId, datum, cas);
-            System.out.println("ZAPIS: OFFLINE -> XML | klientId=" + klientId);
+            appLog.info("ZAPIS: OFFLINE -> XML | klientId=" + klientId);
             return;
         }
 
         // ONLINE -> najprv DB, potom XML cache
         try {
             vstupDao.zapisVstup(klientId, datum);
-            System.out.println("ZAPIS: ONLINE -> DB OK | klientId=" + klientId);
+            appLog.info("ZAPIS: ONLINE -> DB OK | klientId=" + klientId);
 
             // cache do XML len ak DB prebehla OK (aby nebol nesúlad)
             vstupXmlServis.zapisVstupXML(klientId, datum, cas);
-            System.out.println("ZAPIS: ONLINE -> XML CACHE OK | klientId=" + klientId);
+            appLog.info("ZAPIS: ONLINE -> XML CACHE OK | klientId=" + klientId);
 
         } catch (Exception e) {
-            e.printStackTrace();
+            appLog.error("Zlyhanie zápisu do DB, použije sa XML fallback | klientId=" + klientId + " | chyba=", e);
 
             // fallback: aspoň XML nech je offline stopa
             vstupXmlServis.zapisVstupXML(klientId, datum, cas);

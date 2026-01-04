@@ -3,6 +3,7 @@ package sk.patrikscerba.io.vstup;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.NodeList;
+import sk.patrikscerba.io.log.AppLogServis;
 
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
@@ -17,7 +18,7 @@ import java.time.LocalTime;
 
 public class VstupXmlServis {
 
-
+    private final AppLogServis applog = new AppLogServis();
     private static final String XML_SUBOR = "data/vstupy.xml";
 
     // XML slúži ako offline evidencia vstupov v hybridnom režime aplikácie
@@ -72,7 +73,7 @@ public class VstupXmlServis {
             }
 
         } catch (Exception e) {
-            System.err.println("Chyba pri kontrole dnešného vstupu v XML: " + e.getMessage());
+            applog.error("Chyba pri kontrole dnešného vstupu v XML: ",e);
         }
         return false;
     }
@@ -100,7 +101,7 @@ public class VstupXmlServis {
             ulozXml(document);
 
         } catch (Exception e) {
-            System.err.println("Chyba pri zápise vstupu do XML: " + e.getMessage());
+            applog.error("Chyba pri zápise vstupu do XML: ",e);
         }
     }
 }

@@ -4,6 +4,7 @@ import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
+import sk.patrikscerba.io.log.AppLogServis;
 import sk.patrikscerba.model.Klient;
 
 import javax.xml.parsers.DocumentBuilder;
@@ -16,6 +17,8 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class XMLNacitanieServis {
+
+    private final AppLogServis applog = new AppLogServis();
 
     private static final DateTimeFormatter FORMAT_DB = DateTimeFormatter.ofPattern("yyyy-MM-dd");
     private static final DateTimeFormatter FORMAT_V1 = DateTimeFormatter.ofPattern("dd.MM.yyyy");
@@ -72,7 +75,7 @@ public class XMLNacitanieServis {
             }
         }
         catch (Exception e){
-            System.err.println("Chyba pri načítaní klientov zo súboru XML. Vráti prázdny zoznam" + e.getMessage());
+            applog.error("Chyba pri načítaní klientov zo súboru XML. Vráti prázdny zoznam", e);
         }
         return klienti;
     }

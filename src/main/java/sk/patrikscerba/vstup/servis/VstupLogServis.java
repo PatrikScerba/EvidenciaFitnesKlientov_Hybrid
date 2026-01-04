@@ -1,5 +1,7 @@
 package sk.patrikscerba.vstup.servis;
 
+import sk.patrikscerba.io.log.AppLogServis;
+
 import java.io.FileWriter;
 import java.io.IOException;
 import java.time.LocalDateTime;
@@ -8,6 +10,8 @@ import java.time.format.DateTimeFormatter;
 
 //Trieda na zápis logov súvisiacich so vstupmi klientov
 public class VstupLogServis {
+
+    private  static final AppLogServis log = new AppLogServis();
 
     //Cesta k logovaciemu súboru + formát dátumu a času použitý v logu
     private static final String LOG_SUBOR = "data/vstupy_log.txt";
@@ -23,7 +27,7 @@ public class VstupLogServis {
             writer.flush();
 
         } catch (IOException e) {
-            System.err.println("Nepodarilo sa zapísať log:" + e.getMessage());
+            log.error("Nepodarilo sa zapísať log:", e);
         }
     }
 }

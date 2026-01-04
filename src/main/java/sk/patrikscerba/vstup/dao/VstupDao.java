@@ -1,6 +1,8 @@
 package sk.patrikscerba.vstup.dao;
 
 import sk.patrikscerba.io.db.DatabazaPripojenie;
+import sk.patrikscerba.io.log.AppLogServis;
+
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -8,6 +10,9 @@ import java.time.LocalDate;
 
 
 public class VstupDao {
+
+    private final AppLogServis applog = new AppLogServis();
+
     private final DatabazaPripojenie databazaPripojenie;
 
     // Konštruktor - inicializuje DB pripojenie
@@ -29,7 +34,7 @@ public class VstupDao {
 
         } catch (Exception e) {
 
-            System.err.println("Chyba pri zápise vstupu do DB: " + e.getMessage());
+            applog.error("Chyba pri zápise vstupu do DB: ", e);
         }
     }
 
@@ -52,7 +57,8 @@ public class VstupDao {
             return false;
 
         } catch (Exception e){
-            System.err.println("Chyba pri kontrole dnešného vstupu: " + e.getMessage());
+
+            applog.error("Chyba pri kontrole dnešného vstupu: ", e);
             return false;
         }
     }

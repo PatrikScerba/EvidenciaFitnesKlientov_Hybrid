@@ -2,6 +2,7 @@ package sk.patrikscerba.io.xml;
 
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
+import sk.patrikscerba.io.log.AppLogServis;
 import sk.patrikscerba.model.Klient;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
@@ -18,6 +19,8 @@ import java.util.List;
 
 public class XMLZapisServis {
 
+    private final AppLogServis appLog = new AppLogServis();
+
     // Priečinok a názov súboru pre ukladanie dát
     private static final  String PRIECINOK_DATA = "data";
     private static final  String SUBOR_KLIENTI_XML = "klienti.xml";
@@ -31,7 +34,8 @@ public class XMLZapisServis {
                 Files.createDirectory(priecinok);
             }
         }catch (Exception e ){
-            throw new RuntimeException("Chyba pri vytváraní priečinka pre dáta/", e);
+            appLog.error("Chyba pri vytváraní priečinka pre dáta/"+ PRIECINOK_DATA, e);
+            throw new IllegalStateException("Chyba pri vytváraní priečinka pre dáta/", e);
         }
     }
 
@@ -84,7 +88,8 @@ public class XMLZapisServis {
             // Zápis dokumentu do XML súboru
             zapisXML(document, xmlSubor);
         } catch (Exception e) {
-            throw new RuntimeException("Chyba pri ukladaní klienta do XML: ", e);
+            appLog.error("Chyba pri ukladaní klienta do XML: ", e);
+            throw new IllegalStateException("Chyba pri ukladaní klienta do XML: ", e);
         }
 
     }
