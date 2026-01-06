@@ -1,5 +1,6 @@
 package sk.patrikscerba.ui;
 
+import sk.patrikscerba.servis.RegistraciaKlientaServis;
 import javax.swing.*;
 
 // Okno pre registráciu nového klienta
@@ -34,22 +35,24 @@ public class Registracia extends JFrame {
         // Pridanie akcie na tlačidlo registrácie
         buttonRegistrovat.addActionListener(e -> registrujKlienta());
     }
-        private void registrujKlienta() {
-            String krstneMeno = jTextKrstneMeno.getText();
-            String priezvisko = jTextPriezvisko.getText();
-            String datumNarodenia = jTextDatumNarodenia.getText();
-            String telefonneCislo = jTextTelefonneCislo.getText();
-            String adresa = jTextAdresa.getText();
-            String email = jTextEmail.getText();
+    
+    // Registrácia klienta pomocou servisnej vrstvy
+    private void registrujKlienta() {
+        RegistraciaKlientaServis registraciaKlientaServis = new RegistraciaKlientaServis();
 
-            //------------Otestovanie výpisu údajov klienta do konzoly-------------
-            System.out.println("Registrujem klienta: \n" + krstneMeno + " " + priezvisko +
-                    ", \nDátum narodenia: " + datumNarodenia +
-                    ", \nTelefón: " + telefonneCislo +
-                    ", \nAdresa: " + adresa +
-                    ", \nEmail: " + email +
-                    "\n=============================" +
-                    "\nKlient zaregistrovaný úspešne.");
+        try {
+            registraciaKlientaServis.zaregistrujKlienta(
+                    jTextKrstneMeno.getText(),
+                    jTextPriezvisko.getText(),
+                    jTextDatumNarodenia.getText(),
+                    jTextTelefonneCislo.getText(),
+                    jTextAdresa.getText(),
+                    jTextEmail.getText()
+            );
+            JOptionPane.showMessageDialog(this, "Klient zaregistrovaný.");
+        } catch (Exception ex) {
+            JOptionPane.showMessageDialog(this, ex.getMessage(), "Chyba", JOptionPane.ERROR_MESSAGE);
+        }
     }
 }
 

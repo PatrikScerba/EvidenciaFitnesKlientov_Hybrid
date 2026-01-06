@@ -1,6 +1,7 @@
 package sk.patrikscerba.model;
 
 import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
 
 
 public class Klient {
@@ -14,6 +15,8 @@ public class Klient {
     private String email;
     private LocalDate datumRegistracie;
     private LocalDate permanentkaPlatnaDo;
+
+    private static final DateTimeFormatter FORMATTER = DateTimeFormatter.ofPattern("dd.MM.yyyy");
 
 
     public Klient(){
@@ -32,6 +35,18 @@ public class Klient {
         this.datumRegistracie = datumRegistracie;
 
     }
+    // konštruktor pre registráciu nového klienta
+    public Klient(String krstneMeno, String priezvisko, LocalDate datumNarodenia,
+                  String telefonneCislo, String adresa, String email) {
+        this.krstneMeno = krstneMeno;
+        this.priezvisko = priezvisko;
+        this.datumNarodenia = datumNarodenia;
+        this.telefonneCislo = telefonneCislo;
+        this.adresa = adresa;
+        this.email = email;
+
+    }
+
     public Klient(int id) {
         this.id = id;
     }
