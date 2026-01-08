@@ -49,9 +49,14 @@ public class Registracia extends JFrame {
                     jTextAdresa.getText(),
                     jTextEmail.getText()
             );
+
             JOptionPane.showMessageDialog(this, "Klient zaregistrovaný.");
-        } catch (Exception ex) {
-            JOptionPane.showMessageDialog(this, ex.getMessage(), "Chyba", JOptionPane.ERROR_MESSAGE);
+
+        } catch ( IllegalArgumentException ex) {
+            JOptionPane.showMessageDialog(this, ex.getMessage(), "Chyba vstupu", JOptionPane.ERROR_MESSAGE);
+
+        }catch (Exception ex){
+            JOptionPane.showMessageDialog(this, ex.getMessage(), "Nastala chyba pri registrácii klienta", JOptionPane.ERROR_MESSAGE);
         }
     }
 }
