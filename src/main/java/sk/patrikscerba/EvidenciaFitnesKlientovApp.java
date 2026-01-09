@@ -1,11 +1,10 @@
 package sk.patrikscerba;
 
 import com.formdev.flatlaf.FlatLightLaf;
-import sk.patrikscerba.io.db.DatabazaPripojenie;
 import sk.patrikscerba.io.log.AppLogServis;
 import sk.patrikscerba.ui.HlavneOkno;
-import javax.swing.*;
 
+import javax.swing.*;
 
 public class EvidenciaFitnesKlientovApp {
 
@@ -13,36 +12,27 @@ public class EvidenciaFitnesKlientovApp {
 
     public static void main(String[] args) {
 
-        boolean dostupnaDatabaza = DatabazaPripojenie.testConnection();
+        // Nastavenie moderného vzhľadu FlatLaf
+        try {
+            UIManager.setLookAndFeel(new FlatLightLaf());
+        } catch (Exception e) {
+            applog.error("Nepodarilo sa načítať FlatLaf: ", e);
+        }
 
-        if (!dostupnaDatabaza) {
+        // Test pripojenia na databázu + nastavenie režimu (online/offline)
+        boolean dostupnaDb = sk.patrikscerba.io.db.DatabazaPripojenie.testConnection();
+
+        if (!dostupnaDb) {
             sk.patrikscerba.system.SystemRezim.setOffline(true);
-
-            applog.info("Databáza nedostupná. Aplikácia spustená v OFFLINE režime.");
-
+            applog.info("Databáza nedostupná - offline režim");
         } else {
             sk.patrikscerba.system.SystemRezim.setOffline(false);
-
-            applog.info("Databáza dostupná. Aplikácia spustená v ONLINE režime.");
-
-            // Nastavenie moderného vzhľadu FlatLaf
-            try {
-                UIManager.setLookAndFeel(new FlatLightLaf());
-            } catch (Exception e) {
-                applog.error("Nepodarilo sa načítať FlatLaf: ", e);
-            }
-
-            // Spustenie GUI na správnom vlákne (AWT)
-            SwingUtilities.invokeLater(() ->
-                    new HlavneOkno().setVisible(true)
-            );
+            applog.info("Databáza dostupná - online režim");
         }
+
+        // Spustenie GUI na správnom vlákne (AWT)
+        SwingUtilities.invokeLater(() -> {
+            new HlavneOkno().setVisible(true);
+        });
     }
 }
-
-
-
-
-
-
-
