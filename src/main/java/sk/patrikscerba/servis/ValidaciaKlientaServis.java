@@ -1,5 +1,6 @@
 package sk.patrikscerba.servis;
 
+import java.text.Normalizer;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.time.format.DateTimeParseException;
@@ -41,4 +42,15 @@ public class ValidaciaKlientaServis {
             return false;
         }
     }
+
+    // Normalizuje text pre vyhľadávanie
+    // (odstráni diakritiku, prevedie na malé písmená a oreže medzery)
+    public static String normalizujText(String text){
+        if (text == null) return "";
+        return Normalizer.normalize(text.trim(), Normalizer.Form.NFD)
+                .replaceAll("\\p{M}", "")
+                .toLowerCase()
+                .trim();
+    }
+
 }
