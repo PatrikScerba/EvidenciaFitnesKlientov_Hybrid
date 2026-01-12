@@ -10,8 +10,9 @@ import sk.patrikscerba.vstup.dao.VstupDao;
 
 import java.time.LocalDate;
 import java.time.LocalTime;
+import java.util.Optional;
 
-//Servisná trieda zabezpečujúca kontrolu a evidenciu vstupov klientov do fitnes centra
+// Servisná trieda zabezpečujúca kontrolu a evidenciu vstupov klientov do fitnes centra
 public class VstupServis {
 
     private final VstupDao vstupDao = new VstupDao();
@@ -21,45 +22,58 @@ public class VstupServis {
     private final PermanentkaVstupServis permanentkaVstupServis = new PermanentkaVstupServis();
     private final AppLogServis appLog = new AppLogServis();
 
-    // kontrola vstupu klienta
+    // Kontrola vstupu klienta (true = povolený vstup, false = zamietnutý)
     public boolean skontrolujVstup(int klientId) {
 
-        Klient klient = ziskajKlienta(klientId);
-        if (klient == null) {
-            zapisNeuspesnyVstup(klient, klientId, "Klient neexistuje");
+        Optional<Klient> klientOpt = ziskajKlienta(klientId);
+
+        if (klientOpt.isEmpty()) {
+            zapisNeuspesnyVstup(null, klientId, "Klient neexistuje");
             return false;
         }
 
-        if (!maPlatnuPermanentku(klientId)) {
+        Klient klient = klientOpt.get();
+
+        if (!maPlatnuPermanentku(klientId, klientOpt)) {
             zapisNeuspesnyVstup(klient, klientId, "Neplatná alebo chýbajúca permanentka");
             return false;
         }
 
-        //Duplicitný vstup-klient môže vstúpiť len raz denne
+        // Duplicitný vstup-klient môže vstúpiť len raz denne
         if (malDnesVstup(klientId)) {
             zapisNeuspesnyVstup(klient, klientId, "Klient už dnes mal vstup");
             return false;
         }
 
-        //Zapíš vstup (iba raz!)
+        // Zapíš vstup (iba raz)
         zapisVstup(klientId);
         return true;
     }
 
     // Zistí klienta podľa režimu (ONLINE = DB, OFFLINE = XML)
-    private Klient ziskajKlienta(int klientId) {
-
-        if (!SystemRezim.isOffline()) {
-
-            // ONLINE – overí, či klient existuje v DB
-            if (!klientDao.existujeKlient(klientId)) {
-                return null;
-            }
-            return new Klient(klientId);
-        }
+    public Optional<Klient> ziskajKlienta(int klientId) {
+        long id = klientId;
 
         // OFFLINE – vyhľadanie v XML
-        return xmlNacitanieServis.najdiKlientaVXmlPodlaId(klientId);
+        if (SystemRezim.isOffline()) {
+            return xmlNacitanieServis.najdiKlientaVXmlPodlaId(id);
+        }
+
+        // ONLINE – DB
+        try {
+            // Bezpečný fallback, ak zatiaľ nieje "najdiKlientaPodlaId" ako Optional:
+            if (!klientDao.existujeKlient(id)) {
+                return Optional.empty();
+            }
+
+            // Ak existuje, načítaj aspoň identitu (alebo plného klienta)
+            Klient klient = klientDao.nacitajIdentituKlienta(klientId);
+            return Optional.ofNullable(klient);
+
+        } catch (Exception e) {
+            appLog.error("DB chyba pri ziskajKlienta, fallback na XML | klientId=" + klientId, e);
+            return xmlNacitanieServis.najdiKlientaVXmlPodlaId(id);
+        }
     }
 
     // Skontroluje, či klient už dnes vstúpil (kontrola duplicity podľa režimu)
@@ -72,7 +86,7 @@ public class VstupServis {
         return vstupDao.malDnesVstup(klientId, dnes);
     }
 
-    // Zápis vstupu podľa režimu (OFFLINE = XML, ONLINE = DB + XML cache, pri chybe DB fallback do XML).
+    // Zápis vstupu podľa režimu (OFFLINE = XML, ONLINE = DB + XML cache, pri chybe DB fallback do XML)
     private void zapisVstup(int klientId) {
 
         LocalDate datum = LocalDate.now();
@@ -120,20 +134,25 @@ public class VstupServis {
                 ? (" | meno=" + klient.getKrstneMeno() + " | priezvisko=" + klient.getPriezvisko())
                 : "";
 
-        VstupLogServis.zapisLog("NEUSPECH | klientId=" + klientId + identita + " | dovod=" + dovod +
-                " | rezim=" + (SystemRezim.isOffline() ? "OFFLINE_XML" : "DB"));
+        VstupLogServis.zapisLog(
+                "NEUSPECH | klientId=" + klientId + identita +
+                        " | dovod=" + dovod +
+                        " | rezim=" + (SystemRezim.isOffline() ? "OFFLINE_XML" : "DB")
+        );
     }
 
     // Skontroluje platnosť permanentky (OFFLINE = XML, ONLINE = DB)
-    private boolean maPlatnuPermanentku(int klientId) {
+    private boolean maPlatnuPermanentku(int klientId, Optional<Klient> klientOpt) {
         LocalDate platnaDo;
 
         if (SystemRezim.isOffline()) {
-            Klient k = xmlNacitanieServis.najdiKlientaVXmlPodlaId(klientId);
-            if (k == null) return false;
-            platnaDo = k.getPermanentkaPlatnaDo();
+
+            // V offline režime berie dátum priamo z klienta z XML (už je v Optional)
+            platnaDo = klientOpt.map(Klient::getPermanentkaPlatnaDo).orElse(null);
         } else {
-            platnaDo = klientDao.ziskajPermanentkuPlatnuDoDB(klientId); // doplníme v DAO
+
+            // ONLINE: načítanie z DB (ako si mal)
+            platnaDo = klientDao.ziskajPermanentkuPlatnuDoDB(klientId);
         }
 
         return permanentkaVstupServis.jePlatnaPermanentka(platnaDo);

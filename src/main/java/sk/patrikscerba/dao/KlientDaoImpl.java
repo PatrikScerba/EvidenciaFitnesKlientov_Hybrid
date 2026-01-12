@@ -1,6 +1,5 @@
 package sk.patrikscerba.dao;
 
-import com.mysql.cj.exceptions.CJConnectionFeatureNotAvailableException;
 import sk.patrikscerba.io.db.DatabazaPripojenie;
 import sk.patrikscerba.io.log.AppLogServis;
 import sk.patrikscerba.model.Klient;
@@ -15,6 +14,7 @@ import java.sql.Statement;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 
 //Trieda zabezpečuje databázové operácie nad klientmi a mapovanie databázových dát na objekt Klient.
@@ -69,7 +69,7 @@ public class KlientDaoImpl implements KlientDao {
 
     // Nájde klienta podľa ID (ak neexistuje, vráti null)
     @Override
-    public Klient najdiKlientaPodlaId(int id){
+     public  Optional<Klient> najdiKlientaPodlaId(long id){
 
         String sql = "SELECT * FROM klienti WHERE id = ?";
 
@@ -77,15 +77,16 @@ public class KlientDaoImpl implements KlientDao {
              PreparedStatement preparedStatement = connection.prepareStatement(sql)) {
 
 
-            preparedStatement.setInt(1, id);
+            preparedStatement.setLong(1, id);
 
             try (ResultSet resultSet = preparedStatement.executeQuery()) {
                 if (resultSet.next()) {
-                    return mapujKlientaZResultSetu(resultSet);
+                    Klient klient = mapujKlientaZResultSetu(resultSet);
+                    return Optional.of(klient);
                 }
             }
 
-            return null;
+            return Optional.empty();
 
         } catch (SQLException e) {
             throw new RuntimeException("Chyba pri hľadaní klienta podľa ID: " + e.getMessage(), e);
@@ -199,14 +200,14 @@ public class KlientDaoImpl implements KlientDao {
     }
 
     // Overí, či klient s daným ID existuje v DB
-    public boolean existujeKlient(int klientId){
+    public boolean existujeKlient(long klientId){
 
         String sql = "SELECT 1 FROM klienti WHERE id = ? LIMIT 1";
 
         try (Connection connection = databazaPripojenie.getConnection();
              PreparedStatement ps = connection.prepareStatement(sql)) {
 
-            ps.setInt(1, klientId);
+            ps.setLong(1, klientId);
 
             try (ResultSet rs = ps.executeQuery()) {
                 return rs.next(); // true = existuje
@@ -244,7 +245,7 @@ public class KlientDaoImpl implements KlientDao {
 
     // Aktualizuje platnosť permanentky klienta
     @Override
-    public boolean aktualizujPermanentkuPlatnuDo(int id, LocalDate platnaDo) {
+    public boolean aktualizujPermanentkuPlatnuDo(long id, LocalDate platnaDo) {
         String sql = "UPDATE klienti SET permanentka_platna_do = ? WHERE id = ?";
 
         try (Connection connection = databazaPripojenie.getConnection();
@@ -256,7 +257,7 @@ public class KlientDaoImpl implements KlientDao {
                 preparedStatement.setDate(1, java.sql.Date.valueOf(platnaDo));
             }
 
-            preparedStatement.setInt(2, id);
+            preparedStatement.setLong(2, id);
             return preparedStatement.executeUpdate() > 0;
 
         } catch (SQLException e) {

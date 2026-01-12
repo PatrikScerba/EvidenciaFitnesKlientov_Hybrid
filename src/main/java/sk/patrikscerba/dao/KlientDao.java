@@ -4,12 +4,13 @@ import sk.patrikscerba.model.Klient;
 
 import java.time.LocalDate;
 import java.util.List;
+import java.util.Optional;
 
 public interface KlientDao {
 
     int ulozKlienta(Klient klient);
 
-    Klient najdiKlientaPodlaId(int id);
+    Optional<Klient> najdiKlientaPodlaId(long id);
 
     List<Klient> ziskajVsetkychKlientov();
 
@@ -17,5 +18,5 @@ public interface KlientDao {
 
     boolean vymazatKlienta(int id);
 
-    boolean aktualizujPermanentkuPlatnuDo(int id, LocalDate platnaDo);
+    boolean aktualizujPermanentkuPlatnuDo(long id, LocalDate platnaDo);
 }

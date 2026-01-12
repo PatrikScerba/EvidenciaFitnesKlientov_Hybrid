@@ -9,6 +9,7 @@ import sk.patrikscerba.model.Klient;
 import sk.patrikscerba.system.SystemRezim;
 import java.time.LocalDate;
 import java.util.List;
+import java.util.Optional;
 
 
 public class KlientHybridServis {
@@ -30,7 +31,7 @@ public class KlientHybridServis {
     }
 
     // Vyhľadanie klienta podľa ID s podporou hybridného režimu (DB / XML)
-    public Klient najdiKlientaPodlaId(int id) {
+    public Optional< Klient> najdiKlientaPodlaId(long id) {
 
         //Ak systém OFFLINE ide priamo cez XML
         if (SystemRezim.isOffline()) {
@@ -90,12 +91,13 @@ public class KlientHybridServis {
         if (SystemRezim.isOffline()) {
             throw new IllegalStateException("Nastavenie permanentky nie je možné v offline režime.");
         }
-        Klient klient = klientDao.najdiKlientaPodlaId(klientId);
+        var klientOptional = klientDao.najdiKlientaPodlaId(klientId);
 
         // Skontroluj, či je klient registrovaný
-        if (klient == null || klient.getDatumRegistracie() == null) {
+        if (klientOptional.isEmpty() || klientOptional.get().getDatumRegistracie() == null) {
             throw new IllegalStateException("Klient nie je registrovaný – nemožno priradiť permanentku.");
         }
+        Klient klient = klientOptional.get();
 
         // Aktualizuj platnosť permanentky v databáze
         boolean databazaOnlineOk =  klientDao.aktualizujPermanentkuPlatnuDo(klientId, platnaDo);

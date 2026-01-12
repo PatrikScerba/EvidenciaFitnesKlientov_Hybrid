@@ -15,6 +15,7 @@ import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 public class XMLNacitanieServis {
 
@@ -81,16 +82,16 @@ public class XMLNacitanieServis {
     }
 
     //Vyhľadanie klienta v XML podľa ID
-    public Klient najdiKlientaVXmlPodlaId(int id) {
+    public Optional < Klient> najdiKlientaVXmlPodlaId(long id) {
 
         List<Klient> klienti = nacitajKlientovZoXML();
 
         for (Klient k : klienti) {
             if (k.getId() == id) {
-                return k;
+                return Optional.of(k);
             }
         }
-        return null;
+        return Optional.empty();
     }
 
     // Pomocná metóda na získanie textového obsahu z elementu podľa tagu
