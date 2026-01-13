@@ -1,6 +1,7 @@
 package sk.patrikscerba.model;
 
 import java.time.LocalDate;
+import java.time.Period;
 import java.time.format.DateTimeFormatter;
 
 
@@ -19,7 +20,7 @@ public class Klient {
     private static final DateTimeFormatter FORMATTER = DateTimeFormatter.ofPattern("dd.MM.yyyy");
 
 
-    public Klient(){
+    public Klient() {
     }
 
     // konštruktor pre databázu
@@ -35,6 +36,7 @@ public class Klient {
         this.datumRegistracie = datumRegistracie;
 
     }
+
     // konštruktor pre registráciu nového klienta
     public Klient(String krstneMeno, String priezvisko, LocalDate datumNarodenia,
                   String telefonneCislo, String adresa, String email) {
@@ -114,12 +116,28 @@ public class Klient {
     public void setEmail(String email) {
         this.email = email;
     }
-    public LocalDate getPermanentkaPlatnaDo(){
+
+    public LocalDate getPermanentkaPlatnaDo() {
         return permanentkaPlatnaDo;
     }
-    public void setPermanentkaPlatnaDo(LocalDate permanentkaPlatnaDo){
+
+    public void setPermanentkaPlatnaDo(LocalDate permanentkaPlatnaDo) {
         this.permanentkaPlatnaDo = permanentkaPlatnaDo;
     }
+
+    //Vypočíta sa vek a vráti vypočítaný vek klienta na základe dátumu narodenia
+    public int getVek() {
+        if (datumNarodenia == null) {
+            return 0;
+        }
+        return Period.between(datumNarodenia, LocalDate.now()).getYears();
+    }
+
+    //Setter pre vek je prázdny, pretože vek sa počíta z dátumu narodenia
+    public void setVek(int vek) {
+
+    }
 }
+
 
 
