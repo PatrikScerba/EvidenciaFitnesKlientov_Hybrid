@@ -1,6 +1,8 @@
 package sk.patrikscerba.ui;
 
 import sk.patrikscerba.model.Klient;
+import sk.patrikscerba.servis.DetailKlientaServis;
+import sk.patrikscerba.servis.KlientHybridServis;
 import sk.patrikscerba.servis.VyhladavanieKlientovServis;
 import javax.swing.*;
 import java.util.List;
@@ -91,17 +93,10 @@ public class Vyhladavanie extends JFrame {
                 String label = k.getKrstneMeno() + " " + k.getPriezvisko() + ", ID: " + k.getId();
                 if (label.equals(vyberKlienta)) {
 
-                    // Zobrazenie detailu klienta v konzole (dočasne)
-                    System.out.println("=====Vybraný klient:=====");
-                    System.out.println("ID: " + k.getId());
-                    System.out.println("Meno: " + k.getKrstneMeno());
-                    System.out.println("Priezvisko: " + k.getPriezvisko());
-                    System.out.println("Dátum narodenia: " + k.getDatumNarodenia());
-                    System.out.println("Telefón: " + k.getTelefonneCislo());
-                    System.out.println("Adresa: " + k.getAdresa());
-                    System.out.println("Email: " + k.getEmail());
+                    long id = k.getId();
 
-                    break;
+                    DetailKlientaServis detailKlientaServis = new DetailKlientaServis(new KlientHybridServis());
+                    new DetailKlienta(id,detailKlientaServis).setVisible(true);
                 }
             }
         }
