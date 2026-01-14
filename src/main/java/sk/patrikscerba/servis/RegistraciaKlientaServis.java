@@ -69,6 +69,8 @@ public class RegistraciaKlientaServis {
                 adresa,
                 email);
 
+        klient.setDatumRegistracie(LocalDate.now());
+
         // Registrácia klienta pomocou hybridného servisu
         klientHybridServis.registrujKlienta(klient);
 
