@@ -1,15 +1,22 @@
 package sk.patrikscerba.ui;
 
+import sk.patrikscerba.dao.KlientDao;
+import sk.patrikscerba.dao.KlientDaoImpl;
+import sk.patrikscerba.io.xml.XMLZapisServis;
 import sk.patrikscerba.model.Klient;
 import sk.patrikscerba.servis.DetailKlientaServis;
+import sk.patrikscerba.vstup.servis.PermanentkaVstupServis;
+
 import javax.swing.*;
+import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 
 
 // Trieda slúži len  na zobrazenie detailov klienta
 public class DetailKlienta extends JFrame {
 
-    private  JPanel mainPanel;
+    private final XMLZapisServis xmlZapisServis = new XMLZapisServis();
+    private JPanel mainPanel;
 
     private JLabel labKrstneMeno;
     private JLabel labPriezvisko;
@@ -20,21 +27,23 @@ public class DetailKlienta extends JFrame {
     private JLabel labDatumNarodenia;
     private JLabel labDatumRegistracie;
 
-    private  JLabel labPermantkaStav;
-    private  JLabel labPlatnostPermanentky;
+    private JLabel labPermanentkaStav;
+    private JLabel labPlatnostPermanentky;
 
-    private  JButton zatvoritButton;
+    private JButton zatvoritButton;
+    private JButton PredlzitPermanentkuButton;
+
 
     private final DetailKlientaServis detailKlientaServis;
     private static final DateTimeFormatter FORMATTER = DateTimeFormatter.ofPattern("dd.MM.yyyy");
 
-    // Nastavenie okna pre detail klienta
+    // Nastavenie okna + načítanie a zobrazenie detailu klienta
     public DetailKlienta(Long klientId, DetailKlientaServis detailKlientaServis) {
         this.detailKlientaServis = detailKlientaServis;
 
         setContentPane(mainPanel);
         setTitle("Detail klienta");
-        setSize( 500, 550);
+        setSize(500, 550);
         setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
         setLocationRelativeTo(null);
 
@@ -54,6 +63,59 @@ public class DetailKlienta extends JFrame {
         zobrazUdaje(klient);
 
         zatvoritButton.addActionListener(e -> dispose());
+
+        // Akcia: predĺženie permanentky (výber dní -> update DB/XML -> obnovenie UI)
+        PredlzitPermanentkuButton.addActionListener(e -> {
+                    JOptionPane.showConfirmDialog(this,
+                    "Naozaj chcete predĺžiť permanentku?",
+                    "Predĺženie permanentky",
+                    JOptionPane.YES_NO_OPTION);
+
+            Object[] moznosti = {"30 dní", "90 dní", "180 dní"};
+            Object vyber = JOptionPane.showInputDialog(
+                    this,
+                    "Vyber dĺžku predĺženia:",
+                    "Predĺženie permanentky",
+                    JOptionPane.QUESTION_MESSAGE,
+                    null,
+                    moznosti,
+                    moznosti[0]
+            );
+
+            if (vyber == null) {
+                return; // používateľ zavrel okno
+            }
+
+            int dni;
+            if (vyber.equals("30 dní")) dni = 30;
+            else if (vyber.equals("90 dní")) dni = 90;
+            else dni = 180;
+
+            try {
+                PermanentkaVstupServis permanentkaServis = new PermanentkaVstupServis();
+                KlientDao klientDao = new KlientDaoImpl();
+
+                LocalDate novaPlatnost = permanentkaServis.predlzODni(klient.getPermanentkaPlatnaDo(), dni);
+                boolean ok = klientDao.aktualizujPermanentkuPlatnuDo(klient.getId(), novaPlatnost);
+
+                if (ok) {
+                    klient.setPermanentkaPlatnaDo(novaPlatnost);
+                    xmlZapisServis.aktualizujKlientaVXml(klient);
+
+                    obnovZobrazeniePermanentky();
+
+                    JOptionPane.showMessageDialog(
+                            this, "Permanentka predĺžená do: " + novaPlatnost);
+                } else {
+                    JOptionPane.showMessageDialog(
+                            this, "Permanentku sa nepodarilo predĺžiť.");
+                }
+
+            } catch (Exception ex) {
+                JOptionPane.showMessageDialog(
+                        this, "Chyba: " + ex.getMessage());
+            }
+        });
     }
 
     // Zobrazenie údajov klienta v UI
@@ -82,13 +144,35 @@ public class DetailKlienta extends JFrame {
         }
 
         //Informácie o permanentke
-        if (klient.getPermanentkaPlatnaDo() !=null){
-            labPermantkaStav.setText("Permanentka: Aktívna");
+        if (klient.getPermanentkaPlatnaDo() != null) {
+            labPermanentkaStav.setText("Permanentka: Aktívna");
             labPlatnostPermanentky.setText(
                     "Permanentka platná do: " + klient.getPermanentkaPlatnaDo().format(FORMATTER));
-        }else {
-            labPermantkaStav.setText("Permanentka: Neaktívna");
+        } else {
+            labPermanentkaStav.setText("Permanentka: Neaktívna");
             labPlatnostPermanentky.setText("Platná do: -");
         }
     }
+
+    // Obnovenie zobrazenia stavu a platnosti permanentky
+    private void obnovZobrazeniePermanentky() {
+        PermanentkaVstupServis permanentkaServis = new PermanentkaVstupServis();
+        Klient klient = new Klient();
+        LocalDate platnaDo = klient.getPermanentkaPlatnaDo();
+
+        if (platnaDo == null) {
+            labPermanentkaStav.setText("Nemá permanentku");
+            labPlatnostPermanentky.setText("—");
+            return;
+        }
+        labPlatnostPermanentky.setText(platnaDo.toString());
+
+        if (permanentkaServis.jePlatnaPermanentka(platnaDo)) {
+            labPermanentkaStav.setText("Platná");
+        } else {
+            labPermanentkaStav.setText("Neplatná");
+        }
+    }
 }
+
+
