@@ -8,7 +8,10 @@ public class PermanentkaVstupServis {
 
     //kontrola platnosti permanentky
     public boolean jePlatnaPermanentka(LocalDate platnaDo) {
-        return platnaDo != null && !platnaDo.isBefore(LocalDate.now());
+        if (platnaDo == null) {
+            return false;
+        }
+        return !platnaDo.isBefore(LocalDate.now());
     }
 
     // vypočíta nový dátum platnosti pri predĺžení o X dní

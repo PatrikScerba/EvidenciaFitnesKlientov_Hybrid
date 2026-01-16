@@ -10,7 +10,7 @@ import java.util.List;
 public class HistoriaVstupovServis {
     private static final String CESTA = "data/vstupy_log.txt";
 
-    public List<String> nacitajRiadky() {
+    public List<String> nacitajRiadky(Long klientId) {
         try {
             Path path = Path.of(CESTA);
 
@@ -24,5 +24,20 @@ public class HistoriaVstupovServis {
             return Collections.singletonList("Chyba pri načítaní súboru: " + e.getMessage());
         }
     }
+
+    // Načíta riadky pre konkrétneho klienta podľa jeho ID
+    public List<String> nacitajRiadkyPreKlienta(long klientId) {
+
+        Path path = Path.of(CESTA);
+
+        if (!Files.exists(path)) {
+            return Collections.emptyList();
+
+        }
+        return nacitajRiadky(klientId).stream()
+                .filter(riadok -> riadok.contains("| klientId=" + klientId + " "))
+                .toList();
+    }
 }
+
 

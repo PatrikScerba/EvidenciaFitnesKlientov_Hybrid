@@ -47,6 +47,7 @@ public class VstupServis {
 
         // Zapíš vstup (iba raz)
         zapisVstup(klientId);
+        zapisUspesnyVstup(klient, klientId);
         return true;
     }
 
@@ -141,6 +142,20 @@ public class VstupServis {
         );
     }
 
+    // Logovanie úspešných vstupov
+    public void zapisUspesnyVstup(Klient klient, int klientId) {
+
+        String identita = (klient != null)
+                ? (" | meno=" + klient.getKrstneMeno() + " | priezvisko=" + klient.getPriezvisko())
+                : "";
+
+        VstupLogServis.zapisLog(
+                "USPECH | klientId=" + klientId + identita +
+                        " | dovod=Platná permanentka a vstup povolený" +
+                        " | rezim=" + (SystemRezim.isOffline() ? "OFFLINE_XML" : "DB")
+        );
+    }
+
     // Skontroluje platnosť permanentky (OFFLINE = XML, ONLINE = DB)
     private boolean maPlatnuPermanentku(int klientId, Optional<Klient> klientOpt) {
         LocalDate platnaDo;
@@ -158,3 +173,4 @@ public class VstupServis {
         return permanentkaVstupServis.jePlatnaPermanentka(platnaDo);
     }
 }
+
