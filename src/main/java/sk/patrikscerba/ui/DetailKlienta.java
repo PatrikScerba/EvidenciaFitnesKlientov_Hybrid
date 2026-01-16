@@ -32,14 +32,16 @@ public class DetailKlienta extends JFrame {
 
     private JButton zatvoritButton;
     private JButton PredlzitPermanentkuButton;
+    private  JButton historiaKlientaButton;
 
-
+    private final Long klientId;
     private final DetailKlientaServis detailKlientaServis;
     private static final DateTimeFormatter FORMATTER = DateTimeFormatter.ofPattern("dd.MM.yyyy");
 
     // Nastavenie okna + načítanie a zobrazenie detailu klienta
     public DetailKlienta(Long klientId, DetailKlientaServis detailKlientaServis) {
         this.detailKlientaServis = detailKlientaServis;
+        this.klientId = klientId;
 
         setContentPane(mainPanel);
         setTitle("Detail klienta");
@@ -63,6 +65,10 @@ public class DetailKlienta extends JFrame {
         zobrazUdaje(klient);
 
         zatvoritButton.addActionListener(e -> dispose());
+        historiaKlientaButton.addActionListener(e -> {
+            new HistoriaKlienta(this.klientId).setVisible(true);
+        });
+
 
         // Akcia: predĺženie permanentky (výber dní -> update DB/XML -> obnovenie UI)
         PredlzitPermanentkuButton.addActionListener(e -> {
