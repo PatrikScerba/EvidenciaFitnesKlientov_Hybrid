@@ -13,7 +13,7 @@ public class DetailKlientaServis {
     }
 
     //Načítanie detail klienta podľa ID
-    public Optional<Klient> nacitajDetailKlienta(long klientId) {
+    public Optional<Klient> nacitajDetailKlienta(Long klientId) {
         return klientHybridServis.najdiKlientaPodlaId(klientId);
     }
 }

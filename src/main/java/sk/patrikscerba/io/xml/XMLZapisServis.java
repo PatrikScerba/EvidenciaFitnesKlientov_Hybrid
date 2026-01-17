@@ -170,7 +170,7 @@ public class XMLZapisServis {
     }
 
     // Vymazanie klienta podľa ID
-    public void vymazatKlientaPodlaId(int klientId) throws Exception {
+    public void vymazatKlientaPodlaId(Long klientId) throws Exception {
         XMLNacitanieServis xmlNacitanieServis = new XMLNacitanieServis();
         List<Klient> klienti = xmlNacitanieServis.nacitajKlientovZoXML();
 

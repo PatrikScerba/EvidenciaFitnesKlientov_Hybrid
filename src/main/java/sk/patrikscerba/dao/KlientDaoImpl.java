@@ -30,7 +30,7 @@ public class KlientDaoImpl implements KlientDao {
 
     // Uloží nového klienta do DB
     @Override
-    public int ulozKlienta(Klient klient) {
+    public Long ulozKlienta(Klient klient) {
 
         //Použitie PreparedStatement kvôli bezpečnosti ( SQL injection )
         String sql = """
@@ -55,12 +55,12 @@ public class KlientDaoImpl implements KlientDao {
             // Vracia vygenerované ID z databázy po INSERT-e (AUTO_INCREMENT)
             try (ResultSet resultSet = preparedStatement.getGeneratedKeys()) {
                 if (resultSet.next()) {
-                    return resultSet.getInt(1);
+                    return resultSet.getLong(1);
                 }
             }
 
             //Ak sa ID nepodarilo získať, vrátime -1 (signalizuje problém)
-            return -1;
+            return null;
 
         } catch (SQLException e) {
             throw new RuntimeException("Chyba pri ukladaní klienta do databázy: " + e.getMessage(), e);
@@ -69,7 +69,7 @@ public class KlientDaoImpl implements KlientDao {
 
     // Nájde klienta podľa ID (ak neexistuje, vráti null)
     @Override
-     public  Optional<Klient> najdiKlientaPodlaId(long id){
+     public  Optional<Klient> najdiKlientaPodlaId(Long id){
 
         String sql = "SELECT * FROM klienti WHERE id = ?";
 
@@ -141,7 +141,7 @@ public class KlientDaoImpl implements KlientDao {
             preparedStatement.setString(4, klient.getTelefonneCislo());
             preparedStatement.setString(5, klient.getEmail());
             preparedStatement.setString(6, klient.getAdresa());
-            preparedStatement.setInt(7, klient.getId());
+            preparedStatement.setLong(7, klient.getId());
 
             //Vráti počet zmenených riadkov
             return preparedStatement.executeUpdate() > 0;
@@ -153,14 +153,14 @@ public class KlientDaoImpl implements KlientDao {
 
     // Vymaže klienta podľa ID
     @Override
-    public boolean vymazatKlienta(int id) {
+    public boolean vymazatKlienta(Long id) {
 
         String sql = "DELETE FROM klienti WHERE id = ?";
 
         try (Connection connection = databazaPripojenie.getConnection();
              PreparedStatement preparedStatement = connection.prepareStatement(sql)) {
 
-            preparedStatement.setInt(1, id);
+            preparedStatement.setLong(1, id);
 
             //Ak sa v databáze vymazal aspoň 1 riadok tak vymazanie prebehlo
             return preparedStatement.executeUpdate() > 0;
@@ -174,7 +174,7 @@ public class KlientDaoImpl implements KlientDao {
     private Klient mapujKlientaZResultSetu(ResultSet resultSet) throws SQLException {
 
         // Povinné údaje z databázy
-        int id = resultSet.getInt("id");
+        Long id = resultSet.getLong("id");
         String krstneMeno = resultSet.getString("krstne_meno");
         String priezvisko = resultSet.getString("priezvisko");
         LocalDate datumNarodenia = resultSet.getDate("datum_narodenia").toLocalDate();
@@ -220,13 +220,13 @@ public class KlientDaoImpl implements KlientDao {
     }
 
     // Načíta len krstné meno a priezvisko klienta podľa ID (použité pre logovanie)
-    public Klient nacitajIdentituKlienta(int klientId) {
+    public Klient nacitajIdentituKlienta(Long klientId) {
         String sql = "SELECT krstne_meno, priezvisko FROM klienti WHERE id = ? LIMIT 1";
 
         try (Connection connection = databazaPripojenie.getConnection();
              PreparedStatement preparedStatement = connection.prepareStatement(sql)) {
 
-            preparedStatement.setInt(1, klientId);
+            preparedStatement.setLong(1, klientId);
 
             try (ResultSet resultSet = preparedStatement.executeQuery()) {
                 if (resultSet.next()) {
@@ -245,7 +245,7 @@ public class KlientDaoImpl implements KlientDao {
 
     // Aktualizuje platnosť permanentky klienta
     @Override
-    public boolean aktualizujPermanentkuPlatnuDo(long id, LocalDate platnaDo) {
+    public boolean aktualizujPermanentkuPlatnuDo(Long id, LocalDate platnaDo) {
         String sql = "UPDATE klienti SET permanentka_platna_do = ? WHERE id = ?";
 
         try (Connection connection = databazaPripojenie.getConnection();
@@ -266,13 +266,13 @@ public class KlientDaoImpl implements KlientDao {
     }
 
     // Získa dátum platnosti permanentky klienta podľa ID
-    public LocalDate ziskajPermanentkuPlatnuDoDB(int klientId) {
+    public LocalDate ziskajPermanentkuPlatnuDoDB(Long klientId) {
         String sql = "SELECT permanentka_platna_do FROM klienti WHERE id = ?";
 
         try (Connection connection = databazaPripojenie.getConnection();
              PreparedStatement preparedStatement = connection.prepareStatement(sql)) {
 
-            preparedStatement.setInt(1, klientId);
+            preparedStatement.setLong(1, klientId);
 
             try (ResultSet resultSet = preparedStatement.executeQuery()) {
                 if (resultSet.next()) {

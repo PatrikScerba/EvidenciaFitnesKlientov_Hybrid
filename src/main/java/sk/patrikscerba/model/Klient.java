@@ -7,7 +7,7 @@ import java.time.format.DateTimeFormatter;
 
 public class Klient {
 
-    private int id;
+    private Long id;
     private String krstneMeno;
     private String priezvisko;
     private LocalDate datumNarodenia;
@@ -24,7 +24,7 @@ public class Klient {
     }
 
     // konštruktor pre databázu
-    public Klient(int id, String krstneMeno, String priezvisko, LocalDate datumNarodenia,
+    public Klient(Long id, String krstneMeno, String priezvisko, LocalDate datumNarodenia,
                   String telefonneCislo, String adresa, String email, LocalDate datumRegistracie) {
         this.id = id;
         this.krstneMeno = krstneMeno;
@@ -49,15 +49,15 @@ public class Klient {
 
     }
 
-    public Klient(int id) {
+    public Klient(Long id) {
         this.id = id;
     }
 
-    public int getId() {
+    public Long getId() {
         return id;
     }
 
-    public void setId(int id) {
+    public void setId(Long id) {
         this.id = id;
     }
 
@@ -132,12 +132,9 @@ public class Klient {
         }
         return Period.between(datumNarodenia, LocalDate.now()).getYears();
     }
-
-    //Setter pre vek je prázdny, pretože vek sa počíta z dátumu narodenia
-    public void setVek(int vek) {
-
-    }
 }
+
+
 
 
 

@@ -93,7 +93,7 @@ public class Vyhladavanie extends JFrame {
                 String label = k.getKrstneMeno() + " " + k.getPriezvisko() + ", ID: " + k.getId();
                 if (label.equals(vyberKlienta)) {
 
-                    long id = k.getId();
+                    Long id = k.getId();
 
                     DetailKlientaServis detailKlientaServis = new DetailKlientaServis(new KlientHybridServis());
                     new DetailKlienta(id,detailKlientaServis).setVisible(true);

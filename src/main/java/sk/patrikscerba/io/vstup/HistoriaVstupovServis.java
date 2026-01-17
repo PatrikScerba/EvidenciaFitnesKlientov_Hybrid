@@ -10,7 +10,7 @@ import java.util.List;
 public class HistoriaVstupovServis {
     private static final String CESTA = "data/vstupy_log.txt";
 
-    public List<String> nacitajRiadky(Long klientId) {
+    public List<String> nacitajRiadky() {
         try {
             Path path = Path.of(CESTA);
 
@@ -26,7 +26,7 @@ public class HistoriaVstupovServis {
     }
 
     // Načíta riadky pre konkrétneho klienta podľa jeho ID
-    public List<String> nacitajRiadkyPreKlienta(long klientId) {
+    public List<String> nacitajRiadkyPreKlienta(Long klientId) {
 
         Path path = Path.of(CESTA);
 
@@ -34,7 +34,7 @@ public class HistoriaVstupovServis {
             return Collections.emptyList();
 
         }
-        return nacitajRiadky(klientId).stream()
+        return nacitajRiadky().stream()
                 .filter(riadok -> riadok.contains("| klientId=" + klientId + " "))
                 .toList();
     }

@@ -56,7 +56,7 @@ public class VstupXmlServis {
     }
 
     //Kontrola či mal klient dnes vstup
-    public boolean malDnesVstup(int klientId, LocalDate datum) {
+    public boolean malDnesVstup(Long klientId, LocalDate datum) {
         try {
             Document document = nacitajXml();
             NodeList list = document.getElementsByTagName("vstup");
@@ -79,7 +79,7 @@ public class VstupXmlServis {
     }
 
     //Zapísanie nového vstupu do XML
-    public void zapisVstupXML(int klientId, LocalDate datum, LocalTime cas) {
+    public void zapisVstupXML(Long klientId, LocalDate datum, LocalTime cas) {
 
         try {
             Document document = nacitajXml();

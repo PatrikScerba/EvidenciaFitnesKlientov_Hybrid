@@ -31,7 +31,7 @@ public class KlientHybridServis {
     }
 
     // Vyhľadanie klienta podľa ID s podporou hybridného režimu (DB / XML)
-    public Optional< Klient> najdiKlientaPodlaId(long id) {
+    public Optional< Klient> najdiKlientaPodlaId(Long id) {
 
         //Ak systém OFFLINE ide priamo cez XML
         if (SystemRezim.isOffline()) {
@@ -51,12 +51,12 @@ public class KlientHybridServis {
     }
 
     // Registrácia nového klienta je povolená len v online režime
-    public int registrujKlienta(Klient klient) {
+    public Long registrujKlienta(Klient klient) {
         if (SystemRezim.isOffline()) {
 
             throw new IllegalStateException("Registrácia klienta je povolená len v online režime .");
         }
-        int id = klientDao.ulozKlienta(klient);
+        Long id = klientDao.ulozKlienta(klient);
 
         klient.setId(id);
         try{
@@ -78,7 +78,7 @@ public class KlientHybridServis {
     }
 
     // Vymazanie klienta je povolené len v online režime
-    public boolean vymazatKlienta(int id) {
+    public boolean vymazatKlienta(Long id) {
         if (SystemRezim.isOffline()) {
             throw new IllegalStateException("Vymazanie klienta nie je možná v offline režime.");
         }
@@ -86,7 +86,7 @@ public class KlientHybridServis {
     }
 
     // Nastavenie platnosti permanentky je povolené len v online režime
-    public boolean nastavPermanentkuPlatnuDo(int klientId, LocalDate platnaDo) {
+    public boolean nastavPermanentkuPlatnuDo(Long klientId, LocalDate platnaDo) {
 
         if (SystemRezim.isOffline()) {
             throw new IllegalStateException("Nastavenie permanentky nie je možné v offline režime.");

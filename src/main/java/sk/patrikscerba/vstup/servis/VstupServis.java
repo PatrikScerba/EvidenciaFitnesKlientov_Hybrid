@@ -23,7 +23,7 @@ public class VstupServis {
     private final AppLogServis appLog = new AppLogServis();
 
     // Kontrola vstupu klienta (true = povolený vstup, false = zamietnutý)
-    public boolean skontrolujVstup(int klientId) {
+    public boolean skontrolujVstup(Long klientId) {
 
         Optional<Klient> klientOpt = ziskajKlienta(klientId);
 
@@ -52,18 +52,18 @@ public class VstupServis {
     }
 
     // Zistí klienta podľa režimu (ONLINE = DB, OFFLINE = XML)
-    public Optional<Klient> ziskajKlienta(int klientId) {
-        long id = klientId;
+    public Optional<Klient> ziskajKlienta(Long klientId) {
+
 
         // OFFLINE – vyhľadanie v XML
         if (SystemRezim.isOffline()) {
-            return xmlNacitanieServis.najdiKlientaVXmlPodlaId(id);
+            return xmlNacitanieServis.najdiKlientaVXmlPodlaId(klientId);
         }
 
         // ONLINE – DB
         try {
             // Bezpečný fallback, ak zatiaľ nieje "najdiKlientaPodlaId" ako Optional:
-            if (!klientDao.existujeKlient(id)) {
+            if (!klientDao.existujeKlient(klientId)) {
                 return Optional.empty();
             }
 
@@ -73,12 +73,12 @@ public class VstupServis {
 
         } catch (Exception e) {
             appLog.error("DB chyba pri ziskajKlienta, fallback na XML | klientId=" + klientId, e);
-            return xmlNacitanieServis.najdiKlientaVXmlPodlaId(id);
+            return xmlNacitanieServis.najdiKlientaVXmlPodlaId(klientId);
         }
     }
 
     // Skontroluje, či klient už dnes vstúpil (kontrola duplicity podľa režimu)
-    private boolean malDnesVstup(int klientId) {
+    private boolean malDnesVstup(Long klientId) {
         LocalDate dnes = LocalDate.now();
 
         if (SystemRezim.isOffline()) {
@@ -88,7 +88,7 @@ public class VstupServis {
     }
 
     // Zápis vstupu podľa režimu (OFFLINE = XML, ONLINE = DB + XML cache, pri chybe DB fallback do XML)
-    private void zapisVstup(int klientId) {
+    private void zapisVstup(Long klientId) {
 
         LocalDate datum = LocalDate.now();
         LocalTime cas = LocalTime.now();
@@ -119,7 +119,7 @@ public class VstupServis {
     }
 
     // Logovanie neúspešných pokusov o vstup
-    public void zapisNeuspesnyVstup(Klient klient, int klientId, String dovod) {
+    public void zapisNeuspesnyVstup(Klient klient, Long klientId, String dovod) {
 
         // ONLINE: ak nemáme meno/priezvisko, dotiahni ich z DB len pre log
         if (!SystemRezim.isOffline()) {
@@ -143,7 +143,7 @@ public class VstupServis {
     }
 
     // Logovanie úspešných vstupov
-    public void zapisUspesnyVstup(Klient klient, int klientId) {
+    public void zapisUspesnyVstup(Klient klient, Long klientId) {
 
         String identita = (klient != null)
                 ? (" | meno=" + klient.getKrstneMeno() + " | priezvisko=" + klient.getPriezvisko())
@@ -157,7 +157,7 @@ public class VstupServis {
     }
 
     // Skontroluje platnosť permanentky (OFFLINE = XML, ONLINE = DB)
-    private boolean maPlatnuPermanentku(int klientId, Optional<Klient> klientOpt) {
+    private boolean maPlatnuPermanentku(Long klientId, Optional<Klient> klientOpt) {
         LocalDate platnaDo;
 
         if (SystemRezim.isOffline()) {

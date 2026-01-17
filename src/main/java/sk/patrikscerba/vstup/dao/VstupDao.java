@@ -21,13 +21,13 @@ public class VstupDao {
     }
 
     // Zaznamenanie vstupu klienta do databázy
-    public void zapisVstup(int klientId, LocalDate datum) {
+    public void zapisVstup(Long klientId, LocalDate datum) {
         String sql = "INSERT INTO vstupy(klient_id, datum) VALUES (?, ? )";
 
         try (Connection connection = databazaPripojenie.getConnection();
              PreparedStatement preparedStatement = connection.prepareStatement(sql)) {
 
-            preparedStatement.setInt(1, klientId);
+            preparedStatement.setLong(1, klientId);
             preparedStatement.setDate(2, java.sql.Date.valueOf(datum));
 
             preparedStatement.executeUpdate();
@@ -39,14 +39,14 @@ public class VstupDao {
     }
 
     // Kontrola, či má klient dnes zaznamenaný vstup v databáze
-    public boolean malDnesVstup(int klientId, LocalDate datum){
+    public boolean malDnesVstup(Long klientId, LocalDate datum){
 
         String sql = "SELECT COUNT(*) FROM vstupy WHERE klient_id = ? AND datum = ?";
 
         try(Connection connection = databazaPripojenie.getConnection();
             PreparedStatement preparedStatement = connection.prepareStatement(sql)){
 
-            preparedStatement.setInt(1, klientId);
+            preparedStatement.setLong(1, klientId);
             preparedStatement.setDate(2, java.sql.Date.valueOf(datum));
 
             try(ResultSet resultSet = preparedStatement.executeQuery()){

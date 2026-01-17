@@ -8,15 +8,15 @@ import java.util.Optional;
 
 public interface KlientDao {
 
-    int ulozKlienta(Klient klient);
+    Long ulozKlienta(Klient klient);
 
-    Optional<Klient> najdiKlientaPodlaId(long id);
+    Optional<Klient> najdiKlientaPodlaId(Long id);
 
     List<Klient> ziskajVsetkychKlientov();
 
     boolean aktualizujKlienta(Klient klient);
 
-    boolean vymazatKlienta(int id);
+    boolean vymazatKlienta(Long id);
 
-    boolean aktualizujPermanentkuPlatnuDo(long id, LocalDate platnaDo);
+    boolean aktualizujPermanentkuPlatnuDo(Long id, LocalDate platnaDo);
 }

@@ -54,7 +54,7 @@ public class XMLNacitanieServis {
 
                 Element element = (Element) node;
 
-                int id = Integer.parseInt(getText(element, "id"));
+                Long id = Long.parseLong(getText(element, "id"));
 
                 String krstneMeno = getText(element, "krstneMeno");
                 String priezvisko = getText(element, "priezvisko");
@@ -82,7 +82,7 @@ public class XMLNacitanieServis {
     }
 
     //Vyhľadanie klienta v XML podľa ID
-    public Optional < Klient> najdiKlientaVXmlPodlaId(long id) {
+    public Optional < Klient> najdiKlientaVXmlPodlaId(Long id) {
 
         List<Klient> klienti = nacitajKlientovZoXML();
 
