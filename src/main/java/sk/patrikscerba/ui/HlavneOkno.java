@@ -25,12 +25,13 @@ public class HlavneOkno extends JFrame {
         if (sk.patrikscerba.system.SystemRezim.isOffline()) {
             Registracia.setEnabled(false);
             Klienti.setEnabled(true); // čítanie povolené
-            Vyhladanie.setEnabled(true); // čítanie povolené
+            Vyhladanie.setEnabled(true);
+            HistoriaVstupov.setEnabled(true);// čítanie povolené
         }
 
         //Nastavenie akcií tlačidiel v hlavnom okne
         Registracia.addActionListener(e -> new Registracia().setVisible(true));
-        Vyhladanie.addActionListener(e -> new Vyhladavanie().setVisible(true));
+        Vyhladanie.addActionListener(e -> new Vyhladavanie(false).setVisible(true));
         Klienti.addActionListener(e ->  new ZoznamKlientov().setVisible(true));
         HistoriaVstupov.addActionListener(e -> new HistoriaVstupov().setVisible(true));
     }

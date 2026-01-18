@@ -1,16 +1,37 @@
 package sk.patrikscerba.ui;
 
+import sk.patrikscerba.io.vstup.HistoriaVstupovServis;
+
 import javax.swing.*;
+import javax.swing.table.DefaultTableModel;
+import java.util.List;
 
-//Zobrazenie histórie vstupov klientov
-public class HistoriaVstupov extends  JFrame{
+// Zobrazenie histórie vstupov klienta
+public class HistoriaVstupov extends JFrame {
 
-    private JTable tabulka;
+    private final HistoriaVstupovServis historiaVstupovServis = new HistoriaVstupovServis();
+    private final JTable tabulka = new JTable();
 
-    public HistoriaVstupov(){
-        setTitle("História vstupov klientov");
+    //História vstupov klientov
+    public HistoriaVstupov() {
+        setTitle("Globálna história vstupov klientov");
         setSize(900, 450);
         setLocationRelativeTo(null);
-        setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
+        setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
+
+        // Pridanie tabuľky do okna s posuvníkom
+        add(new JScrollPane(tabulka));
+
+        List<String> riadky = historiaVstupovServis.nacitajRiadky();
+
+        //Model tabuľky (stĺpce + riadky)
+        DefaultTableModel model = new DefaultTableModel();
+        model.addColumn("Záznamy vstupov");
+
+        for (String riadok : riadky) {
+            model.addRow(new Object[]{riadok});
+        }
+
+        tabulka.setModel(model);
     }
 }
