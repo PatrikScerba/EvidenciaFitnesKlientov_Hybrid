@@ -32,7 +32,7 @@ public class DetailKlienta extends JFrame {
 
     private JButton zatvoritButton;
     private JButton PredlzitPermanentkuButton;
-    private  JButton historiaKlientaButton;
+    private JButton historiaKlientaButton;
 
     private final Long klientId;
     private final DetailKlientaServis detailKlientaServis;
@@ -72,7 +72,7 @@ public class DetailKlienta extends JFrame {
 
         // Akcia: predĺženie permanentky (výber dní -> update DB/XML -> obnovenie UI)
         PredlzitPermanentkuButton.addActionListener(e -> {
-                    JOptionPane.showConfirmDialog(this,
+            JOptionPane.showConfirmDialog(this,
                     "Naozaj chcete predĺžiť permanentku?",
                     "Predĺženie permanentky",
                     JOptionPane.YES_NO_OPTION);
@@ -108,7 +108,7 @@ public class DetailKlienta extends JFrame {
                     klient.setPermanentkaPlatnaDo(novaPlatnost);
                     xmlZapisServis.aktualizujKlientaVXml(klient);
 
-                    obnovZobrazeniePermanentky();
+                    obnovZobrazeniePermanentky(klient);
 
                     JOptionPane.showMessageDialog(
                             this, "Permanentka predĺžená do: " + novaPlatnost);
@@ -150,33 +150,29 @@ public class DetailKlienta extends JFrame {
         }
 
         //Informácie o permanentke
-        if (klient.getPermanentkaPlatnaDo() != null) {
-            labPermanentkaStav.setText("Permanentka: Aktívna");
-            labPlatnostPermanentky.setText(
-                    "Permanentka platná do: " + klient.getPermanentkaPlatnaDo().format(FORMATTER));
-        } else {
-            labPermanentkaStav.setText("Permanentka: Neaktívna");
-            labPlatnostPermanentky.setText("Platná do: -");
-        }
+        obnovZobrazeniePermanentky(klient);
     }
 
     // Obnovenie zobrazenia stavu a platnosti permanentky
-    private void obnovZobrazeniePermanentky() {
+    private void obnovZobrazeniePermanentky(Klient klient) {
         PermanentkaVstupServis permanentkaServis = new PermanentkaVstupServis();
-        Klient klient = new Klient();
+
         LocalDate platnaDo = klient.getPermanentkaPlatnaDo();
 
         if (platnaDo == null) {
-            labPermanentkaStav.setText("Nemá permanentku");
+            labPermanentkaStav.setText("Nemá ");
             labPlatnostPermanentky.setText("—");
             return;
         }
-        labPlatnostPermanentky.setText(platnaDo.toString());
+
+        long dni = permanentkaServis.zostavaDni(platnaDo);
 
         if (permanentkaServis.jePlatnaPermanentka(platnaDo)) {
-            labPermanentkaStav.setText("Platná");
+            labPermanentkaStav.setText("Permanentka: Aktívna");
+            labPlatnostPermanentky.setText("Platná do: " + platnaDo.format(FORMATTER) + " ( " + dni + " dní " + " ) ");
         } else {
-            labPermanentkaStav.setText("Neplatná");
+            labPermanentkaStav.setText("Permanentka: Neplatná");
+            labPlatnostPermanentky.setText("Vypršala platnosť: " + platnaDo.format(FORMATTER) + " (" + Math.abs(dni) + " dní po)");
         }
     }
 }
