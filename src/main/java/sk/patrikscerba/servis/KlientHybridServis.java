@@ -7,6 +7,7 @@ import sk.patrikscerba.io.xml.XMLNacitanieServis;
 import sk.patrikscerba.io.xml.XMLZapisServis;
 import sk.patrikscerba.model.Klient;
 import sk.patrikscerba.system.SystemRezim;
+
 import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
@@ -17,12 +18,12 @@ public class KlientHybridServis {
     private final KlientDao klientDao = new KlientDaoImpl();
     private final XMLZapisServis xmlZapisServis = new XMLZapisServis();
     private final XMLNacitanieServis xmlNacitanieServis = new XMLNacitanieServis();
-    private  final AppLogServis appLog = new AppLogServis();
+    private final AppLogServis appLog = new AppLogServis();
 
     // Získanie všetkých klientov s podporou hybridného režimu (DB / XML)
     public List<Klient> ziskajVsetkychKlientov() {
 
-        //Ofline rezim - nacitanie z XML suboru
+        //Ofline rezim - nacitanie z XML súboru
         if (SystemRezim.isOffline()) {
             return xmlNacitanieServis.nacitajKlientovZoXML();
         }
@@ -31,9 +32,9 @@ public class KlientHybridServis {
     }
 
     // Vyhľadanie klienta podľa ID s podporou hybridného režimu (DB / XML)
-    public Optional< Klient> najdiKlientaPodlaId(Long id) {
+    public Optional<Klient> najdiKlientaPodlaId(Long id) {
 
-        //Ak systém OFFLINE ide priamo cez XML
+        //Ak systém je OFFLINE načíta cez XML
         if (SystemRezim.isOffline()) {
             return xmlNacitanieServis.najdiKlientaVXmlPodlaId(id);
         }
@@ -45,36 +46,47 @@ public class KlientHybridServis {
 
             appLog.error("DB chyba pri najdiKlientaPodlaId, fallback na XML | klientId=" + id, e);
 
-            // DB nedostupná, prepni do offline režimu a skús načítať z XML
+            // Databáza zlyhala, načítanie z XML
             return xmlNacitanieServis.najdiKlientaVXmlPodlaId(id);
         }
     }
 
     // Registrácia nového klienta je povolená len v online režime
     public Long registrujKlienta(Klient klient) {
-        if (SystemRezim.isOffline()) {
+        vyzadujOnline("Registrácia klienta");
 
-            throw new IllegalStateException("Registrácia klienta je povolená len v online režime .");
-        }
         Long id = klientDao.ulozKlienta(klient);
-
         klient.setId(id);
-        try{
-        xmlZapisServis.ulozKlienta(klient);
 
-        } catch (Exception e){
+        try {
+            xmlZapisServis.ulozKlienta(klient);
+        } catch (Exception e) {
             appLog.error("Zlyhal zápis klienta do XML po uložení do DB | klientId=" + id, e);
-            throw e;
+            throw new RuntimeException("Klient sa uložil do DB, ale nepodarilo sa uložiť XML.", e);
         }
+
         return id;
     }
 
     // Aktualizácia klienta je povolená len v online režime
     public boolean aktualizujKlienta(Klient klient) {
-        if (SystemRezim.isOffline()) {
-            throw new IllegalStateException("Aktualizácia klienta nie je možná v offline režime.");
+        vyzadujOnline("Aktualizácia klienta");
+
+        boolean ok = klientDao.aktualizujKlienta(klient);
+
+        if (!ok) {
+            appLog.warn("DB neaktualizovala klienta (0 riadkov) | klientId=" + klient.getId());
+            return false;
         }
-        return klientDao.aktualizujKlienta(klient);
+
+        try {
+            xmlZapisServis.aktualizujKlientaVXml(klient);
+        } catch (Exception e) {
+            appLog.error("DB aktualizovaná, ale XML zlyhalo | klientId=" + klient.getId(), e);
+            throw new RuntimeException("DB sa aktualizovala, ale XML sa nepodarilo zosúladiť.", e);
+        }
+
+        return true;
     }
 
     // Vymazanie klienta je povolené len v online režime
@@ -100,7 +112,7 @@ public class KlientHybridServis {
         Klient klient = klientOptional.get();
 
         // Aktualizuj platnosť permanentky v databáze
-        boolean databazaOnlineOk =  klientDao.aktualizujPermanentkuPlatnuDo(klientId, platnaDo);
+        boolean databazaOnlineOk = klientDao.aktualizujPermanentkuPlatnuDo(klientId, platnaDo);
 
         if (!databazaOnlineOk) {
             appLog.warn("Databáza neaktualizovala platnosť permanentky, zrušenie operácie | klientId=" + klientId);
@@ -117,6 +129,13 @@ public class KlientHybridServis {
         }
 
         return true;
+    }
+
+    // Zabezpečuje, že zápisové operácie sú povolené len v online režime
+    private void vyzadujOnline(String akcia) {
+        if (SystemRezim.isOffline()) {
+            throw new IllegalStateException(akcia + " nie je dostupné v offline režime.");
+        }
     }
 }
 
