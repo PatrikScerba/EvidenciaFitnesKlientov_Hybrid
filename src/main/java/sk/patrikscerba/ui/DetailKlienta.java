@@ -97,7 +97,14 @@ public class DetailKlienta extends JFrame {
         );
 
         PredlzitPermanentkuButton.addActionListener(e -> predlzPermanentku());
-        upravitButton.addActionListener(e -> prepniDoUprav());
+
+        upravitButton.addActionListener(e -> {
+            if (!rezim) {
+                prepniDoUprav();
+            } else {
+                ulozZmeny();
+            }
+        });
 
     }
 
@@ -108,7 +115,7 @@ public class DetailKlienta extends JFrame {
         nastavViditelnostUpravPoli(uprav);
         zobrazLabely(!uprav);
 
-        upravitButton.setText("Upraviť");
+        upravitButton.setText(uprav ? "Uložiť zmeny" : "Upraviť");
         mainPanel.setBackground(uprav ? new Color(47, 39, 39) : null);
 
         mainPanel.revalidate();
@@ -156,6 +163,41 @@ public class DetailKlienta extends JFrame {
         labVek.setVisible(viditelne);
         labPermanentkaStav.setVisible(viditelne);
         labPlatnostPermanentky.setVisible(viditelne);
+    }
+
+    //Uloženie zmien po úprave klienta
+    private void ulozZmeny() {
+        try {
+            //servis uloží do DB/XML cez hybrid servis (validácie sú v servise)
+            detailKlientaServis.ulozUpravyKlienta(
+                    klientId,
+                    upravitKrstneMeno.getText(),
+                    upravitPriezvisko.getText(),
+                    upravitDatumNarodenia.getText(),
+                    upravitTelefonneCislo.getText(),
+                    upravitAdresa.getText(),
+                    upravitEmail.getText()
+            );
+
+            // UI: aktualizácia aktuálneho klienta
+            this.klient.setKrstneMeno(upravitKrstneMeno.getText().trim());
+            this.klient.setPriezvisko(upravitPriezvisko.getText().trim());
+            this.klient.setEmail(upravitEmail.getText().trim());
+            this.klient.setAdresa(upravitAdresa.getText().trim());
+            this.klient.setTelefonneCislo(upravitTelefonneCislo.getText().trim());
+            this.klient.setDatumNarodenia(LocalDate.parse(upravitDatumNarodenia.getText().trim(), FORMATTER));
+
+            // UI zobrazí aktualizované údaje
+            zobrazUdaje(this.klient);
+            nastavRezim(false);
+
+            JOptionPane.showMessageDialog(this, "Údaje boli uložené.");
+
+        } catch (Exception ex) {
+            JOptionPane.showMessageDialog(this, "Chyba: " + ex.getMessage(), "Chyba", JOptionPane.ERROR_MESSAGE);
+            // zostaneš v edit režime, aby si mohol opraviť hodnoty
+            nastavRezim(true);
+        }
     }
 
     //Predĺženie permanentky klienta s výberom počtu dní
