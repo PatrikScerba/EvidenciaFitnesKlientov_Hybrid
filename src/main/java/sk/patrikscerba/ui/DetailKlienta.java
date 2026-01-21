@@ -33,9 +33,10 @@ public class DetailKlienta extends JFrame {
     private JLabel labPlatnostPermanentky;
 
     private JButton zatvoritButton;
-    private JButton PredlzitPermanentkuButton;
+    private JButton predlzitPermanentkuButton;
     private JButton historiaKlientaButton;
     private JButton upravitButton;
+    private JButton zrusitUpravyButton;
 
     private JTextField upravitKrstneMeno;
     private JTextField upravitPriezvisko;
@@ -95,7 +96,7 @@ public class DetailKlienta extends JFrame {
 
         historiaKlientaButton.addActionListener(e -> new HistoriaKlienta(this.klientId).setVisible(true));
 
-        PredlzitPermanentkuButton.addActionListener(e -> predlzPermanentku());
+        predlzitPermanentkuButton.addActionListener(e -> predlzPermanentku());
 
         upravitButton.addActionListener(e -> {
             if (!rezim) {
@@ -104,6 +105,8 @@ public class DetailKlienta extends JFrame {
                 ulozZmeny();
             }
         });
+
+        zrusitUpravyButton.addActionListener(e -> nastavRezim(false));
 
     }
 
@@ -114,6 +117,10 @@ public class DetailKlienta extends JFrame {
         nastavViditelnosPoliUprav(uprav);
         zobrazLabely(!uprav);
 
+        predlzitPermanentkuButton.setVisible(!uprav);
+        historiaKlientaButton.setVisible(!uprav);
+        zrusitUpravyButton.setVisible(uprav);
+        zatvoritButton.setVisible(!uprav);
         upravitButton.setText(uprav ? "Uložiť zmeny" : "Upraviť");
         mainPanel.setBackground(uprav ? new Color(47, 39, 39) : null);
 
@@ -283,7 +290,8 @@ public class DetailKlienta extends JFrame {
         boolean offline = SystemRezim.isOffline();
 
         upravitButton.setEnabled(!offline);
-        PredlzitPermanentkuButton.setEnabled(!offline);
+        predlzitPermanentkuButton.setEnabled(!offline);
+        zrusitUpravyButton.setEnabled(!offline);
 
         if (offline) {
             //informácia pre zamestnanca
@@ -291,6 +299,7 @@ public class DetailKlienta extends JFrame {
         }
     }
 }
+
 
 
 
