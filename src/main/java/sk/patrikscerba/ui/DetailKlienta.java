@@ -5,6 +5,7 @@ import sk.patrikscerba.dao.KlientDaoImpl;
 import sk.patrikscerba.io.xml.XMLZapisServis;
 import sk.patrikscerba.model.Klient;
 import sk.patrikscerba.servis.DetailKlientaServis;
+import sk.patrikscerba.system.SystemRezim;
 import sk.patrikscerba.vstup.servis.PermanentkaVstupServis;
 
 import javax.swing.*;
@@ -61,7 +62,7 @@ public class DetailKlienta extends JFrame {
 
         //štandardne v zobrazovacom režime
         nastavRezim(false);
-
+        nastavDostupnostAkciiPodlaRezimu();
     }
 
     // Nastavenie základných vlastností okna
@@ -92,9 +93,7 @@ public class DetailKlienta extends JFrame {
 
         zatvoritButton.addActionListener(e -> dispose());
 
-        historiaKlientaButton.addActionListener(e ->
-                new HistoriaKlienta(this.klientId).setVisible(true)
-        );
+        historiaKlientaButton.addActionListener(e -> new HistoriaKlienta(this.klientId).setVisible(true));
 
         PredlzitPermanentkuButton.addActionListener(e -> predlzPermanentku());
 
@@ -112,7 +111,7 @@ public class DetailKlienta extends JFrame {
     private void nastavRezim(boolean uprav) {
         rezim = uprav;
 
-        nastavViditelnostUpravPoli(uprav);
+        nastavViditelnosPoliUprav(uprav);
         zobrazLabely(!uprav);
 
         upravitButton.setText(uprav ? "Uložiť zmeny" : "Upraviť");
@@ -122,7 +121,7 @@ public class DetailKlienta extends JFrame {
         mainPanel.repaint();
     }
 
-    // Prepne mód do režimu úprav
+    // Prepne režim do režimu úprav
     private void prepniDoUprav() {
 
         // Naplnenie polí
@@ -132,17 +131,13 @@ public class DetailKlienta extends JFrame {
         upravitAdresa.setText(klient.getAdresa());
         upravitTelefonneCislo.setText(klient.getTelefonneCislo());
 
-        upravitDatumNarodenia.setText(
-                klient.getDatumNarodenia() != null
-                        ? klient.getDatumNarodenia().format(FORMATTER)
-                        : ""
-        );
+        upravitDatumNarodenia.setText(klient.getDatumNarodenia() != null ? klient.getDatumNarodenia().format(FORMATTER) : "");
 
         nastavRezim(true);
     }
 
     // Zobrazí alebo skryje polia na úpravu podľa režimu
-    private void nastavViditelnostUpravPoli(boolean viditelne) {
+    private void nastavViditelnosPoliUprav(boolean viditelne) {
         upravitKrstneMeno.setVisible(viditelne);
         upravitPriezvisko.setVisible(viditelne);
         upravitEmail.setVisible(viditelne);
@@ -169,15 +164,7 @@ public class DetailKlienta extends JFrame {
     private void ulozZmeny() {
         try {
             //servis uloží do DB/XML cez hybrid servis (validácie sú v servise)
-            detailKlientaServis.ulozUpravyKlienta(
-                    klientId,
-                    upravitKrstneMeno.getText(),
-                    upravitPriezvisko.getText(),
-                    upravitDatumNarodenia.getText(),
-                    upravitTelefonneCislo.getText(),
-                    upravitAdresa.getText(),
-                    upravitEmail.getText()
-            );
+            detailKlientaServis.ulozUpravyKlienta(klientId, upravitKrstneMeno.getText(), upravitPriezvisko.getText(), upravitDatumNarodenia.getText(), upravitTelefonneCislo.getText(), upravitAdresa.getText(), upravitEmail.getText());
 
             // UI: aktualizácia aktuálneho klienta
             this.klient.setKrstneMeno(upravitKrstneMeno.getText().trim());
@@ -203,27 +190,14 @@ public class DetailKlienta extends JFrame {
     //Predĺženie permanentky klienta s výberom počtu dní
     private void predlzPermanentku() {
 
-        int potvrdenie = JOptionPane.showConfirmDialog(
-                this,
-                "Naozaj chcete predĺžiť permanentku?",
-                "Predĺženie permanentky",
-                JOptionPane.YES_NO_OPTION
-        );
+        int potvrdenie = JOptionPane.showConfirmDialog(this, "Naozaj chcete predĺžiť permanentku?", "Predĺženie permanentky", JOptionPane.YES_NO_OPTION);
 
         if (potvrdenie != JOptionPane.YES_OPTION) {
             return;
         }
 
         Object[] moznosti = {"30 dní", "90 dní", "180 dní"};
-        Object vyber = JOptionPane.showInputDialog(
-                this,
-                "Vyber dĺžku predĺženia:",
-                "Predĺženie permanentky",
-                JOptionPane.QUESTION_MESSAGE,
-                null,
-                moznosti,
-                moznosti[0]
-        );
+        Object vyber = JOptionPane.showInputDialog(this, "Vyber dĺžku predĺženia:", "Predĺženie permanentky", JOptionPane.QUESTION_MESSAGE, null, moznosti, moznosti[0]);
 
         if (vyber == null) {
             return;
@@ -301,6 +275,19 @@ public class DetailKlienta extends JFrame {
         } else {
             labPermanentkaStav.setText("Permanentka: Neplatná");
             labPlatnostPermanentky.setText("Vypršala: " + platnaDo.format(FORMATTER) + " (" + Math.abs(dni) + " dní po)");
+        }
+    }
+
+    //Podľa režimu systému nastaví dostupnosť akcií upraviť a predĺžiť permanentku pre klienta
+    private void nastavDostupnostAkciiPodlaRezimu() {
+        boolean offline = SystemRezim.isOffline();
+
+        upravitButton.setEnabled(!offline);
+        PredlzitPermanentkuButton.setEnabled(!offline);
+
+        if (offline) {
+            //informácia pre zamestnanca
+            JOptionPane.showMessageDialog(this, "Offline režim: úpravy a predĺženie permanentky nie sú dostupné.\n" + "Zobrazenie detailu funguje len na čítanie (XML záloha).", "Offline režim", JOptionPane.WARNING_MESSAGE);
         }
     }
 }
