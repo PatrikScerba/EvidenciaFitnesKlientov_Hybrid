@@ -37,6 +37,7 @@ public class DetailKlienta extends JFrame {
     private JButton historiaKlientaButton;
     private JButton upravitButton;
     private JButton zrusitUpravyButton;
+    private JButton vymazatKlientaButton;
 
     private JTextField upravitKrstneMeno;
     private JTextField upravitPriezvisko;
@@ -108,6 +109,8 @@ public class DetailKlienta extends JFrame {
 
         zrusitUpravyButton.addActionListener(e -> nastavRezim(false));
 
+        vymazatKlientaButton.addActionListener(e -> vymazKlienta());
+
     }
 
     //Režim zobrazenia alebo úprav
@@ -121,6 +124,7 @@ public class DetailKlienta extends JFrame {
         historiaKlientaButton.setVisible(!uprav);
         zrusitUpravyButton.setVisible(uprav);
         zatvoritButton.setVisible(!uprav);
+        vymazatKlientaButton.setVisible(!uprav);
         upravitButton.setText(uprav ? "Uložiť zmeny" : "Upraviť");
         mainPanel.setBackground(uprav ? new Color(47, 39, 39) : null);
 
@@ -292,10 +296,35 @@ public class DetailKlienta extends JFrame {
         upravitButton.setEnabled(!offline);
         predlzitPermanentkuButton.setEnabled(!offline);
         zrusitUpravyButton.setEnabled(!offline);
+        vymazatKlientaButton.setEnabled(!offline);
 
         if (offline) {
             //informácia pre zamestnanca
             JOptionPane.showMessageDialog(this, "Offline režim: úpravy a predĺženie permanentky nie sú dostupné.\n" + "Zobrazenie detailu funguje len na čítanie (XML záloha).", "Offline režim", JOptionPane.WARNING_MESSAGE);
+        }
+    }
+
+    // Vymazanie klienta po potvrdení
+    private void vymazKlienta() {
+
+        int potvrdenie = JOptionPane.showConfirmDialog(
+                this,
+                "Naozaj chcete vymazať klienta?",
+                "Potvrdenie",
+                JOptionPane.YES_NO_OPTION
+        );
+
+        if (potvrdenie == JOptionPane.YES_OPTION) {
+            try {
+                detailKlientaServis.vymazatKlienta(klientId);
+                JOptionPane.showMessageDialog(this, "Klient bol úspešne vymazaný.");
+                dispose();
+
+            } catch (Exception e) {
+                JOptionPane.showMessageDialog(this,
+                        "Chyba pri vymazaní: " + e.getMessage(),
+                        "Chyba", JOptionPane.ERROR_MESSAGE);
+            }
         }
     }
 }

@@ -90,4 +90,13 @@ public class DetailKlientaServis {
             throw new IllegalStateException("Aktualizácia klienta v XML sa nepodarila.", e);
         }
     }
+
+    // Vymazanie klienta podľa ID s kontrolou úspešnosti operácie
+    public void vymazatKlienta(Long klientId) {
+        boolean vymazane = klientHybridServis.vymazatKlienta(klientId);
+
+        if (!vymazane) {
+            throw new IllegalStateException("Klienta sa nepodarilo vymazať.");
+        }
+    }
 }

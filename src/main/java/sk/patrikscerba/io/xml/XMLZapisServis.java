@@ -170,15 +170,19 @@ public class XMLZapisServis {
     }
 
     // Vymazanie klienta podľa ID
-    public void vymazatKlientaPodlaId(Long klientId) throws Exception {
+    public boolean vymazatKlientaPodlaId(Long klientId) throws Exception {
         XMLNacitanieServis xmlNacitanieServis = new XMLNacitanieServis();
         List<Klient> klienti = xmlNacitanieServis.nacitajKlientovZoXML();
 
-        // odstránenie klienta podľa ID
-        klienti.removeIf(k -> k.getId() == klientId);
+        boolean KlientVymazany = klienti.removeIf(k -> k.getId().equals(klientId));
+
+        if (!KlientVymazany){
+            return false;
+        }
 
         // uloženie aktualizovaného zoznamu späť do XML
         ulozVsetkychKlientov(klienti);
+        return true;
     }
 }
 

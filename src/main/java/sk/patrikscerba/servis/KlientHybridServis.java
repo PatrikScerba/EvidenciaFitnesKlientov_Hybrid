@@ -89,12 +89,29 @@ public class KlientHybridServis {
         return true;
     }
 
-    // Vymazanie klienta je povolené len v online režime
+    // Vymazanie klienta je povolené len v online režime(súbežne z DB aj z XML)
     public boolean vymazatKlienta(Long id) {
         if (SystemRezim.isOffline()) {
             throw new IllegalStateException("Vymazanie klienta nie je možná v offline režime.");
         }
-        return klientDao.vymazatKlienta(id);
+        boolean vymazanyZDb = klientDao.vymazatKlienta(id);
+
+        if (!vymazanyZDb) {
+            throw new IllegalStateException("Klient sa nenašiel v databáze.");
+        }
+        boolean vymazanyZXml;
+
+        try {
+            vymazanyZXml = xmlZapisServis.vymazatKlientaPodlaId(id);
+        } catch (Exception e) {
+            throw new IllegalStateException("Chyba pri mazaní klienta z XML.", e);
+        }
+
+        if (!vymazanyZXml) {
+            throw new IllegalStateException("Klient sa nenašiel v XML.");
+        }
+
+        return true;
     }
 
     // Nastavenie platnosti permanentky je povolené len v online režime
