@@ -17,7 +17,7 @@ import java.util.List;
 import java.util.Optional;
 
 
-//Trieda zabezpečuje databázové operácie nad klientmi a mapovanie databázových dát na objekt Klient.
+// Trieda zabezpečuje databázové operácie nad klientmi a mapovanie databázových dát na objekt Klient.
 public class KlientDaoImpl implements KlientDao {
 
     private final AppLogServis applog = new AppLogServis();
@@ -69,7 +69,7 @@ public class KlientDaoImpl implements KlientDao {
 
     // Nájde klienta podľa ID (ak neexistuje, vráti null)
     @Override
-     public  Optional<Klient> najdiKlientaPodlaId(Long id){
+    public Optional<Klient> najdiKlientaPodlaId(Long id) {
 
         String sql = "SELECT * FROM klienti WHERE id = ?";
 
@@ -118,7 +118,7 @@ public class KlientDaoImpl implements KlientDao {
 
     // Aktualizuje existujúceho klienta podľa ID (vracia true/false podľa toho, či sa niečo zmenilo)
     @Override
-    public boolean aktualizujKlienta(Klient klient){
+    public boolean aktualizujKlienta(Klient klient) {
 
         String sql = """
                 UPDATE klienti SET
@@ -134,7 +134,7 @@ public class KlientDaoImpl implements KlientDao {
         try (Connection connection = databazaPripojenie.getConnection();
              PreparedStatement preparedStatement = connection.prepareStatement(sql)) {
 
-            //Napĺnenie hodnôt do UPDATE podľa poradia
+            // Napĺnenie hodnôt do UPDATE podľa poradia
             preparedStatement.setString(1, klient.getKrstneMeno());
             preparedStatement.setString(2, klient.getPriezvisko());
             preparedStatement.setDate(3, Date.valueOf(klient.getDatumNarodenia()));
@@ -143,7 +143,7 @@ public class KlientDaoImpl implements KlientDao {
             preparedStatement.setString(6, klient.getAdresa());
             preparedStatement.setLong(7, klient.getId());
 
-            //Vráti počet zmenených riadkov
+            // Vráti počet zmenených riadkov
             return preparedStatement.executeUpdate() > 0;
 
         } catch (SQLException e) {
@@ -181,9 +181,10 @@ public class KlientDaoImpl implements KlientDao {
         String telefonneCislo = resultSet.getString("telefonne_cislo");
         String email = resultSet.getString("email");
         String adresa = resultSet.getString("adresa");
+        String qrCesta = resultSet.getString("qr_cesta");
 
         // Dátum registrácie je v databáze default (CURRENT_DATE)
-        //ale pre istotu je ošetrenie null (ak by vrátila prázdnu hodnotu)
+        // ale pre istotu je ošetrenie null (ak by vrátila prázdnu hodnotu)
         LocalDate datumRegistracie = null;
         Date registracnyDatum = resultSet.getDate("datum_registracie");
         if (registracnyDatum != null) {
@@ -192,7 +193,7 @@ public class KlientDaoImpl implements KlientDao {
         Date sqlPermanentka = resultSet.getDate("permanentka_platna_do");
         LocalDate permanentkaPlatnaDo = (sqlPermanentka != null) ? sqlPermanentka.toLocalDate() : null;
 
-        Klient klient = new Klient(id, krstneMeno, priezvisko, datumNarodenia, telefonneCislo, adresa, email, datumRegistracie);
+        Klient klient = new Klient(id, krstneMeno, priezvisko, datumNarodenia, telefonneCislo, adresa, email, datumRegistracie, qrCesta);
         klient.setPermanentkaPlatnaDo(permanentkaPlatnaDo);
 
         return klient;
@@ -200,7 +201,7 @@ public class KlientDaoImpl implements KlientDao {
     }
 
     // Overí, či klient s daným ID existuje v DB
-    public boolean existujeKlient(long klientId){
+    public boolean existujeKlient(long klientId) {
 
         String sql = "SELECT 1 FROM klienti WHERE id = ? LIMIT 1";
 
@@ -284,5 +285,22 @@ public class KlientDaoImpl implements KlientDao {
             return null;
         }
         return null;
+    }
+
+    // Aktualizuje cestu k QR kódu klienta podľa ID
+    @Override
+    public boolean aktualizujQrCestu(int id, String qrCesta) throws SQLException {
+
+        String sql = "UPDATE klienti SET qr_cesta = ? WHERE id = ?";
+
+        PreparedStatement preparedStatement = databazaPripojenie.getConnection().prepareStatement(sql);
+
+        preparedStatement.setString(1, qrCesta);
+        preparedStatement.setInt(2, id);
+
+        int updatedRows = preparedStatement.executeUpdate();
+
+        return updatedRows > 0;
+
     }
 }

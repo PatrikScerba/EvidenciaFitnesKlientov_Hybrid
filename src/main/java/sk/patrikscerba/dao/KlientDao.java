@@ -2,6 +2,7 @@ package sk.patrikscerba.dao;
 
 import sk.patrikscerba.model.Klient;
 
+import java.sql.SQLException;
 import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
@@ -19,4 +20,6 @@ public interface KlientDao {
     boolean vymazatKlienta(Long id);
 
     boolean aktualizujPermanentkuPlatnuDo(Long id, LocalDate platnaDo);
+
+    boolean aktualizujQrCestu(int id, String qrCesta) throws SQLException;
 }

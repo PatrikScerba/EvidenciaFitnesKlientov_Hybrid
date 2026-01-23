@@ -16,6 +16,7 @@ public class Klient {
     private String email;
     private LocalDate datumRegistracie;
     private LocalDate permanentkaPlatnaDo;
+    private String qrCesta;
 
     private static final DateTimeFormatter FORMATTER = DateTimeFormatter.ofPattern("dd.MM.yyyy");
 
@@ -25,7 +26,7 @@ public class Klient {
 
     // konštruktor pre databázu
     public Klient(Long id, String krstneMeno, String priezvisko, LocalDate datumNarodenia,
-                  String telefonneCislo, String adresa, String email, LocalDate datumRegistracie) {
+                  String telefonneCislo, String adresa, String email, LocalDate datumRegistracie, String qrCesta) {
         this.id = id;
         this.krstneMeno = krstneMeno;
         this.priezvisko = priezvisko;
@@ -131,6 +132,14 @@ public class Klient {
             return 0;
         }
         return Period.between(datumNarodenia, LocalDate.now()).getYears();
+    }
+
+    public String getQrCesta() {
+        return qrCesta;
+    }
+
+    public void setQrCesta(String qrCesta) {
+        this.qrCesta = qrCesta;
     }
 }
 

@@ -24,10 +24,10 @@ public class XMLNacitanieServis {
     private static final DateTimeFormatter FORMAT_DB = DateTimeFormatter.ofPattern("yyyy-MM-dd");
     private static final DateTimeFormatter FORMAT_V1 = DateTimeFormatter.ofPattern("dd.MM.yyyy");
 
-    private static final  String PRIECINOK_DATA  = "data";
-    private static final  String SUBOR_KLIENTI_XML = "klienti.xml";
+    private static final String PRIECINOK_DATA = "data";
+    private static final String SUBOR_KLIENTI_XML = "klienti.xml";
 
-    //Načítanie klientov zo súboru XML
+    // Načítanie klientov zo súboru XML
     public List<Klient> nacitajKlientovZoXML() {
         List<Klient> klienti = new ArrayList<>();
 
@@ -67,22 +67,23 @@ public class XMLNacitanieServis {
 
                 LocalDate permanentkaPlatnaDo = parseDate(getText(element, "permanentkaPlatnaDo"));
 
+                String qrCesta = getText(element, "qrCesta");
+
                 Klient klient = new Klient(id, krstneMeno, priezvisko, datumNarodenia,
-                        telefonneCislo, adresa, email, datumRegistracie);
+                        telefonneCislo, adresa, email, datumRegistracie, qrCesta);
 
                 klient.setPermanentkaPlatnaDo(permanentkaPlatnaDo);
 
                 klienti.add(klient);
             }
-        }
-        catch (Exception e){
+        } catch (Exception e) {
             applog.error("Chyba pri načítaní klientov zo súboru XML. Vráti prázdny zoznam", e);
         }
         return klienti;
     }
 
     //Vyhľadanie klienta v XML podľa ID
-    public Optional < Klient> najdiKlientaVXmlPodlaId(Long id) {
+    public Optional<Klient> najdiKlientaVXmlPodlaId(Long id) {
 
         List<Klient> klienti = nacitajKlientovZoXML();
 
@@ -95,7 +96,7 @@ public class XMLNacitanieServis {
     }
 
     // Pomocná metóda na získanie textového obsahu z elementu podľa tagu
-    private String getText (Element element, String tag){
+    private String getText(Element element, String tag) {
         NodeList nodeList = element.getElementsByTagName(tag);
         if (nodeList.getLength() > 0) {
             return nodeList.item(0).getTextContent().trim();
@@ -104,7 +105,7 @@ public class XMLNacitanieServis {
     }
 
     // Pomocná metóda na parsovanie dátumu z rôznych formátov
-    private LocalDate parseDate (String text ){
+    private LocalDate parseDate(String text) {
         if (text == null || text.isEmpty()) return null;
 
         try {
