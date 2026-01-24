@@ -17,6 +17,7 @@ public class Klient {
     private LocalDate datumRegistracie;
     private LocalDate permanentkaPlatnaDo;
     private String qrCesta;
+    private String qrToken;
 
     private static final DateTimeFormatter FORMATTER = DateTimeFormatter.ofPattern("dd.MM.yyyy");
 
@@ -26,7 +27,7 @@ public class Klient {
 
     // konštruktor pre databázu
     public Klient(Long id, String krstneMeno, String priezvisko, LocalDate datumNarodenia,
-                  String telefonneCislo, String adresa, String email, LocalDate datumRegistracie, String qrCesta) {
+                  String telefonneCislo, String adresa, String email, LocalDate datumRegistracie, String qrCesta, String qrToken) {
         this.id = id;
         this.krstneMeno = krstneMeno;
         this.priezvisko = priezvisko;
@@ -35,6 +36,8 @@ public class Klient {
         this.adresa = adresa;
         this.email = email;
         this.datumRegistracie = datumRegistracie;
+        this.qrCesta = qrCesta;
+        this.qrToken = qrToken;
 
     }
 
@@ -140,6 +143,12 @@ public class Klient {
 
     public void setQrCesta(String qrCesta) {
         this.qrCesta = qrCesta;
+    }
+    public String getQrToken() {
+        return qrToken;
+    }
+    public void setQrToken(String qrToken) {
+        this.qrToken = qrToken;
     }
 }
 

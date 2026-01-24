@@ -21,5 +21,8 @@ public interface KlientDao {
 
     boolean aktualizujPermanentkuPlatnuDo(Long id, LocalDate platnaDo);
 
-    boolean aktualizujQrCestu(int id, String qrCesta) throws SQLException;
+    boolean aktualizujQrCestu(Long id, String qrCesta) throws SQLException;
+
+    boolean aktualizujQrToken(Long id, String qrToken) throws SQLException;
+
 }

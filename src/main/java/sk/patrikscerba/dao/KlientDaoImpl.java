@@ -182,6 +182,7 @@ public class KlientDaoImpl implements KlientDao {
         String email = resultSet.getString("email");
         String adresa = resultSet.getString("adresa");
         String qrCesta = resultSet.getString("qr_cesta");
+        String qrToken = resultSet.getString("qr_token");
 
         // Dátum registrácie je v databáze default (CURRENT_DATE)
         // ale pre istotu je ošetrenie null (ak by vrátila prázdnu hodnotu)
@@ -193,7 +194,7 @@ public class KlientDaoImpl implements KlientDao {
         Date sqlPermanentka = resultSet.getDate("permanentka_platna_do");
         LocalDate permanentkaPlatnaDo = (sqlPermanentka != null) ? sqlPermanentka.toLocalDate() : null;
 
-        Klient klient = new Klient(id, krstneMeno, priezvisko, datumNarodenia, telefonneCislo, adresa, email, datumRegistracie, qrCesta);
+        Klient klient = new Klient(id, krstneMeno, priezvisko, datumNarodenia, telefonneCislo, adresa, email, datumRegistracie, qrCesta, qrToken);
         klient.setPermanentkaPlatnaDo(permanentkaPlatnaDo);
 
         return klient;
@@ -289,18 +290,33 @@ public class KlientDaoImpl implements KlientDao {
 
     // Aktualizuje cestu k QR kódu klienta podľa ID
     @Override
-    public boolean aktualizujQrCestu(int id, String qrCesta) throws SQLException {
+    public boolean aktualizujQrCestu(Long id, String qrCesta) throws SQLException {
 
         String sql = "UPDATE klienti SET qr_cesta = ? WHERE id = ?";
 
-        PreparedStatement preparedStatement = databazaPripojenie.getConnection().prepareStatement(sql);
+        try (Connection connection = databazaPripojenie.getConnection();
+             PreparedStatement preparedStatement = connection.prepareStatement(sql)) {
 
-        preparedStatement.setString(1, qrCesta);
-        preparedStatement.setInt(2, id);
+            preparedStatement.setString(1, qrCesta);
+            preparedStatement.setLong(2, id);
 
-        int updatedRows = preparedStatement.executeUpdate();
+            return preparedStatement.executeUpdate() > 0;
+        }
+    }
 
-        return updatedRows > 0;
+    // Aktualizuje QR token klienta
+    @Override
+    public boolean aktualizujQrToken(Long id, String qrToken) throws SQLException {
 
+        String sql = "UPDATE klienti SET qr_token = ? WHERE id = ?";
+
+        try (Connection connection = databazaPripojenie.getConnection();
+             PreparedStatement preparedStatement = connection.prepareStatement(sql)) {
+
+            preparedStatement.setString(1, qrToken);
+            preparedStatement.setLong(2, id);
+
+            return preparedStatement.executeUpdate() > 0;
+        }
     }
 }

@@ -86,6 +86,9 @@ public class XMLZapisServis {
             pridajElement(document, klientElement, "qrCesta",
                     klient.getQrCesta() != null ? klient.getQrCesta() : "-");
 
+            pridajElement(document, klientElement, "qrToken",
+                    klient.getQrToken() != null ? klient.getQrToken() : "-");
+
             // Pridanie elementu do root elementu
             root.appendChild(klientElement);
 
@@ -155,6 +158,9 @@ public class XMLZapisServis {
 
             pridajElement(document, klientElement, "qrCesta",
                     k.getQrCesta() != null ? k.getQrCesta() : "");
+
+            pridajElement(document, klientElement, "qrToken",
+                    k.getQrToken() != null ? k.getQrToken() : "");
         }
         zapisXML(document, xmlSubor);
     }
@@ -166,7 +172,7 @@ public class XMLZapisServis {
 
         for (int i = 0; i < klienti.size(); i++) {
 
-            if (klienti.get(i).getId() == aktualizovany.getId()) {
+            if (klienti.get(i).getId().equals(aktualizovany.getId()))  {
                 klienti.set(i, aktualizovany);
                 ulozVsetkychKlientov(klienti);
                 return true;

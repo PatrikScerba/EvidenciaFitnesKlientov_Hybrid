@@ -69,8 +69,10 @@ public class XMLNacitanieServis {
 
                 String qrCesta = getText(element, "qrCesta");
 
+                String qrToken = getText(element, "qrToken");
+
                 Klient klient = new Klient(id, krstneMeno, priezvisko, datumNarodenia,
-                        telefonneCislo, adresa, email, datumRegistracie, qrCesta);
+                        telefonneCislo, adresa, email, datumRegistracie, qrCesta, qrToken);
 
                 klient.setPermanentkaPlatnaDo(permanentkaPlatnaDo);
 
@@ -88,7 +90,7 @@ public class XMLNacitanieServis {
         List<Klient> klienti = nacitajKlientovZoXML();
 
         for (Klient k : klienti) {
-            if (k.getId() == id) {
+            if (k.getId().equals(id)) {
                 return Optional.of(k);
             }
         }
