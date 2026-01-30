@@ -7,7 +7,7 @@ import sk.patrikscerba.io.xml.XMLNacitanieServis;
 import sk.patrikscerba.io.xml.XMLZapisServis;
 import sk.patrikscerba.model.Klient;
 import sk.patrikscerba.system.SystemRezim;
-
+import java.sql.SQLException;
 import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
@@ -146,6 +146,67 @@ public class KlientHybridServis {
         }
 
         return true;
+    }
+
+    // Aktualizácia QR cesty je povolená len v online režime
+    public boolean aktualizujQrCestu(Long klientId, String qrCesta) throws SQLException {
+        vyzadujOnline("Aktualizácia QR cesty");
+
+        boolean ok = klientDao.aktualizujQrCestu(klientId, qrCesta);
+
+        if (!ok) {
+            appLog.warn("DB neaktualizovala údaje qr_cesta (0 riadkov) | klientId=" + klientId);
+            return false;
+        }
+
+        Klient klient = najdiKlientaPodlaId(klientId)
+                .orElseThrow(() -> new IllegalStateException("Klient sa nenašiel | klientId=" + klientId));
+
+        klient.setQrCesta(qrCesta);
+
+        try {
+            xmlZapisServis.aktualizujKlientaVXml(klient);
+        } catch (Exception e) {
+            appLog.error("DB aktualizovaná, ale XML zlyhalo pri qr_cesta | klientId=" + klientId, e);
+            throw new RuntimeException("DB sa aktualizovala, ale XML sa nepodarilo zosúladiť.", e);
+        }
+
+        return true;
+    }
+
+    // Aktualizácia QR tokenu je povolená len v online režime
+    public boolean aktualizujQrToken(Long klientId, String qrToken) throws SQLException {
+        vyzadujOnline("Aktualizácia QR tokenu");
+
+        boolean ok = klientDao.aktualizujQrToken(klientId, qrToken);
+
+        if (!ok) {
+            appLog.warn("DB neaktualizovala qr_token (0 riadkov) | klientId=" + klientId);
+            return false;
+        }
+
+        // zosúladenie XML
+        Klient klient = najdiKlientaPodlaId(klientId)
+                .orElseThrow(() -> new IllegalStateException("Klient sa nenašiel | klientId=" + klientId));
+
+        klient.setQrToken(qrToken);
+
+        try {
+            xmlZapisServis.aktualizujKlientaVXml(klient);
+        } catch (Exception e) {
+            appLog.error("DB aktualizovaná, ale XML zlyhalo pri qr_token | klientId=" + klientId, e);
+            throw new RuntimeException("DB sa aktualizovala, ale XML sa nepodarilo zosúladiť.", e);
+        }
+
+        return true;
+    }
+
+    // Zabezpečí, že klient má QR token, ak nie, vygeneruje nový
+    public String zabezpecQrToken(Klient klient) {
+        if (klient.getQrToken() == null || klient.getQrToken().isBlank()) {
+            klient.setQrToken(java.util.UUID.randomUUID().toString().replace("-", ""));
+        }
+        return klient.getQrToken();
     }
 
     // Zabezpečuje, že zápisové operácie sú povolené len v online režime
