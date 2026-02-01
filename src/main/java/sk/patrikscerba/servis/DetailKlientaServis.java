@@ -3,6 +3,10 @@ package sk.patrikscerba.servis;
 import sk.patrikscerba.io.xml.XMLZapisServis;
 import sk.patrikscerba.model.Klient;
 
+import javax.swing.*;
+import java.awt.*;
+import java.nio.file.Files;
+import java.nio.file.Path;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.util.Optional;
@@ -10,7 +14,6 @@ import java.util.Optional;
 // Servisná trieda sprostredkujúca operácie nad detailom klienta pre UI vrstvu
 public class DetailKlientaServis {
 
-    private static final DateTimeFormatter FORMAT_DATUMU = DateTimeFormatter.ofPattern("dd.MM.yyyy");
     private final KlientHybridServis klientHybridServis;
     private final XMLZapisServis xmlZapisServis = new XMLZapisServis();
 
@@ -99,4 +102,32 @@ public class DetailKlientaServis {
             throw new IllegalStateException("Klienta sa nepodarilo vymazať.");
         }
     }
+
+    // Načítanie QR ikony klienta podľa ID a zmena jej veľkosti
+    public Optional<ImageIcon> nacitajQrIkonu(Long klientId, int sirka, int vyska) {
+
+        Klient klient = klientHybridServis.najdiKlientaPodlaId(klientId)
+                .orElseThrow(() -> new IllegalStateException("Klient sa nenašiel | klientId=" + klientId));
+
+        // Získanie cesty k QR obrázku klienta
+        String qrCesta = klient.getQrCesta();
+        if (qrCesta == null || qrCesta.isBlank()) {
+            return Optional.empty();
+        }
+
+        // Overenie existencie súboru na danej ceste
+        Path cesta = Path.of(qrCesta);
+        if (!Files.exists(cesta)) {
+            return Optional.empty();
+        }
+
+        // Načítanie QR obrázka zo súboru a zmena veľkostí na požadovaný rozmer
+        ImageIcon ikona = new ImageIcon(qrCesta);
+        Image img = ikona.getImage().getScaledInstance(sirka, vyska, Image.SCALE_SMOOTH);
+
+        return Optional.of(new ImageIcon(img));
+    }
 }
+
+
+
