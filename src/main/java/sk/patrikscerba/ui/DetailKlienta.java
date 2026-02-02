@@ -12,6 +12,7 @@ import javax.swing.*;
 import java.awt.*;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
+import java.util.Optional;
 
 
 // Trieda slúži len  na zobrazenie detailov klienta
@@ -31,6 +32,8 @@ public class DetailKlienta extends JFrame {
 
     private JLabel labPermanentkaStav;
     private JLabel labPlatnostPermanentky;
+
+    private JLabel qrObrazokLabel;
 
     private JButton zatvoritButton;
     private JButton predlzitPermanentkuButton;
@@ -62,9 +65,11 @@ public class DetailKlienta extends JFrame {
         nacitajKlientaAleboZavri();
         nastavAkcieTlacidiel();
 
+
         //štandardne v zobrazovacom režime
         nastavRezim(false);
         nastavDostupnostAkciiPodlaRezimu();
+        zobrazQrObrazok();
     }
 
     // Nastavenie základných vlastností okna
@@ -107,7 +112,10 @@ public class DetailKlienta extends JFrame {
             }
         });
 
-        zrusitUpravyButton.addActionListener(e -> nastavRezim(false));
+        zrusitUpravyButton.addActionListener(e -> {
+            nastavRezim(false);
+            zobrazQrObrazok();
+        });
 
         vymazatKlientaButton.addActionListener(e -> vymazKlienta());
 
@@ -127,6 +135,7 @@ public class DetailKlienta extends JFrame {
         vymazatKlientaButton.setVisible(!uprav);
         upravitButton.setText(uprav ? "Uložiť zmeny" : "Upraviť");
         mainPanel.setBackground(uprav ? new Color(47, 39, 39) : null);
+        qrObrazokLabel.setVisible(!uprav);
 
         mainPanel.revalidate();
         mainPanel.repaint();
@@ -188,6 +197,7 @@ public class DetailKlienta extends JFrame {
             // UI zobrazí aktualizované údaje
             zobrazUdaje(this.klient);
             nastavRezim(false);
+            zobrazQrObrazok();
 
             JOptionPane.showMessageDialog(this, "Údaje boli uložené.");
 
@@ -327,7 +337,23 @@ public class DetailKlienta extends JFrame {
             }
         }
     }
+
+    // Zobrazenie QR obrázka klienta
+    private void zobrazQrObrazok() {
+
+        Optional<ImageIcon> ikona = detailKlientaServis.nacitajQrIkonu(
+                klientId, 200, 200);
+
+        if (ikona.isPresent()) {
+            qrObrazokLabel.setIcon(ikona.get());
+            qrObrazokLabel.setText("");
+        } else {
+            qrObrazokLabel.setIcon(null);
+            qrObrazokLabel.setText("QR kód nie je dostupný");
+        }
+    }
 }
+
 
 
 
