@@ -209,6 +209,15 @@ public class KlientHybridServis {
         return klient.getQrToken();
     }
 
+    // Vygeneruje nový QR token pre klienta
+    public String vygenerujNovyQrToken(Klient klient) {
+        vyzadujOnline("Generovanie nového QR tokenu nie je možné v offline režime.");
+
+        klient.setQrToken(java.util.UUID.randomUUID().toString().replace("-", ""));
+
+        return klient.getQrToken();
+    }
+
     // Zabezpečuje, že zápisové operácie sú povolené len v online režime
     private void vyzadujOnline(String akcia) {
         if (SystemRezim.isOffline()) {

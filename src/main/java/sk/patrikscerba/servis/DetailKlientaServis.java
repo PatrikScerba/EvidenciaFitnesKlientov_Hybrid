@@ -2,6 +2,7 @@ package sk.patrikscerba.servis;
 
 import sk.patrikscerba.io.xml.XMLZapisServis;
 import sk.patrikscerba.model.Klient;
+import sk.patrikscerba.qr.QrServis;
 
 import javax.swing.*;
 import java.awt.*;
@@ -16,6 +17,7 @@ public class DetailKlientaServis {
 
     private final KlientHybridServis klientHybridServis;
     private final XMLZapisServis xmlZapisServis = new XMLZapisServis();
+    private final QrServis qrServis = new QrServis();
 
     // Konštruktor s injektovaným hybridným servisom pre prácu s detailom klienta
     public DetailKlientaServis(KlientHybridServis klientHybridServis) {
@@ -126,6 +128,26 @@ public class DetailKlientaServis {
         Image img = ikona.getImage().getScaledInstance(sirka, vyska, Image.SCALE_SMOOTH);
 
         return Optional.of(new ImageIcon(img));
+    }
+
+    // Vygenerovanie nového QR kódu pre klienta podľa ID
+    public String vygenerujNovyQrKod(Long klientId) throws Exception {
+        Klient klient = klientHybridServis.najdiKlientaPodlaId(klientId)
+                .orElseThrow(() -> new IllegalStateException("Klient sa nenašiel | klientId=" + klientId));
+
+        // Zabezpečí nový QR token
+        String qrToken = klientHybridServis.vygenerujNovyQrToken(klient);
+
+        // Aktualizácia QR tokenu v databáze a XML
+        klientHybridServis.aktualizujQrToken(klientId, qrToken);
+
+        // Generovanie a uloženie QR obrázka
+        String qrCesta = qrServis.vygenerujAUlozQrObrazok(klientId, qrToken);
+
+        // Aktualizácia cesty k QR obrázku v databáze a XML
+        klientHybridServis.aktualizujQrCestu(klientId, qrCesta);
+
+        return qrCesta;
     }
 }
 
