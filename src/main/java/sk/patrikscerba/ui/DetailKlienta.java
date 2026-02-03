@@ -41,6 +41,7 @@ public class DetailKlienta extends JFrame {
     private JButton upravitButton;
     private JButton zrusitUpravyButton;
     private JButton vymazatKlientaButton;
+    private JButton znovaGenerovatQrButton;
 
     private JTextField upravitKrstneMeno;
     private JTextField upravitPriezvisko;
@@ -119,6 +120,7 @@ public class DetailKlienta extends JFrame {
 
         vymazatKlientaButton.addActionListener(e -> vymazKlienta());
 
+        znovaGenerovatQrButton.addActionListener(e -> znovaVygenerovatQrKod());
     }
 
     //Režim zobrazenia alebo úprav
@@ -136,6 +138,7 @@ public class DetailKlienta extends JFrame {
         upravitButton.setText(uprav ? "Uložiť zmeny" : "Upraviť");
         mainPanel.setBackground(uprav ? new Color(47, 39, 39) : null);
         qrObrazokLabel.setVisible(!uprav);
+        znovaGenerovatQrButton.setVisible(uprav);
 
         mainPanel.revalidate();
         mainPanel.repaint();
@@ -307,6 +310,7 @@ public class DetailKlienta extends JFrame {
         predlzitPermanentkuButton.setEnabled(!offline);
         zrusitUpravyButton.setEnabled(!offline);
         vymazatKlientaButton.setEnabled(!offline);
+        znovaGenerovatQrButton.setEnabled(!offline);
 
         if (offline) {
             //informácia pre zamestnanca
@@ -350,6 +354,33 @@ public class DetailKlienta extends JFrame {
         } else {
             qrObrazokLabel.setIcon(null);
             qrObrazokLabel.setText("QR kód nie je dostupný");
+        }
+    }
+
+    // Vygenerovanie nového QR kódu po potvrdení
+    private void znovaVygenerovatQrKod() {
+
+        int potvrdenie = JOptionPane.showConfirmDialog(
+                this,
+                "Naozaj chcete vygenerovať nový QR kód?",
+                "Potvrdenie",
+                JOptionPane.YES_NO_OPTION
+        );
+
+        if (potvrdenie == JOptionPane.YES_OPTION) {
+            try {
+                detailKlientaServis.vygenerujNovyQrKod(klientId);
+                 // refresh z DB/XML podľa klientId
+                JOptionPane.showMessageDialog(this, "Nový QR bol úspešne obnovený");
+
+                nastavRezim(false);
+                zobrazQrObrazok();
+
+            } catch (Exception e) {
+                JOptionPane.showMessageDialog(this,
+                        "Chyba pri generovaní nového QR kódu: " + e.getMessage(),
+                        "Chyba", JOptionPane.ERROR_MESSAGE);
+            }
         }
     }
 }
