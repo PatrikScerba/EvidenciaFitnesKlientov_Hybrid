@@ -105,31 +105,6 @@ public class DetailKlientaServis {
         }
     }
 
-    // Načítanie QR ikony klienta podľa ID a zmena jej veľkosti
-    public Optional<ImageIcon> nacitajQrIkonu(Long klientId, int sirka, int vyska) {
-
-        Klient klient = klientHybridServis.najdiKlientaPodlaId(klientId)
-                .orElseThrow(() -> new IllegalStateException("Klient sa nenašiel | klientId=" + klientId));
-
-        // Získanie cesty k QR obrázku klienta
-        String qrCesta = klient.getQrCesta();
-        if (qrCesta == null || qrCesta.isBlank()) {
-            return Optional.empty();
-        }
-
-        // Overenie existencie súboru na danej ceste
-        Path cesta = Path.of(qrCesta);
-        if (!Files.exists(cesta)) {
-            return Optional.empty();
-        }
-
-        // Načítanie QR obrázka zo súboru a zmena veľkostí na požadovaný rozmer
-        ImageIcon ikona = new ImageIcon(qrCesta);
-        Image img = ikona.getImage().getScaledInstance(sirka, vyska, Image.SCALE_SMOOTH);
-
-        return Optional.of(new ImageIcon(img));
-    }
-
     // Vygenerovanie nového QR kódu pre klienta podľa ID
     public String vygenerujNovyQrKod(Long klientId) throws Exception {
         Klient klient = klientHybridServis.najdiKlientaPodlaId(klientId)
@@ -148,6 +123,42 @@ public class DetailKlientaServis {
         klientHybridServis.aktualizujQrCestu(klientId, qrCesta);
 
         return qrCesta;
+    }
+
+    // Získa a overí uloženú cestu k QR súboru klienta (existuje klient, cesta aj súbor)
+    public Path ziskajExistujucuQrCestu(Long klientId) {
+        Klient klient = klientHybridServis.najdiKlientaPodlaId(klientId)
+                .orElseThrow(() -> new IllegalStateException("Klient sa nenašiel | klientId=" + klientId));
+
+        String qrCesta = klient.getQrCesta();
+        if (qrCesta == null || qrCesta.isBlank()) {
+            throw new IllegalStateException("Klient nemá uloženú cestu k QR kódu.");
+        }
+
+        Path cesta = Path.of(qrCesta);
+        if (!Files.exists(cesta)) {
+            throw new IllegalStateException("QR súbor neexistuje: " + cesta);
+        }
+        return cesta;
+    }
+
+    // Načítanie overenej cesty k QR súboru klienta
+    public Path nacitajQrCestu(Long klientId) {
+        return ziskajExistujucuQrCestu(klientId);
+    }
+
+    // Načíta QR ikonu klienta podľa ID, zmení veľkosť a pri chybe vráti Optional.empty()
+    public Optional<ImageIcon> nacitajQrIkonu(Long klientId, int sirka, int vyska) {
+        try {
+            Path cesta = ziskajExistujucuQrCestu(klientId);
+
+            ImageIcon ikona = new ImageIcon(cesta.toString());
+            Image img = ikona.getImage().getScaledInstance(sirka, vyska, Image.SCALE_SMOOTH);
+
+            return Optional.of(new ImageIcon(img));
+        } catch (Exception e) {
+            return Optional.empty();
+        }
     }
 }
 
