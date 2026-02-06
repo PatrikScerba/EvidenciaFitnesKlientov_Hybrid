@@ -4,12 +4,14 @@ import sk.patrikscerba.dao.KlientDao;
 import sk.patrikscerba.dao.KlientDaoImpl;
 import sk.patrikscerba.io.xml.XMLZapisServis;
 import sk.patrikscerba.model.Klient;
+import sk.patrikscerba.qr.QrVystupServis;
 import sk.patrikscerba.servis.DetailKlientaServis;
 import sk.patrikscerba.system.SystemRezim;
 import sk.patrikscerba.vstup.servis.PermanentkaVstupServis;
 
 import javax.swing.*;
 import java.awt.*;
+import java.nio.file.Path;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.util.Optional;
@@ -42,6 +44,7 @@ public class DetailKlienta extends JFrame {
     private JButton zrusitUpravyButton;
     private JButton vymazatKlientaButton;
     private JButton znovaGenerovatQrButton;
+    private JButton vytlacitQrButton;
 
     private JTextField upravitKrstneMeno;
     private JTextField upravitPriezvisko;
@@ -55,6 +58,8 @@ public class DetailKlienta extends JFrame {
     private final Long klientId;
     private final DetailKlientaServis detailKlientaServis;
     private static final DateTimeFormatter FORMATTER = DateTimeFormatter.ofPattern("dd.MM.yyyy");
+    private final QrVystupServis qrVystupServis = new QrVystupServis();
+
 
     // Nastavenie okna + načítanie a zobrazenie detailu klienta
     public DetailKlienta(Long klientId, DetailKlientaServis detailKlientaServis) {
@@ -121,6 +126,7 @@ public class DetailKlienta extends JFrame {
         vymazatKlientaButton.addActionListener(e -> vymazKlienta());
 
         znovaGenerovatQrButton.addActionListener(e -> znovaVygenerovatQrKod());
+        vytlacitQrButton.addActionListener(e -> pripravQrNaTlac());
     }
 
     //Režim zobrazenia alebo úprav
@@ -139,6 +145,7 @@ public class DetailKlienta extends JFrame {
         mainPanel.setBackground(uprav ? new Color(47, 39, 39) : null);
         qrObrazokLabel.setVisible(!uprav);
         znovaGenerovatQrButton.setVisible(uprav);
+        vytlacitQrButton.setVisible(!uprav);
 
         mainPanel.revalidate();
         mainPanel.repaint();
@@ -311,10 +318,14 @@ public class DetailKlienta extends JFrame {
         zrusitUpravyButton.setEnabled(!offline);
         vymazatKlientaButton.setEnabled(!offline);
         znovaGenerovatQrButton.setEnabled(!offline);
+        vytlacitQrButton.setEnabled(!offline);
 
         if (offline) {
             //informácia pre zamestnanca
-            JOptionPane.showMessageDialog(this, "Offline režim: úpravy a predĺženie permanentky nie sú dostupné.\n" + "Zobrazenie detailu funguje len na čítanie (XML záloha).", "Offline režim", JOptionPane.WARNING_MESSAGE);
+            JOptionPane.showMessageDialog(this,
+                    "Offline režim: úpravy a predĺženie permanentky nie sú dostupné.\n" +
+                            "Zobrazenie detailu funguje len na čítanie (XML záloha).",
+                    "Offline režim", JOptionPane.WARNING_MESSAGE);
         }
     }
 
@@ -370,7 +381,7 @@ public class DetailKlienta extends JFrame {
         if (potvrdenie == JOptionPane.YES_OPTION) {
             try {
                 detailKlientaServis.vygenerujNovyQrKod(klientId);
-                 // refresh z DB/XML podľa klientId
+                // refresh z DB/XML podľa klientId
                 JOptionPane.showMessageDialog(this, "Nový QR bol úspešne obnovený");
 
                 nastavRezim(false);
@@ -381,6 +392,25 @@ public class DetailKlienta extends JFrame {
                         "Chyba pri generovaní nového QR kódu: " + e.getMessage(),
                         "Chyba", JOptionPane.ERROR_MESSAGE);
             }
+        }
+    }
+
+    // Príprava QR kódu na tlač a otvorenie priečinka s pripraveným súborom
+    private void pripravQrNaTlac() {
+        try {
+            Path qrCesta = detailKlientaServis.nacitajQrCestu(klientId);
+            Path suborNaTlac = qrVystupServis.pripravQrNaTlac(qrCesta);
+
+            if (suborNaTlac == null || suborNaTlac.getParent() == null) {
+                throw new IllegalStateException("Nepodarilo sa určiť priečinok pre tlač.");
+            }
+
+            Desktop.getDesktop().open(suborNaTlac.getParent().toFile());
+
+        } catch (Exception e) {
+            JOptionPane.showMessageDialog(this,
+                    "Chyba pri príprave QR kódu na tlač: " + e.getMessage(),
+                    "Chyba", JOptionPane.ERROR_MESSAGE);
         }
     }
 }
