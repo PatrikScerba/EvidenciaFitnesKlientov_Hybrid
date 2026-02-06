@@ -1,5 +1,7 @@
 package sk.patrikscerba.ui;
 
+import sk.patrikscerba.servis.DetailKlientaServis;
+import sk.patrikscerba.servis.KlientHybridServis;
 import sk.patrikscerba.servis.RegistraciaKlientaServis;
 import javax.swing.*;
 
@@ -35,13 +37,13 @@ public class Registracia extends JFrame {
         // Pridanie akcie na tlačidlo registrácie
         buttonRegistrovat.addActionListener(e -> registrujKlienta());
     }
-    
+
     // Registrácia klienta pomocou servisnej vrstvy
     private void registrujKlienta() {
         RegistraciaKlientaServis registraciaKlientaServis = new RegistraciaKlientaServis();
 
         try {
-            registraciaKlientaServis.zaregistrujKlienta(
+            Long klientId = registraciaKlientaServis.zaregistrujKlienta(
                     jTextKrstneMeno.getText(),
                     jTextPriezvisko.getText(),
                     jTextDatumNarodenia.getText(),
@@ -52,15 +54,32 @@ public class Registracia extends JFrame {
 
             JOptionPane.showMessageDialog(this, "Klient zaregistrovaný.");
 
-        } catch ( IllegalArgumentException ex) {
-            JOptionPane.showMessageDialog(this, ex.getMessage(), "Chyba vstupu", JOptionPane.ERROR_MESSAGE);
+            // Ponuka na zobrazenie detailu klienta
+            int volba = JOptionPane.showConfirmDialog(
+                    this,
+                    "Klient bol zaregistrovaný.\nChcete zobraziť detail klienta?",
+                    "Registrácia úspešná",
+                    JOptionPane.YES_NO_OPTION,
+                    JOptionPane.QUESTION_MESSAGE
+            );
 
-        }catch (Exception ex){
-            JOptionPane.showMessageDialog(this, ex.getMessage(), "Nastala chyba pri registrácii klienta", JOptionPane.ERROR_MESSAGE);
+            if (volba == JOptionPane.YES_OPTION) {
+                KlientHybridServis klientHybridServis = new KlientHybridServis();
+                DetailKlientaServis detailServis = new DetailKlientaServis(klientHybridServis);
+
+                new DetailKlienta(klientId, detailServis).setVisible(true);
+                this.dispose();
+            }
+
+        } catch (IllegalArgumentException ex) {
+            JOptionPane.showMessageDialog(
+                    this, ex.getMessage(),
+                    "Chyba vstupu", JOptionPane.ERROR_MESSAGE);
+
+        } catch (Exception ex) {
+            JOptionPane.showMessageDialog(
+                    this, ex.getMessage(),
+                    "Nastala chyba pri registrácii klienta", JOptionPane.ERROR_MESSAGE);
         }
     }
 }
-
-
-
-
