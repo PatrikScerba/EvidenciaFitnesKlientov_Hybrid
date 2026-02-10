@@ -23,7 +23,8 @@ CREATE TABLE `klienti` (
   `adresa` varchar(255) DEFAULT NULL,
   `datum_registracie` date DEFAULT curdate(),
   `permanentka_platna_do` date DEFAULT NULL,
-  `qr_cesta` varchar(255) DEFAULT NULL
+  `qr_cesta` varchar(255) DEFAULT NULL,
+  `qr_token` varchar(64) DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 DROP TABLE IF EXISTS `vstupy`;
