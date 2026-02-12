@@ -7,6 +7,7 @@ import sk.patrikscerba.io.xml.XMLNacitanieServis;
 import sk.patrikscerba.model.Klient;
 import sk.patrikscerba.system.SystemRezim;
 import sk.patrikscerba.vstup.dao.VstupDao;
+import sk.patrikscerba.vstup.model.VstupVysledok;
 
 import java.time.LocalDate;
 import java.time.LocalTime;
@@ -22,8 +23,19 @@ public class VstupServis {
     private final PermanentkaVstupServis permanentkaVstupServis = new PermanentkaVstupServis();
     private final AppLogServis appLog = new AppLogServis();
 
-    // Kontrola vstupu klienta (true = povolený vstup, false = zamietnutý)
-    public boolean skontrolujVstup(Long klientId) {
+
+    // Hlavná kontrola vstupu – používa sa pri skenovaní QR kódu
+    public boolean skontrolujVstup(Long klientId, String qrToken) {
+
+        if (klientId == null) {
+            zapisNeuspesnyVstup(null, null, "Chýba klientId");
+            return false;
+        }
+
+        if (qrToken == null || qrToken.isBlank()) {
+            zapisNeuspesnyVstup(null, klientId, "Chýba QR token");
+            return false;
+        }
 
         Optional<Klient> klientOpt = ziskajKlienta(klientId);
 
@@ -34,12 +46,56 @@ public class VstupServis {
 
         Klient klient = klientOpt.get();
 
-        if (!maPlatnuPermanentku(klientId, klientOpt)) {
+        // Token zdroj: OFFLINE = XML, ONLINE = DB (alebo fallback z XML)
+        String tokenZdroj = klient.getQrToken();
+        if (tokenZdroj == null || tokenZdroj.isBlank()) {
+            zapisNeuspesnyVstup(klient, klientId, "Klient nemá uložený QR token");
+            return false;
+        }
+
+        // Presné porovnanie QR tokenu zo systému s tokenom zo skenu
+        if (!tokenZdroj.equals(qrToken.trim())) {
+            zapisNeuspesnyVstup(klient, klientId, "Neplatný QR token");
+            return false;
+        }
+
+        // Token sedí, pokračuje plnou kontrolou (permanentka, duplicita, zápis, logy)
+        return skontrolujVstupPreKlienta(klient, klientId);
+    }
+
+    // Načíta klienta podľa aktuálneho režimu (ONLINE = DB, OFFLINE = XML)
+    public Optional<Klient> ziskajKlienta(Long klientId) {
+
+        if (klientId == null) {
+            return Optional.empty();
+        }
+
+        // OFFLINE – vyhľadanie v XML
+        if (SystemRezim.isOffline()) {
+            return xmlNacitanieServis.najdiKlientaVXmlPodlaId(klientId);
+        }
+
+        // ONLINE – DB + fallback na XML pri chybe
+        try {
+            Klient klient = klientDao.nacitajIdentituKlienta(klientId);
+            return Optional.ofNullable(klient);
+
+        } catch (Exception e) {
+            appLog.error("DB chyba pri získaj Klienta, fallback na XML | klientId=" + klientId, e);
+            return xmlNacitanieServis.najdiKlientaVXmlPodlaId(klientId);
+        }
+    }
+
+    // Vnútorná kontrola vstupu pre už načítaného klienta
+    private boolean skontrolujVstupPreKlienta(Klient klient, Long klientId) {
+
+        // Kontrola platnosti permanentky klienta.
+        if (!maPlatnuPermanentku(klientId, klient)) {
             zapisNeuspesnyVstup(klient, klientId, "Neplatná alebo chýbajúca permanentka");
             return false;
         }
 
-        // Duplicitný vstup-klient môže vstúpiť len raz denne
+        // Duplicitný vstup - klient môže vstúpiť len raz denne
         if (malDnesVstup(klientId)) {
             zapisNeuspesnyVstup(klient, klientId, "Klient už dnes mal vstup");
             return false;
@@ -51,40 +107,18 @@ public class VstupServis {
         return true;
     }
 
-    // Zistí klienta podľa režimu (ONLINE = DB, OFFLINE = XML)
-    public Optional<Klient> ziskajKlienta(Long klientId) {
-
-
-        // OFFLINE – vyhľadanie v XML
-        if (SystemRezim.isOffline()) {
-            return xmlNacitanieServis.najdiKlientaVXmlPodlaId(klientId);
-        }
-
-        // ONLINE – DB
-        try {
-            // Bezpečný fallback, ak zatiaľ nieje "najdiKlientaPodlaId" ako Optional:
-            if (!klientDao.existujeKlient(klientId)) {
-                return Optional.empty();
-            }
-
-            // Ak existuje, načítaj aspoň identitu (alebo plného klienta)
-            Klient klient = klientDao.nacitajIdentituKlienta(klientId);
-            return Optional.ofNullable(klient);
-
-        } catch (Exception e) {
-            appLog.error("DB chyba pri ziskajKlienta, fallback na XML | klientId=" + klientId, e);
-            return xmlNacitanieServis.najdiKlientaVXmlPodlaId(klientId);
-        }
-    }
-
     // Skontroluje, či klient už dnes vstúpil (kontrola duplicity podľa režimu)
     private boolean malDnesVstup(Long klientId) {
+
         LocalDate dnes = LocalDate.now();
 
         if (SystemRezim.isOffline()) {
             return vstupXmlServis.malDnesVstup(klientId, dnes);
         }
-        return vstupDao.malDnesVstup(klientId, dnes);
+        boolean vDatabaze = vstupDao.malDnesVstup(klientId, dnes);
+        boolean vXml = vstupXmlServis.malDnesVstup(klientId, dnes);
+
+        return vDatabaze || vXml;
     }
 
     // Zápis vstupu podľa režimu (OFFLINE = XML, ONLINE = DB + XML cache, pri chybe DB fallback do XML)
@@ -101,7 +135,7 @@ public class VstupServis {
             return;
         }
 
-        // ONLINE -> najprv DB, potom XML cache
+        // ONLINE: najprv DB, potom XML cache
         try {
             vstupDao.zapisVstup(klientId, datum);
             appLog.info("ZAPIS: ONLINE -> DB OK | klientId=" + klientId);
@@ -118,15 +152,20 @@ public class VstupServis {
         }
     }
 
-    // Logovanie neúspešných pokusov o vstup
+    // Zapíše log neúspešného vstupu (dôvod + režim)
+    // Ak nieje meno/priezvisko, pokúsi sa doplniť identitu z DB (iba v ONLINE)
     public void zapisNeuspesnyVstup(Klient klient, Long klientId, String dovod) {
 
-        // ONLINE: ak nemáme meno/priezvisko, dotiahni ich z DB len pre log
-        if (!SystemRezim.isOffline()) {
+        if (!SystemRezim.isOffline() && klientId != null) {
             if (klient == null || klient.getKrstneMeno() == null || klient.getPriezvisko() == null) {
-                Klient identita = klientDao.nacitajIdentituKlienta(klientId);
-                if (identita != null) {
-                    klient = identita;
+
+                try {
+                    Klient identita = klientDao.nacitajIdentituKlienta(klientId);
+                    if (identita != null) {
+                        klient = identita;
+                    }
+                } catch (Exception e) {
+                    appLog.error("DB chyba pri dotiahnutí identity do logu | klientId= " + klientId, e);
                 }
             }
         }
@@ -138,11 +177,11 @@ public class VstupServis {
         VstupLogServis.zapisLog(
                 "NEUSPECH | klientId=" + klientId + identita +
                         " | dovod=" + dovod +
-                        " | rezim=" + (SystemRezim.isOffline() ? "OFFLINE_XML" : "DB")
+                        " | rezim=" + (SystemRezim.isOffline() ? "OFFLINE_XML" : "ONLINE_DB")
         );
     }
 
-    // Logovanie úspešných vstupov
+    // Logovanie úspešných vstupov (identita + režim)
     public void zapisUspesnyVstup(Klient klient, Long klientId) {
 
         String identita = (klient != null)
@@ -152,25 +191,79 @@ public class VstupServis {
         VstupLogServis.zapisLog(
                 "USPECH | klientId=" + klientId + identita +
                         " | dovod=Platná permanentka a vstup povolený" +
-                        " | rezim=" + (SystemRezim.isOffline() ? "OFFLINE_XML" : "DB")
+                        " | rezim=" + (SystemRezim.isOffline() ? "OFFLINE_XML" : "ONLINE_DB")
         );
     }
 
     // Skontroluje platnosť permanentky (OFFLINE = XML, ONLINE = DB)
-    private boolean maPlatnuPermanentku(Long klientId, Optional<Klient> klientOpt) {
-        LocalDate platnaDo;
+    // OFFLINE: Zoberie dátum z XML
+    // ONLINE: Porovná DB a XML a použije neskorší dátum (aby stará cache nezablokovala klienta)
+    private boolean maPlatnuPermanentku(Long klientId, Klient klient) {
+
+        LocalDate platnaDoXml = (klient != null) ? klient.getPermanentkaPlatnaDo() : null;
 
         if (SystemRezim.isOffline()) {
 
-            // V offline režime berie dátum priamo z klienta z XML (už je v Optional)
-            platnaDo = klientOpt.map(Klient::getPermanentkaPlatnaDo).orElse(null);
-        } else {
-
-            // ONLINE: načítanie z DB (ako si mal)
-            platnaDo = klientDao.ziskajPermanentkuPlatnuDoDB(klientId);
+            // OFFLINE – platí to, čo je v XML
+            return permanentkaVstupServis.jePlatnaPermanentka(platnaDoXml);
         }
 
+        // ONLINE: zoberie aj DB aj XML a použije neskorší (platnejší) dátum, aby cache neblokovala klienta
+        LocalDate platnaDoDb = (klientId != null) ? klientDao.ziskajPermanentkuPlatnuDoDB(klientId) : null;
+
+        LocalDate platnaDo = vyberNeskorsiDatum(platnaDoDb, platnaDoXml);
+
         return permanentkaVstupServis.jePlatnaPermanentka(platnaDo);
+    }
+
+    // Porovná dátum permanentky z DB a XML a vráti neskorší (platnejší) dátum
+    private LocalDate vyberNeskorsiDatum(LocalDate prvyDatum, LocalDate druhyDatum) {
+        if (prvyDatum == null)
+            return druhyDatum;
+
+        if (druhyDatum == null)
+            return prvyDatum;
+
+        return prvyDatum.isAfter(druhyDatum) ? prvyDatum : druhyDatum;
+    }
+
+    // Pomocná metóda pre desktop simuláciu (Scanner okno)
+    // Vracia priamo text pre UI (aby UI trieda nemusela riešiť detailnú logiku)
+    public VstupVysledok simulujVstupCezScanner(Long klientId) {
+
+        Optional<Klient> klientOpt = ziskajKlienta(klientId);
+
+        if (klientOpt.isEmpty()) {
+            zapisNeuspesnyVstup(null, klientId, "Klient neexistuje");
+
+            return new VstupVysledok(
+                    false,
+                    "Vstup zamietnutý.\nSkontrolujte históriu vstupov klienta.");
+        }
+
+        Klient klient = klientOpt.get();
+
+        String token = klient.getQrToken();
+        if (token == null || token.isBlank()) {
+            zapisNeuspesnyVstup(klient, klientId, "Klient nemá uložený QR token");
+
+            return new VstupVysledok(
+                    false,
+                    "Vstup zamietnutý.\nSkontrolujte históriu vstupov klienta.");
+        }
+
+        boolean ok = skontrolujVstup(klientId, token);
+
+        if (ok) {
+            return new VstupVysledok(
+                    true,
+                    "Vstup povolený.");
+        } else {
+
+            return new VstupVysledok(
+                    false,
+                    "Vstup zamietnutý.\nSkontrolujte históriu vstupov klienta.");
+        }
     }
 }
 
