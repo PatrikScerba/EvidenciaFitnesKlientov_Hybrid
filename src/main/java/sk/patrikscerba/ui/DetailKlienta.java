@@ -106,7 +106,7 @@ public class DetailKlienta extends JFrame {
 
         zatvoritButton.addActionListener(e -> dispose());
 
-        historiaKlientaButton.addActionListener(e -> new HistoriaKlienta(this.klientId).setVisible(true));
+        historiaKlientaButton.addActionListener(e -> new HistoriaKlienta(this.klientId,false).setVisible(true));
 
         predlzitPermanentkuButton.addActionListener(e -> predlzPermanentku());
 
