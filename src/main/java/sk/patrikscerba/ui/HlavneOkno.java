@@ -9,6 +9,7 @@ public class HlavneOkno extends JFrame {
     private JButton Vyhladanie;
     private JButton Klienti;
     private JButton HistoriaVstupov;
+    private JButton Scanner;
     private JLabel verzia3Label;
     private JLabel developedByPatrikŠčerbaLabel;
 
@@ -18,7 +19,7 @@ public class HlavneOkno extends JFrame {
         setContentPane(mainPanel);
         setTitle("Evidencia klientov");
         setSize(650, 250);
-        setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
         setLocationRelativeTo(null);
 
         nastavRezim();
@@ -34,6 +35,7 @@ public class HlavneOkno extends JFrame {
             Klienti.setEnabled(true);
             Vyhladanie.setEnabled(true);
             HistoriaVstupov.setEnabled(true);
+            Scanner.setEnabled(true);
         }
     }
 
@@ -43,6 +45,7 @@ public class HlavneOkno extends JFrame {
         Vyhladanie.addActionListener(e -> new Vyhladavanie(false).setVisible(true));
         Klienti.addActionListener(e -> new ZoznamKlientov().setVisible(true));
         HistoriaVstupov.addActionListener(e -> new HistoriaVstupov().setVisible(true));
+        Scanner.addActionListener(e -> new ScannerQrOkno().setVisible(true));
     }
 }
 
