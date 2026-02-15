@@ -3,50 +3,58 @@ package sk.patrikscerba.io.vstup;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.NodeList;
-import sk.patrikscerba.io.log.AppLogServis;
-
+import org.xml.sax.SAXException;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
+import javax.xml.parsers.ParserConfigurationException;
 import javax.xml.transform.OutputKeys;
 import javax.xml.transform.Transformer;
+import javax.xml.transform.TransformerException;
 import javax.xml.transform.TransformerFactory;
 import javax.xml.transform.dom.DOMSource;
 import javax.xml.transform.stream.StreamResult;
 import java.io.File;
+import java.io.IOException;
 import java.time.LocalDate;
 import java.time.LocalTime;
+import java.time.format.DateTimeParseException;
 
 public class VstupXmlServis {
 
-    private final AppLogServis applog = new AppLogServis();
     private static final String XML_SUBOR = "data/vstupy.xml";
 
     // XML slúži ako offline evidencia vstupov v hybridnom režime aplikácie
-    private Document nacitajXml() throws Exception {
-        File file = new File(XML_SUBOR);
-        File parent = file.getParentFile();
-        if (parent != null && !parent.exists()) {
-            parent.mkdirs();
-        }
+    private Document nacitajXml() {
 
-        // Ak súbor neexistuje, vytvoríme nový XML dokument s koreňovým elementom vstupy
-        if (!file.exists()) {
+        try {
+            File file = new File(XML_SUBOR);
+            File parent = file.getParentFile();
+            if (parent != null && !parent.exists()) {
+                parent.mkdirs();
+            }
+
+            // Ak súbor neexistuje, vytvoríme nový XML dokument s koreňovým elementom vstupy
+            if (!file.exists()) {
+                DocumentBuilder documentBuilder = DocumentBuilderFactory.newInstance().newDocumentBuilder();
+                Document document = documentBuilder.newDocument();
+
+                Element root = document.createElement("vstupy");
+                document.appendChild(root);
+
+                ulozXml(document);
+                return document;
+            }
+
             DocumentBuilder documentBuilder = DocumentBuilderFactory.newInstance().newDocumentBuilder();
-            Document document = documentBuilder.newDocument();
+            return documentBuilder.parse(file);
 
-            Element root = document.createElement("vstupy");
-            document.appendChild(root);
-
-            ulozXml(document);
-            return document;
+        } catch (ParserConfigurationException | SAXException | IOException | TransformerException e) {
+            throw new IllegalStateException("Nepodarilo sa načítať alebo vytvoriť vstupy.xml.", e);
         }
-
-        DocumentBuilder documentBuilder = DocumentBuilderFactory.newInstance().newDocumentBuilder();
-        return documentBuilder.parse(file);
     }
 
     // Uloženie XML dokumentu do súboru
-    private void ulozXml(Document document) throws Exception {
+    private void ulozXml(Document document) throws TransformerException {
 
         Transformer transformer = TransformerFactory.newInstance().newTransformer();
         transformer.setOutputProperty(OutputKeys.INDENT, "yes");
@@ -71,11 +79,14 @@ public class VstupXmlServis {
                     return true;
                 }
             }
+            return false;
 
-        } catch (Exception e) {
-            applog.error("Chyba pri kontrole dnešného vstupu v XML: ",e);
+        } catch (NumberFormatException | DateTimeParseException e) {
+            return false;
+
+        } catch (IllegalStateException e) {
+            return false;
         }
-        return false;
     }
 
     //Zapísanie nového vstupu do XML
@@ -100,11 +111,15 @@ public class VstupXmlServis {
             root.appendChild(elementNovy);
             ulozXml(document);
 
-        } catch (Exception e) {
-            applog.error("Chyba pri zápise vstupu do XML: ",e);
+        } catch (IllegalStateException e) {
+            throw e;
+
+        } catch (TransformerException e) {
+            throw new IllegalStateException("Nepodarilo sa uložiť vstupy.xml.", e);
         }
     }
 }
+
 
 
 

@@ -2,11 +2,13 @@ package sk.patrikscerba.io.xml;
 
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
+import org.xml.sax.SAXException;
 import sk.patrikscerba.io.log.AppLogServis;
 import sk.patrikscerba.model.Klient;
 
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
+import javax.xml.parsers.ParserConfigurationException;
 import javax.xml.transform.OutputKeys;
 import javax.xml.transform.Transformer;
 import javax.xml.transform.TransformerException;
@@ -14,6 +16,7 @@ import javax.xml.transform.TransformerFactory;
 import javax.xml.transform.dom.DOMSource;
 import javax.xml.transform.stream.StreamResult;
 import java.io.File;
+import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.List;
@@ -29,15 +32,7 @@ public class XMLZapisServis {
     // Konštruktor, ktorý zabezpečí vytvorenie priečinka pre dáta, ak ešte neexistuje
     public XMLZapisServis() {
 
-        try {
-            Path priecinok = Path.of(PRIECINOK_DATA);
-            if (!Files.exists(priecinok)) {
-                Files.createDirectory(priecinok);
-            }
-        } catch (Exception e) {
-            appLog.error("Chyba pri vytváraní priečinka pre dáta/" + PRIECINOK_DATA, e);
-            throw new IllegalStateException("Chyba pri vytváraní priečinka pre dáta/", e);
-        }
+        pripravPriecinokPreData();
     }
 
     // Uloženie klienta na koniec XML súboru
@@ -94,7 +89,7 @@ public class XMLZapisServis {
 
             // Zápis dokumentu do XML súboru
             zapisXML(document, xmlSubor);
-        } catch (Exception e) {
+        } catch (ParserConfigurationException | SAXException | IOException | TransformerException e) {
             appLog.error("Chyba pri ukladaní klienta do XML: ", e);
             throw new IllegalStateException("Chyba pri ukladaní klienta do XML: ", e);
         }
@@ -123,7 +118,7 @@ public class XMLZapisServis {
     }
 
     // Uloženie všetkých klientov do XML (pre aktualizáciu a mazanie)
-    private void ulozVsetkychKlientov(List<Klient> klienti) throws Exception {
+    private void ulozVsetkychKlientov(List<Klient> klienti) throws ParserConfigurationException, TransformerException {
 
         Path xmlCesta = Path.of(PRIECINOK_DATA, SUBOR_KLIENTI_XML);
         File xmlSubor = xmlCesta.toFile();
@@ -166,36 +161,65 @@ public class XMLZapisServis {
     }
 
     // Aktualizácia klienta
-    public boolean aktualizujKlientaVXml(Klient aktualizovany) throws Exception {
-        XMLNacitanieServis xmlNacitanieServis = new XMLNacitanieServis();
-        List<Klient> klienti = xmlNacitanieServis.nacitajKlientovZoXML();
+    public boolean aktualizujKlientaVXml(Klient aktualizovany) {
+        try {
+            XMLNacitanieServis xmlNacitanieServis = new XMLNacitanieServis();
+            List<Klient> klienti = xmlNacitanieServis.nacitajKlientovZoXML();
 
-        for (int i = 0; i < klienti.size(); i++) {
+            for (int i = 0; i < klienti.size(); i++) {
 
-            if (klienti.get(i).getId().equals(aktualizovany.getId()))  {
-                klienti.set(i, aktualizovany);
-                ulozVsetkychKlientov(klienti);
-                return true;
+                if (klienti.get(i).getId().equals(aktualizovany.getId())) {
+                    klienti.set(i, aktualizovany);
+                    ulozVsetkychKlientov(klienti);
+                    return true;
+                }
             }
-        }
-        return false;
+            return false;
 
+        } catch (ParserConfigurationException | TransformerException e) {
+
+            throw new IllegalStateException("Chyba pri aktualizácii klienta v XML.", e);
+        }
     }
 
     // Vymazanie klienta podľa ID
-    public boolean vymazatKlientaPodlaId(Long klientId) throws Exception {
-        XMLNacitanieServis xmlNacitanieServis = new XMLNacitanieServis();
-        List<Klient> klienti = xmlNacitanieServis.nacitajKlientovZoXML();
+    public boolean vymazatKlientaPodlaId(Long klientId) {
 
-        boolean KlientVymazany = klienti.removeIf(k -> k.getId().equals(klientId));
+        try {
+            XMLNacitanieServis xmlNacitanieServis = new XMLNacitanieServis();
+            List<Klient> klienti = xmlNacitanieServis.nacitajKlientovZoXML();
 
-        if (!KlientVymazany) {
-            return false;
+            boolean KlientVymazany = klienti.removeIf(k -> k.getId().equals(klientId));
+
+            if (!KlientVymazany) {
+                return false;
+            }
+
+            // Uloženie aktualizovaného zoznamu späť do XML
+            ulozVsetkychKlientov(klienti);
+            return true;
+
+        } catch (ParserConfigurationException e) {
+
+            throw new IllegalStateException("Nepodarilo sa pripraviť XML parser.", e);
+
+        } catch (TransformerException e) {
+
+            throw new IllegalStateException("Nepodarilo sa zapísať zmeny do XML.", e);
         }
+    }
 
-        // Uloženie aktualizovaného zoznamu späť do XML
-        ulozVsetkychKlientov(klienti);
-        return true;
+    // Zabezpečí existenciu priečinka pre ukladanie dát – ak neexistuje, vytvorí ho.
+    private void pripravPriecinokPreData() {
+        try {
+            Path priecinok = Path.of(PRIECINOK_DATA);
+            if (!Files.exists(priecinok)) {
+                Files.createDirectory(priecinok);
+            }
+        } catch (IOException e) {
+
+            throw new IllegalStateException("Chyba pri vytváraní priečinka pre data/", e);
+        }
     }
 }
 

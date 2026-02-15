@@ -11,6 +11,7 @@ import sk.patrikscerba.vstup.servis.PermanentkaVstupServis;
 
 import javax.swing.*;
 import java.awt.*;
+import java.io.IOException;
 import java.nio.file.Path;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
@@ -106,7 +107,7 @@ public class DetailKlienta extends JFrame {
 
         zatvoritButton.addActionListener(e -> dispose());
 
-        historiaKlientaButton.addActionListener(e -> new HistoriaKlienta(this.klientId,false).setVisible(true));
+        historiaKlientaButton.addActionListener(e -> new HistoriaKlienta(this.klientId, false).setVisible(true));
 
         predlzitPermanentkuButton.addActionListener(e -> predlzPermanentku());
 
@@ -211,9 +212,21 @@ public class DetailKlienta extends JFrame {
 
             JOptionPane.showMessageDialog(this, "Údaje boli uložené.");
 
-        } catch (Exception ex) {
-            JOptionPane.showMessageDialog(this, "Chyba: " + ex.getMessage(), "Chyba", JOptionPane.ERROR_MESSAGE);
-            // zostaneš v edit režime, aby si mohol opraviť hodnoty
+        } catch (IllegalArgumentException ex) {
+            JOptionPane.showMessageDialog(
+                    this,
+                    "Chyba: " + ex.getMessage(),
+                    "Chyba", JOptionPane.ERROR_MESSAGE
+            );
+            nastavRezim(true);
+
+        } catch (IllegalStateException ex) {
+            JOptionPane.showMessageDialog(
+                    this,
+                    "Chyba systému: " + ex.getMessage(),
+                    "Chyba",
+                    JOptionPane.ERROR_MESSAGE
+            );
             nastavRezim(true);
         }
     }
@@ -252,13 +265,20 @@ public class DetailKlienta extends JFrame {
 
                 obnovZobrazeniePermanentky(klient);
 
-                JOptionPane.showMessageDialog(this, "Permanentka predĺžená do: " + novaPlatnost);
+                JOptionPane.showMessageDialog(this,
+                        "Permanentka predĺžená do: " + novaPlatnost);
             } else {
-                JOptionPane.showMessageDialog(this, "Permanentku sa nepodarilo predĺžiť.");
+                JOptionPane.showMessageDialog(this,
+                        "Permanentku sa nepodarilo predĺžiť.");
             }
 
-        } catch (Exception ex) {
-            JOptionPane.showMessageDialog(this, "Chyba: " + ex.getMessage(), "Chyba", JOptionPane.ERROR_MESSAGE);
+        } catch (IllegalArgumentException | IllegalStateException ex) {
+            JOptionPane.showMessageDialog(
+                    this,
+                    "Chyba: " + ex.getMessage(),
+                    "Chyba",
+                    JOptionPane.ERROR_MESSAGE
+            );
         }
     }
 
@@ -345,9 +365,19 @@ public class DetailKlienta extends JFrame {
                 JOptionPane.showMessageDialog(this, "Klient bol úspešne vymazaný.");
                 dispose();
 
+            } catch (IllegalArgumentException e) {
+                JOptionPane.showMessageDialog(this,
+                        e.getMessage(),
+                        "Chyba", JOptionPane.ERROR_MESSAGE);
+
+            } catch (IllegalStateException e) {
+                JOptionPane.showMessageDialog(this,
+                        "Chyba systému pri vymazaní klienta:\n" + e.getMessage(),
+                        "Chyba", JOptionPane.ERROR_MESSAGE);
+
             } catch (Exception e) {
                 JOptionPane.showMessageDialog(this,
-                        "Chyba pri vymazaní: " + e.getMessage(),
+                        "Neznáma chyba pri vymazaní klienta:\n" + e.getMessage(),
                         "Chyba", JOptionPane.ERROR_MESSAGE);
             }
         }
@@ -387,9 +417,9 @@ public class DetailKlienta extends JFrame {
                 nastavRezim(false);
                 zobrazQrObrazok();
 
-            } catch (Exception e) {
+            } catch (IllegalArgumentException | IllegalStateException e) {
                 JOptionPane.showMessageDialog(this,
-                        "Chyba pri generovaní nového QR kódu: " + e.getMessage(),
+                        "Chyba: " + e.getMessage(),
                         "Chyba", JOptionPane.ERROR_MESSAGE);
             }
         }
@@ -407,9 +437,19 @@ public class DetailKlienta extends JFrame {
 
             Desktop.getDesktop().open(suborNaTlac.getParent().toFile());
 
+        } catch (IllegalArgumentException | IllegalStateException e) {
+            JOptionPane.showMessageDialog(this,
+                    e.getMessage(),
+                    "Chyba", JOptionPane.ERROR_MESSAGE);
+
+        } catch (IOException e) {
+            JOptionPane.showMessageDialog(this,
+                    "Nepodarilo sa otvoriť priečinok so súborom na tlač:\n" + e.getMessage(),
+                    "Chyba", JOptionPane.ERROR_MESSAGE);
+
         } catch (Exception e) {
             JOptionPane.showMessageDialog(this,
-                    "Chyba pri príprave QR kódu na tlač: " + e.getMessage(),
+                    "Neznáma chyba pri príprave QR kódu na tlač:\n" + e.getMessage(),
                     "Chyba", JOptionPane.ERROR_MESSAGE);
         }
     }

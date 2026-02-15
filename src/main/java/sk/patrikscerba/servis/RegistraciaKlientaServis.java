@@ -2,8 +2,6 @@ package sk.patrikscerba.servis;
 
 import sk.patrikscerba.model.Klient;
 import sk.patrikscerba.qr.QrServis;
-
-import java.sql.SQLException;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.time.format.DateTimeParseException;
@@ -85,23 +83,23 @@ public class RegistraciaKlientaServis {
         // Aktualizácia QR tokenu v databáze a XML
         try {
             klientHybridServis.aktualizujQrToken(id, token);
-        } catch (SQLException e) {
-            throw new RuntimeException("Nepodarilo sa uložiť QR token | klientId=" + id, e);
+        } catch (IllegalStateException e) {
+            throw new IllegalStateException("Nepodarilo sa uložiť QR token | klientId=" + id, e);
         }
 
         // Generovanie a uloženie QR obrázka
         String qrCesta;
         try {
             qrCesta = qrServis.vygenerujAUlozQrObrazok(id, token);
-        } catch (Exception e) {
-            throw new RuntimeException("Nepodarilo sa vygenerovať/uložiť QR obrázok | klientId=" + id, e);
+        } catch (IllegalStateException e) {
+            throw new IllegalStateException("Nepodarilo sa vygenerovať/uložiť QR obrázok | klientId=" + id, e);
         }
 
         // Aktualizácia cesty k QR obrázku v databáze a XML
         try {
             klientHybridServis.aktualizujQrCestu(id, qrCesta);
-        } catch (SQLException e) {
-            throw new RuntimeException("Nepodarilo sa uložiť QR cestu | klientId=" + id, e);
+        } catch (IllegalStateException e) {
+            throw new IllegalStateException("Nepodarilo sa uložiť QR cestu | klientId=" + id, e);
         }
 
         System.out.println("Klient zaregistrovaný úspešne: " + krstneMeno + " " + priezvisko);

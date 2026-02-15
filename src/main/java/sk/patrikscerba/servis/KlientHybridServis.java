@@ -7,7 +7,6 @@ import sk.patrikscerba.io.xml.XMLNacitanieServis;
 import sk.patrikscerba.io.xml.XMLZapisServis;
 import sk.patrikscerba.model.Klient;
 import sk.patrikscerba.system.SystemRezim;
-import java.sql.SQLException;
 import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
@@ -44,7 +43,7 @@ public class KlientHybridServis {
             return klientDao.najdiKlientaPodlaId(id);
         } catch (RuntimeException e) {
 
-            appLog.error("DB chyba pri najdiKlientaPodlaId, fallback na XML | klientId=" + id, e);
+            appLog.error("DB chyba pri nájdi klienta podľa ID, fallback na XML | klientId=" + id, e);
 
             // Databáza zlyhala, načítanie z XML
             return xmlNacitanieServis.najdiKlientaVXmlPodlaId(id);
@@ -60,9 +59,9 @@ public class KlientHybridServis {
 
         try {
             xmlZapisServis.ulozKlienta(klient);
-        } catch (Exception e) {
+        } catch (IllegalStateException e) {
             appLog.error("Zlyhal zápis klienta do XML po uložení do DB | klientId=" + id, e);
-            throw new RuntimeException("Klient sa uložil do DB, ale nepodarilo sa uložiť XML.", e);
+            throw new IllegalStateException("Klient sa uložil do DB, ale nepodarilo sa uložiť XML.", e);
         }
 
         return id;
@@ -81,9 +80,9 @@ public class KlientHybridServis {
 
         try {
             xmlZapisServis.aktualizujKlientaVXml(klient);
-        } catch (Exception e) {
+        } catch (IllegalStateException e) {
             appLog.error("DB aktualizovaná, ale XML zlyhalo | klientId=" + klient.getId(), e);
-            throw new RuntimeException("DB sa aktualizovala, ale XML sa nepodarilo zosúladiť.", e);
+            throw new IllegalStateException("DB sa aktualizovala, ale XML sa nepodarilo zosúladiť.", e);
         }
 
         return true;
@@ -103,7 +102,7 @@ public class KlientHybridServis {
 
         try {
             vymazanyZXml = xmlZapisServis.vymazatKlientaPodlaId(id);
-        } catch (Exception e) {
+        } catch (IllegalStateException e) {
             throw new IllegalStateException("Chyba pri mazaní klienta z XML.", e);
         }
 
@@ -139,8 +138,7 @@ public class KlientHybridServis {
 
         try {
             xmlZapisServis.aktualizujKlientaVXml(klient);
-        } catch (Exception e) {
-
+        } catch (IllegalStateException e) {
             appLog.error("Chyba pri aktualizácii permanentky v XML | klientId=" + klientId, e);
             throw new IllegalStateException("Chyba pri aktualizácii permanentky v XML.", e);
         }
@@ -149,7 +147,7 @@ public class KlientHybridServis {
     }
 
     // Aktualizácia QR cesty je povolená len v online režime
-    public boolean aktualizujQrCestu(Long klientId, String qrCesta) throws SQLException {
+    public boolean aktualizujQrCestu(Long klientId, String qrCesta){
         vyzadujOnline("Aktualizácia QR cesty");
 
         boolean ok = klientDao.aktualizujQrCestu(klientId, qrCesta);
@@ -166,16 +164,16 @@ public class KlientHybridServis {
 
         try {
             xmlZapisServis.aktualizujKlientaVXml(klient);
-        } catch (Exception e) {
+        } catch (IllegalStateException e) {
             appLog.error("DB aktualizovaná, ale XML zlyhalo pri qr_cesta | klientId=" + klientId, e);
-            throw new RuntimeException("DB sa aktualizovala, ale XML sa nepodarilo zosúladiť.", e);
+            throw new IllegalStateException("DB sa aktualizovala, ale XML sa nepodarilo zosúladiť.", e);
         }
 
         return true;
     }
 
     // Aktualizácia QR tokenu je povolená len v online režime
-    public boolean aktualizujQrToken(Long klientId, String qrToken) throws SQLException {
+    public boolean aktualizujQrToken(Long klientId, String qrToken){
         vyzadujOnline("Aktualizácia QR tokenu");
 
         boolean ok = klientDao.aktualizujQrToken(klientId, qrToken);
@@ -193,9 +191,9 @@ public class KlientHybridServis {
 
         try {
             xmlZapisServis.aktualizujKlientaVXml(klient);
-        } catch (Exception e) {
+        } catch (IllegalStateException e) {
             appLog.error("DB aktualizovaná, ale XML zlyhalo pri qr_token | klientId=" + klientId, e);
-            throw new RuntimeException("DB sa aktualizovala, ale XML sa nepodarilo zosúladiť.", e);
+            throw new IllegalStateException("DB sa aktualizovala, ale XML sa nepodarilo zosúladiť.", e);
         }
 
         return true;

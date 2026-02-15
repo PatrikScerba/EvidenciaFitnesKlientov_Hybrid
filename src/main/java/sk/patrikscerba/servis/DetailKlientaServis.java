@@ -3,7 +3,6 @@ package sk.patrikscerba.servis;
 import sk.patrikscerba.io.xml.XMLZapisServis;
 import sk.patrikscerba.model.Klient;
 import sk.patrikscerba.qr.QrServis;
-
 import javax.swing.*;
 import java.awt.*;
 import java.nio.file.Files;
@@ -91,7 +90,7 @@ public class DetailKlientaServis {
         }
         try {
             xmlZapisServis.aktualizujKlientaVXml(klient);
-        } catch (Exception e) {
+        } catch (IllegalStateException e) {
             throw new IllegalStateException("Aktualizácia klienta v XML sa nepodarila.", e);
         }
     }
@@ -106,7 +105,7 @@ public class DetailKlientaServis {
     }
 
     // Vygenerovanie nového QR kódu pre klienta podľa ID
-    public String vygenerujNovyQrKod(Long klientId) throws Exception {
+    public String vygenerujNovyQrKod(Long klientId) {
         Klient klient = klientHybridServis.najdiKlientaPodlaId(klientId)
                 .orElseThrow(() -> new IllegalStateException("Klient sa nenašiel | klientId=" + klientId));
 
@@ -116,13 +115,18 @@ public class DetailKlientaServis {
         // Aktualizácia QR tokenu v databáze a XML
         klientHybridServis.aktualizujQrToken(klientId, qrToken);
 
-        // Generovanie a uloženie QR obrázka
-        String qrCesta = qrServis.vygenerujAUlozQrObrazok(klientId, qrToken);
+        try {
+            // Generovanie a uloženie QR obrázka
+            String qrCesta = qrServis.vygenerujAUlozQrObrazok(klientId, qrToken);
 
-        // Aktualizácia cesty k QR obrázku v databáze a XML
-        klientHybridServis.aktualizujQrCestu(klientId, qrCesta);
+            // Aktualizácia cesty k QR obrázku v databáze a XML
+            klientHybridServis.aktualizujQrCestu(klientId, qrCesta);
 
-        return qrCesta;
+            return qrCesta;
+
+        } catch (IllegalStateException e) {
+            throw new IllegalStateException("Nepodarilo sa vygenerovať/uložiť QR kód | klientId=" + klientId, e);
+        }
     }
 
     // Získa a overí uloženú cestu k QR súboru klienta (existuje klient, cesta aj súbor)
@@ -156,7 +160,7 @@ public class DetailKlientaServis {
             Image img = ikona.getImage().getScaledInstance(sirka, vyska, Image.SCALE_SMOOTH);
 
             return Optional.of(new ImageIcon(img));
-        } catch (Exception e) {
+        } catch (IllegalStateException e) {
             return Optional.empty();
         }
     }

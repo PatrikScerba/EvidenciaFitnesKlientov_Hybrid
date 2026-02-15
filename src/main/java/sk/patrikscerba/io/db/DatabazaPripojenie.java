@@ -1,5 +1,7 @@
 package sk.patrikscerba.io.db;
 
+import sk.patrikscerba.io.log.AppLogServis;
+
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.SQLException;
@@ -12,19 +14,31 @@ public class DatabazaPripojenie {
     private static final String URL = "jdbc:mysql://localhost:3306/fk_evidencia_hybrid";
     private static final String USER = "root";
     private static final String PASSWORD = "";
+    private static final AppLogServis appLog = new AppLogServis();
 
     // Vráti pripojenie k databáze
-    public Connection getConnection() throws SQLException {
-        return DriverManager.getConnection(URL, USER, PASSWORD);
+    public Connection getConnection() {
+        try {
+            return DriverManager.getConnection(URL, USER, PASSWORD);
+
+        } catch (SQLException e) {
+            throw new IllegalStateException("DB pripojenie zlyhalo.", e);
+        }
     }
 
     //Test pripojenia k databáze
     public static boolean testConnection() {
+
         try (Connection connection = new DatabazaPripojenie().getConnection()) {
             return connection != null && !connection.isClosed();
-        } catch (Exception e) {
+
+        } catch (IllegalStateException e) {
+
             return false;
 
+        }catch (Exception e){
+
+            return false;
         }
     }
 }

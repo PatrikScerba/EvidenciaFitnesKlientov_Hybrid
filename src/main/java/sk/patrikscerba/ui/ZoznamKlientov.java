@@ -27,7 +27,7 @@ public class ZoznamKlientov extends JFrame {
         setTitle("Zoznam klientov");
         setSize(900, 450);
         setLocationRelativeTo(null);
-        setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
+        setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
 
         tabulka = new JTable();
         add(new JScrollPane(tabulka));
@@ -52,10 +52,10 @@ public class ZoznamKlientov extends JFrame {
 
             int poradie = 1;
 
-            for (Klient k: klienti){
+            for (Klient k : klienti) {
 
                 int vek = 0;
-                if (k.getDatumNarodenia() != null){
+                if (k.getDatumNarodenia() != null) {
                     vek = Period.between(k.getDatumNarodenia(), LocalDate.now()).getYears();
                 }
 
@@ -68,7 +68,7 @@ public class ZoznamKlientov extends JFrame {
                     stavPermanentky = "Nemá";
                     platnostPermanentky = "—";
                 } else {
-                    long dni =  permanentkaVstupServis.zostavaDni(platnaDo);
+                    long dni = permanentkaVstupServis.zostavaDni(platnaDo);
 
                     if (permanentkaVstupServis.jePlatnaPermanentka(platnaDo)) {
                         stavPermanentky = "Platná";
@@ -101,9 +101,15 @@ public class ZoznamKlientov extends JFrame {
 
             tabulka.setModel(model);
 
-        } catch (Exception e) {
+        } catch (IllegalArgumentException | IllegalStateException ex) {
             JOptionPane.showMessageDialog(this,
-                    "Chyba pri načítaní klientov: " + e.getMessage(),
+                    "Chyba pri načítaní klientov: " + ex.getMessage(),
+                    "Chyba",
+                    JOptionPane.ERROR_MESSAGE);
+
+        } catch (Exception ex) {
+            JOptionPane.showMessageDialog(this,
+                    "Nastala neočakávaná chyba pri načítaní klientov.",
                     "Chyba",
                     JOptionPane.ERROR_MESSAGE);
         }

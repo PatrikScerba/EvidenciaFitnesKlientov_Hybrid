@@ -1,5 +1,6 @@
 package sk.patrikscerba.qr;
 
+import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.StandardCopyOption;
@@ -21,14 +22,14 @@ public class QrVystupServis {
             if (!Files.exists(folder)) {
                 Files.createDirectories(folder);
             }
-        } catch (Exception e) {
+        } catch (IOException e) {
             throw new IllegalStateException("Chyba pri vytváraní výstupného priečinka", e);
         }
     }
 
     // Pripraví QR kód na výstup skopírovaním do výstupného priečinka
     // V priečinku sa vždy nachádza len posledný pripravený QR súbor
-    public Path pripravQrNaTlac(Path cestaKObrazku) throws Exception {
+    public Path pripravQrNaTlac(Path cestaKObrazku) throws IOException {
         Path ciel = Path.of(VYSTUP_PRIECINOK, QR_VYSTUP_SUBOR);
         Files.copy(cestaKObrazku, ciel, StandardCopyOption.REPLACE_EXISTING);
         return ciel;

@@ -4,15 +4,19 @@ import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
+import org.xml.sax.SAXException;
 import sk.patrikscerba.io.log.AppLogServis;
 import sk.patrikscerba.model.Klient;
 
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
+import javax.xml.parsers.ParserConfigurationException;
 import java.io.File;
+import java.io.IOException;
 import java.nio.file.Path;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
+import java.time.format.DateTimeParseException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -78,7 +82,9 @@ public class XMLNacitanieServis {
 
                 klienti.add(klient);
             }
-        } catch (Exception e) {
+        } catch (NumberFormatException | DateTimeParseException e) {
+
+        } catch (ParserConfigurationException | SAXException | IOException e) {
             applog.error("Chyba pri načítaní klientov zo súboru XML. Vráti prázdny zoznam", e);
         }
         return klienti;
@@ -112,12 +118,12 @@ public class XMLNacitanieServis {
 
         try {
             return LocalDate.parse(text, FORMAT_DB);
-        } catch (Exception ignored) {
+        } catch (DateTimeParseException ignored) {
         }
 
         try {
             return LocalDate.parse(text, FORMAT_V1);
-        } catch (Exception ignored) {
+        } catch (DateTimeParseException ignored) {
         }
         return null;
     }

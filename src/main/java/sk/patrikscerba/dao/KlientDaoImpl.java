@@ -4,13 +4,7 @@ import sk.patrikscerba.io.db.DatabazaPripojenie;
 import sk.patrikscerba.io.log.AppLogServis;
 import sk.patrikscerba.model.Klient;
 
-import java.sql.Connection;
-import java.sql.Date;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.sql.SQLException;
-import java.sql.Statement;
-
+import java.sql.*;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
@@ -59,11 +53,10 @@ public class KlientDaoImpl implements KlientDao {
                 }
             }
 
-            //Ak sa ID nepodarilo získať, vrátime -1 (signalizuje problém)
-            return null;
+            throw new IllegalStateException("Klient bol uložený, ale nepodarilo sa získať vygenerované ID.");
 
         } catch (SQLException e) {
-            throw new RuntimeException("Chyba pri ukladaní klienta do databázy: " + e.getMessage(), e);
+            throw new IllegalStateException("Chyba pri ukladaní klienta do databázy: " + e.getMessage(), e);
         }
     }
 
@@ -71,7 +64,7 @@ public class KlientDaoImpl implements KlientDao {
     @Override
     public Optional<Klient> najdiKlientaPodlaId(Long id) {
 
-        String sql = "SELECT * FROM klienti WHERE id = ?";
+        String sql =  "SELECT * FROM klienti WHERE id = ?" ;
 
         try (Connection connection = databazaPripojenie.getConnection();
              PreparedStatement preparedStatement = connection.prepareStatement(sql)) {
@@ -89,7 +82,7 @@ public class KlientDaoImpl implements KlientDao {
             return Optional.empty();
 
         } catch (SQLException e) {
-            throw new RuntimeException("Chyba pri hľadaní klienta podľa ID: " + e.getMessage(), e);
+            throw new IllegalStateException("Chyba pri hľadaní klienta podľa ID: " + e.getMessage(), e);
         }
     }
 
@@ -112,7 +105,7 @@ public class KlientDaoImpl implements KlientDao {
             return klienti;
 
         } catch (SQLException e) {
-            throw new RuntimeException("Chyba pri načítaní všetkých klientov: " + e.getMessage(), e);
+            throw new IllegalStateException("Chyba pri načítaní všetkých klientov: " + e.getMessage(), e);
         }
     }
 
@@ -147,7 +140,7 @@ public class KlientDaoImpl implements KlientDao {
             return preparedStatement.executeUpdate() > 0;
 
         } catch (SQLException e) {
-            throw new RuntimeException("Chyba pri aktualizácii klienta: " + e.getMessage(), e);
+            throw new IllegalStateException("Chyba pri aktualizácii klienta: " + e.getMessage(), e);
         }
     }
 
@@ -166,7 +159,7 @@ public class KlientDaoImpl implements KlientDao {
             return preparedStatement.executeUpdate() > 0;
 
         } catch (SQLException e) {
-            throw new RuntimeException("Chyba pri mazaní klienta: " + e.getMessage(), e);
+            throw new IllegalStateException("Chyba pri mazaní klienta: " + e.getMessage(), e);
         }
     }
 
@@ -215,15 +208,15 @@ public class KlientDaoImpl implements KlientDao {
                 return rs.next(); // true = existuje
             }
 
-        } catch (Exception e) {
-            applog.error("Chyba pri overeni klienta v DB: ", e);
-            return false;
+        } catch (SQLException e) {
+            applog.error("Chyba pri overení klienta v DB: ", e);
+            throw new IllegalStateException("Chyba pri overení existencie klienta v DB.", e);
         }
     }
 
     // Načíta len krstné meno a priezvisko klienta podľa ID (použité pre logovanie)
     public Klient nacitajIdentituKlienta(Long klientId) {
-        String sql = "SELECT krstne_meno, priezvisko FROM klienti WHERE id = ? LIMIT 1";
+        String sql = "SELECT krstne_meno, priezvisko, qr_token FROM klienti WHERE id = ? LIMIT 1";
 
         try (Connection connection = databazaPripojenie.getConnection();
              PreparedStatement preparedStatement = connection.prepareStatement(sql)) {
@@ -235,12 +228,13 @@ public class KlientDaoImpl implements KlientDao {
                     Klient klient = new Klient(klientId);
                     klient.setKrstneMeno(resultSet.getString("krstne_meno"));
                     klient.setPriezvisko(resultSet.getString("priezvisko"));
+                    klient.setQrToken(resultSet.getString("qr_token"));
                     return klient;
                 }
             }
 
-        } catch (Exception e) {
-            applog.error("Chyba pri nacitani identity klienta z DB: ", e);
+        } catch (SQLException e) {
+            throw new IllegalStateException("Chyba pri načítaní identity klienta z DB: " + e.getMessage(), e);
         }
         return null;
     }
@@ -263,7 +257,7 @@ public class KlientDaoImpl implements KlientDao {
             return preparedStatement.executeUpdate() > 0;
 
         } catch (SQLException e) {
-            throw new RuntimeException("Chyba pri aktualizácii platnosti permanentky: " + e.getMessage(), e);
+            throw new IllegalStateException("Chyba pri aktualizácii platnosti permanentky: " + e.getMessage(), e);
         }
     }
 
@@ -282,15 +276,18 @@ public class KlientDaoImpl implements KlientDao {
                     return (d != null) ? d.toLocalDate() : null;
                 }
             }
-        } catch (Exception e) {
             return null;
+
+        } catch (SQLException e) {
+            applog.error("Chyba pri získaní platnosti permanentky z DB | klientId=" + klientId, e);
+            throw new IllegalStateException("Chyba pri načítaní platnosti permanentky z DB.", e);
         }
-        return null;
     }
+
 
     // Aktualizuje cestu k QR kódu klienta podľa ID
     @Override
-    public boolean aktualizujQrCestu(Long id, String qrCesta) throws SQLException {
+    public boolean aktualizujQrCestu(Long id, String qrCesta) {
 
         String sql = "UPDATE klienti SET qr_cesta = ? WHERE id = ?";
 
@@ -301,12 +298,15 @@ public class KlientDaoImpl implements KlientDao {
             preparedStatement.setLong(2, id);
 
             return preparedStatement.executeUpdate() > 0;
+
+        } catch (SQLException e) {
+            throw new IllegalStateException("Chyba pri aktualizácií QR cesty | id=" + id, e);
         }
     }
 
     // Aktualizuje QR token klienta
     @Override
-    public boolean aktualizujQrToken(Long id, String qrToken) throws SQLException {
+    public boolean aktualizujQrToken(Long id, String qrToken) {
 
         String sql = "UPDATE klienti SET qr_token = ? WHERE id = ?";
 
@@ -317,6 +317,9 @@ public class KlientDaoImpl implements KlientDao {
             preparedStatement.setLong(2, id);
 
             return preparedStatement.executeUpdate() > 0;
+
+        } catch (SQLException e) {
+            throw new IllegalStateException("Chyba pri aktualizácií QR tokenu | id=" + id, e);
         }
     }
 }

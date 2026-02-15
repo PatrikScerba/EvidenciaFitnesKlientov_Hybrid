@@ -55,18 +55,33 @@ public class ScannerQrOkno extends JFrame {
             return;
         }
 
-        VstupVysledok vysledok = vstupServis.simulujVstupCezScanner(klientId);
+        try {
+            VstupVysledok vysledok = vstupServis.simulujVstupCezScanner(klientId);
 
-        boolean chyba = !vysledok.jePovoleny();
+            boolean chyba = !vysledok.jePovoleny();
 
-        JOptionPane.showMessageDialog(this,
-                vysledok.getSprava(),
-                NAZOV_OKNA,
-                chyba ? JOptionPane.ERROR_MESSAGE : JOptionPane.INFORMATION_MESSAGE);
+            JOptionPane.showMessageDialog(this,
+                    vysledok.getSprava(),
+                    NAZOV_OKNA,
+                    chyba ? JOptionPane.ERROR_MESSAGE : JOptionPane.INFORMATION_MESSAGE);
 
-        if (chyba) {
-            new HistoriaKlienta(klientId, true).setVisible(true);
-            dispose();
+            if (chyba) {
+                new HistoriaKlienta(klientId, true).setVisible(true);
+                dispose();
+            }
+
+        } catch (IllegalArgumentException | IllegalStateException ex) {
+            JOptionPane.showMessageDialog(
+                    this, "Chyba: " + ex.getMessage(),
+                    NAZOV_OKNA,
+                    JOptionPane.ERROR_MESSAGE);
+
+        } catch (Exception ex) {
+            JOptionPane.showMessageDialog(
+                    this,
+                    "Nastala neočakávaná chyba pri spracovaní vstupu.",
+                    NAZOV_OKNA,
+                    JOptionPane.ERROR_MESSAGE);
         }
     }
 }

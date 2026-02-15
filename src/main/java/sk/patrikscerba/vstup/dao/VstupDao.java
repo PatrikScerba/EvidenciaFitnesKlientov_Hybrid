@@ -6,6 +6,7 @@ import sk.patrikscerba.io.log.AppLogServis;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
+import java.sql.SQLException;
 import java.time.LocalDate;
 
 
@@ -32,34 +33,37 @@ public class VstupDao {
 
             preparedStatement.executeUpdate();
 
-        } catch (Exception e) {
-
-            applog.error("Chyba pri zápise vstupu do DB: ", e);
+        } catch (SQLException e) {
+            applog.error("Chyba pri zápise vstupu do DB | klientId=" + klientId, e);
+            throw new IllegalStateException("Nepodarilo sa zapísať vstup do databázy.", e);
         }
     }
 
+
     // Kontrola, či má klient dnes zaznamenaný vstup v databáze
-    public boolean malDnesVstup(Long klientId, LocalDate datum){
+    public boolean malDnesVstup(Long klientId, LocalDate datum) {
 
         String sql = "SELECT COUNT(*) FROM vstupy WHERE klient_id = ? AND datum = ?";
 
-        try(Connection connection = databazaPripojenie.getConnection();
-            PreparedStatement preparedStatement = connection.prepareStatement(sql)){
+        try (Connection connection = databazaPripojenie.getConnection();
+             PreparedStatement preparedStatement = connection.prepareStatement(sql)) {
 
             preparedStatement.setLong(1, klientId);
             preparedStatement.setDate(2, java.sql.Date.valueOf(datum));
 
-            try(ResultSet resultSet = preparedStatement.executeQuery()){
+            try (ResultSet resultSet = preparedStatement.executeQuery()) {
                 if (resultSet.next()) {
                     return resultSet.getInt(1) > 0;
                 }
             }
             return false;
 
-        } catch (Exception e){
-
-            applog.error("Chyba pri kontrole dnešného vstupu: ", e);
-            return false;
+        } catch (SQLException e) {
+            applog.error("Chyba pri kontrole dnešného vstupu | klientId=" + klientId, e);
+            throw new IllegalStateException("Nepodarilo sa overiť dnešný vstup klienta.", e);
         }
     }
 }
+
+
+

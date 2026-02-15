@@ -2,6 +2,7 @@ package sk.patrikscerba.qr;
 
 import com.google.zxing.BarcodeFormat;
 import com.google.zxing.MultiFormatWriter;
+import com.google.zxing.WriterException;
 import com.google.zxing.client.j2se.MatrixToImageWriter;
 import com.google.zxing.common.BitMatrix;
 
@@ -44,14 +45,14 @@ public class QrServis {
     }
 
     // Vygeneruje QR obrázok z textu
-    public BufferedImage vygenerujQrObrazok(String text) throws Exception {
+    public BufferedImage vygenerujQrObrazok(String text) throws WriterException {
         BitMatrix matrix = new MultiFormatWriter()
                 .encode(text, BarcodeFormat.QR_CODE, SIZE, SIZE);
         return MatrixToImageWriter.toBufferedImage(matrix);
     }
 
     // Uloží QR obrázok do súboru, vráti cestu k súboru
-    public String ulozQrObrazok(Long klientId, BufferedImage qrObrazok) throws Exception {
+    public String ulozQrObrazok(Long klientId, BufferedImage qrObrazok) throws IOException {
 
         if (klientId == null) {
             throw new IllegalArgumentException("ID klienta nesmie byť null.");
@@ -60,20 +61,30 @@ public class QrServis {
             throw new IllegalArgumentException("QR obrázok nesmie byť null.");
         }
 
-        String nazovSuboru = "qr_" + klientId + ".png";
+        String nazovSuboru = "klient_qr_" + klientId + ".png";
         Path cestaKSuboru = Path.of(QR_PRIECINOK, nazovSuboru);
 
-        javax.imageio.ImageIO.write(qrObrazok, "PNG", cestaKSuboru.toFile());
+        boolean zapisane = javax.imageio.ImageIO.write(qrObrazok, "PNG", cestaKSuboru.toFile());
+        if (!zapisane) {
+            throw new IllegalStateException("Nepodarilo sa zapísať PNG (ImageIO.write vrátilo false). Súbor: " + cestaKSuboru);
+        }
         return cestaKSuboru.toString(); //uložená cesta pre DB
     }
 
     // Vygeneruje a uloží QR obrázok pre klienta, vráti cestu k súboru
-    public String vygenerujAUlozQrObrazok(Long klientId, String qrToken) throws Exception {
+    public String vygenerujAUlozQrObrazok(Long klientId, String qrToken) {
+        try {
+            String qrText = vytvorQrText(klientId, qrToken);
 
-        String qrText = vytvorQrText(klientId, qrToken);
+            BufferedImage qrObrazok = vygenerujQrObrazok(qrText);
+            return ulozQrObrazok(klientId, qrObrazok);
 
-        BufferedImage qrObrazok = vygenerujQrObrazok(qrText);
-        return ulozQrObrazok(klientId, qrObrazok);
+        } catch (WriterException e) {
+            throw new IllegalStateException("Chyba pri generovaní alebo ukladaní QR kódu pre klienta ID: " + klientId, e);
+
+        } catch (IOException e) {
+            throw new IllegalStateException("Chyba pri ukladaní QR obrázka na disk pre klienta ID: " + klientId, e);
+        }
     }
 }
 

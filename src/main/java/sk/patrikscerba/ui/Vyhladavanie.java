@@ -54,9 +54,24 @@ public class Vyhladavanie extends JFrame {
 
         try {
             zhodniKlienti = vyhladavanieKlientovServis.vyhladaj(hladaneMeno, hladanePriezvisko);
-        } catch (Exception e) {
+
+        } catch (IllegalArgumentException e) {
+            JOptionPane.showMessageDialog(this,
+                    "Chyba vstupu: " + e.getMessage(),
+                    "Chyba",
+                    JOptionPane.ERROR_MESSAGE);
+            return;
+
+        } catch (IllegalStateException e) {
             JOptionPane.showMessageDialog(this,
                     "Chyba pri vyhľadávaní klientov: " + e.getMessage(),
+                    "Chyba",
+                    JOptionPane.ERROR_MESSAGE);
+            return;
+
+        } catch (Exception e) {
+            JOptionPane.showMessageDialog(this,
+                    "Nastala neočakávaná chyba.",
                     "Chyba",
                     JOptionPane.ERROR_MESSAGE);
             return;

@@ -21,14 +21,14 @@ public class AppLogServis {
     }
 
     //Umožňuje zapísať detailné informácie o chybe do log súboru.
-    private String getStackTrace(Exception e) {
+    private String getStackTrace(Throwable e) {
         StringWriter stringWriter = new StringWriter();
         e.printStackTrace(new PrintWriter(stringWriter));
         return stringWriter.toString();
     }
 
     //Zápis logu do súboru s časom a úrovňou logu
-    private void zapis(String level, String sprava, Exception e) {
+    private void zapis(String level, String sprava, Throwable e) {
         vytvorPriecinokDataAkTreba();
 
         String cas = LocalDateTime.now().toString();
@@ -60,7 +60,7 @@ public class AppLogServis {
     }
 
     //Zapíše chybovú správu spolu s výnimkou do log súboru(závažné problémy)
-    public void error(String sprava, Exception e) {
+    public void error(String sprava, Throwable e) {
         zapis("ERROR", sprava, e);
     }
 }
