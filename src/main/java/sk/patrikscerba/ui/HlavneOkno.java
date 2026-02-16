@@ -10,6 +10,7 @@ public class HlavneOkno extends JFrame {
     private JButton Klienti;
     private JButton HistoriaVstupov;
     private JButton Scanner;
+    private JButton SystemLog;
     private JLabel verzia3Label;
     private JLabel developedByPatrikŠčerbaLabel;
 
@@ -36,6 +37,7 @@ public class HlavneOkno extends JFrame {
             Vyhladanie.setEnabled(true);
             HistoriaVstupov.setEnabled(true);
             Scanner.setEnabled(true);
+            SystemLog.setEnabled(true);
         }
     }
 
@@ -46,6 +48,7 @@ public class HlavneOkno extends JFrame {
         Klienti.addActionListener(e -> new ZoznamKlientov().setVisible(true));
         HistoriaVstupov.addActionListener(e -> new HistoriaVstupov().setVisible(true));
         Scanner.addActionListener(e -> new ScannerQrOkno().setVisible(true));
+        SystemLog.addActionListener(e -> new SystemLogOkno().setVisible(true));
     }
 }
 
