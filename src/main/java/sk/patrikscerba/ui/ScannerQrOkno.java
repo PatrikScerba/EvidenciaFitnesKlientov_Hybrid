@@ -1,5 +1,6 @@
 package sk.patrikscerba.ui;
 
+import sk.patrikscerba.io.log.AppLogServis;
 import sk.patrikscerba.vstup.model.VstupVysledok;
 import sk.patrikscerba.vstup.servis.VstupServis;
 
@@ -18,6 +19,7 @@ public class ScannerQrOkno extends JFrame {
 
     private final VstupServis vstupServis = new VstupServis();
     private static final String NAZOV_OKNA = "Simulácia vstupu (QR)";
+    private final AppLogServis appLog = new AppLogServis();
 
     // Nastavenie okna simulácie QR vstupu a prepojenie tlačidla na spracovanie skenu
     public ScannerQrOkno() {
@@ -71,12 +73,16 @@ public class ScannerQrOkno extends JFrame {
             }
 
         } catch (IllegalArgumentException | IllegalStateException ex) {
+            appLog.error("Chyba systemu pri spracovani vstupu (scanner) | klientId=" + klientId, ex);
+
             JOptionPane.showMessageDialog(
                     this, "Chyba: " + ex.getMessage(),
                     NAZOV_OKNA,
                     JOptionPane.ERROR_MESSAGE);
 
         } catch (Exception ex) {
+            appLog.error("Neocakavana chyba pri spracovani vstupu (scanner) | klientId=" + klientId, ex);
+
             JOptionPane.showMessageDialog(
                     this,
                     "Nastala neočakávaná chyba pri spracovaní vstupu.",

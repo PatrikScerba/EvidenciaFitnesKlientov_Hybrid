@@ -43,8 +43,13 @@ public class KlientDaoImpl implements KlientDao {
             preparedStatement.setString(5, klient.getAdresa());
             preparedStatement.setString(6, klient.getEmail());
 
+            int rows=preparedStatement.executeUpdate();
 
-            preparedStatement.executeUpdate();
+            if(rows==0){
+
+                applog.warn("INSERT klienta nevlozil riadok (0 rows) | email=" + klient.getEmail());
+                throw new IllegalStateException("Klient sa neuložil (0 riadkov).");
+            }
 
             // Vracia vygenerované ID z databázy po INSERT-e (AUTO_INCREMENT)
             try (ResultSet resultSet = preparedStatement.getGeneratedKeys()) {
@@ -52,10 +57,11 @@ public class KlientDaoImpl implements KlientDao {
                     return resultSet.getLong(1);
                 }
             }
-
+            applog.error("Klient ulozeny, ale bez generovaneho ID | email=" + klient.getEmail(), null);
             throw new IllegalStateException("Klient bol uložený, ale nepodarilo sa získať vygenerované ID.");
 
         } catch (SQLException e) {
+            applog.error("SQL chyba pri ukladani klienta | email=" + klient.getEmail(), e);
             throw new IllegalStateException("Chyba pri ukladaní klienta do databázy: " + e.getMessage(), e);
         }
     }
@@ -137,9 +143,16 @@ public class KlientDaoImpl implements KlientDao {
             preparedStatement.setLong(7, klient.getId());
 
             // Vráti počet zmenených riadkov
-            return preparedStatement.executeUpdate() > 0;
+            int rows = preparedStatement.executeUpdate();
+
+            if (rows == 0) {
+                applog.warn("UPDATE klienta nic nezmenil (0 rows) | klientId=" + klient.getId());
+                return false;
+            }
+            return true;
 
         } catch (SQLException e) {
+            applog.error("SQL chyba pri UPDATE klienta | klientId=" + klient.getId(), e);
             throw new IllegalStateException("Chyba pri aktualizácii klienta: " + e.getMessage(), e);
         }
     }
@@ -156,9 +169,16 @@ public class KlientDaoImpl implements KlientDao {
             preparedStatement.setLong(1, id);
 
             //Ak sa v databáze vymazal aspoň 1 riadok tak vymazanie prebehlo
-            return preparedStatement.executeUpdate() > 0;
+            int rows = preparedStatement.executeUpdate();
+
+            if (rows == 0) {
+                applog.warn("DELETE klienta nic nevymazal (0 rows) | klientId=" + id);
+                return false;
+            }
+            return true;
 
         } catch (SQLException e) {
+            applog.error("SQL chyba pri DELETE klienta | klientId=" + id, e);
             throw new IllegalStateException("Chyba pri mazaní klienta: " + e.getMessage(), e);
         }
     }
@@ -209,7 +229,7 @@ public class KlientDaoImpl implements KlientDao {
             }
 
         } catch (SQLException e) {
-            applog.error("Chyba pri overení klienta v DB: ", e);
+            applog.error("Chyba pri overeni klienta v DB: ", e);
             throw new IllegalStateException("Chyba pri overení existencie klienta v DB.", e);
         }
     }
@@ -257,6 +277,7 @@ public class KlientDaoImpl implements KlientDao {
             return preparedStatement.executeUpdate() > 0;
 
         } catch (SQLException e) {
+            applog.error("SQL chyba pri UPDATE qr_cesta | klientId=" + id, e);
             throw new IllegalStateException("Chyba pri aktualizácii platnosti permanentky: " + e.getMessage(), e);
         }
     }
@@ -279,7 +300,7 @@ public class KlientDaoImpl implements KlientDao {
             return null;
 
         } catch (SQLException e) {
-            applog.error("Chyba pri získaní platnosti permanentky z DB | klientId=" + klientId, e);
+            applog.error("Chyba pri ziskani platnosti permanentky z DB | klientId=" + klientId, e);
             throw new IllegalStateException("Chyba pri načítaní platnosti permanentky z DB.", e);
         }
     }
@@ -297,9 +318,16 @@ public class KlientDaoImpl implements KlientDao {
             preparedStatement.setString(1, qrCesta);
             preparedStatement.setLong(2, id);
 
-            return preparedStatement.executeUpdate() > 0;
+            int rows = preparedStatement.executeUpdate();
+
+            if (rows == 0) {
+                applog.warn("UPDATE qr_cesta nic nezmenil (0 rows) | klientId=" + id);
+                return false;
+            }
+            return true;
 
         } catch (SQLException e) {
+            applog.error("SQL chyba pri UPDATE qr_cesta | klientId=" + id, e);
             throw new IllegalStateException("Chyba pri aktualizácií QR cesty | id=" + id, e);
         }
     }
@@ -316,9 +344,16 @@ public class KlientDaoImpl implements KlientDao {
             preparedStatement.setString(1, qrToken);
             preparedStatement.setLong(2, id);
 
-            return preparedStatement.executeUpdate() > 0;
+            int rows = preparedStatement.executeUpdate();
+
+            if (rows == 0) {
+                applog.warn("UPDATE qr_token nic nezmenil (0 rows) | klientId=" + id);
+                return false;
+            }
+            return true;
 
         } catch (SQLException e) {
+            applog.error("SQL chyba pri UPDATE qr_token | klientId=" + id, e);
             throw new IllegalStateException("Chyba pri aktualizácií QR tokenu | id=" + id, e);
         }
     }

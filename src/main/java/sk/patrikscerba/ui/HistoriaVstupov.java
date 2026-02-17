@@ -4,6 +4,7 @@ import sk.patrikscerba.io.vstup.HistoriaVstupovServis;
 
 import javax.swing.*;
 import javax.swing.table.DefaultTableModel;
+import java.util.Collections;
 import java.util.List;
 
 // Zobrazenie histórie vstupov klienta
@@ -22,7 +23,9 @@ public class HistoriaVstupov extends JFrame {
         // Pridanie tabuľky do okna s posuvníkom
         add(new JScrollPane(tabulka));
 
-        List<String> riadky = historiaVstupovServis.nacitajRiadky();
+        List<String> riadky =new java.util.ArrayList<>(
+                historiaVstupovServis.nacitajRiadky() );
+        Collections.reverse(riadky);
 
         //Model tabuľky (stĺpce + riadky)
         DefaultTableModel model = new DefaultTableModel();

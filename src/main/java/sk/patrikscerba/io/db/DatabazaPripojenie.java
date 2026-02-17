@@ -22,6 +22,7 @@ public class DatabazaPripojenie {
             return DriverManager.getConnection(URL, USER, PASSWORD);
 
         } catch (SQLException e) {
+            appLog.error("Zlyhalo pripojenie k databaze | url=" + URL, e);
             throw new IllegalStateException("DB pripojenie zlyhalo.", e);
         }
     }
@@ -33,11 +34,11 @@ public class DatabazaPripojenie {
             return connection != null && !connection.isClosed();
 
         } catch (IllegalStateException e) {
-
+            appLog.warn("Chyba pri testovani pripojenia k databaze:", e);
             return false;
 
-        }catch (Exception e){
-
+        } catch (Exception e) {
+            appLog.warn("Neocakavana chyba pri testovani pripojenia DB:", e);
             return false;
         }
     }

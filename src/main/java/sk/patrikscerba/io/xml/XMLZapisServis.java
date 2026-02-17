@@ -90,7 +90,7 @@ public class XMLZapisServis {
             // Zápis dokumentu do XML súboru
             zapisXML(document, xmlSubor);
         } catch (ParserConfigurationException | SAXException | IOException | TransformerException e) {
-            appLog.error("Chyba pri ukladaní klienta do XML: ", e);
+            appLog.error("Chyba pri ukladani klienta do XML: ", e);
             throw new IllegalStateException("Chyba pri ukladaní klienta do XML: ", e);
         }
 
@@ -177,7 +177,7 @@ public class XMLZapisServis {
             return false;
 
         } catch (ParserConfigurationException | TransformerException e) {
-
+            appLog.error("Chyba pri aktualizacii klienta v XML (zapis XML): ", e);
             throw new IllegalStateException("Chyba pri aktualizácii klienta v XML.", e);
         }
     }
@@ -200,11 +200,11 @@ public class XMLZapisServis {
             return true;
 
         } catch (ParserConfigurationException e) {
-
+            appLog.error("XML konfiguracia parsera zlyhala pri mazani klienta.", e);
             throw new IllegalStateException("Nepodarilo sa pripraviť XML parser.", e);
 
         } catch (TransformerException e) {
-
+            appLog.error("Chyba pri zapise XML (Transformer) pri mazani klienta.", e);
             throw new IllegalStateException("Nepodarilo sa zapísať zmeny do XML.", e);
         }
     }
@@ -217,7 +217,7 @@ public class XMLZapisServis {
                 Files.createDirectory(priecinok);
             }
         } catch (IOException e) {
-
+            appLog.error("Chyba pri vytvarani priecinka pre data/" + PRIECINOK_DATA, e);
             throw new IllegalStateException("Chyba pri vytváraní priečinka pre data/", e);
         }
     }

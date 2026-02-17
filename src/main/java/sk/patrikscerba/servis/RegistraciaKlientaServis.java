@@ -1,5 +1,6 @@
 package sk.patrikscerba.servis;
 
+import sk.patrikscerba.io.log.AppLogServis;
 import sk.patrikscerba.model.Klient;
 import sk.patrikscerba.qr.QrServis;
 import java.time.LocalDate;
@@ -12,6 +13,7 @@ public class RegistraciaKlientaServis {
     private static final DateTimeFormatter FORMAT_DATUMU = DateTimeFormatter.ofPattern("dd.MM.yyyy");
     private final KlientHybridServis klientHybridServis = new KlientHybridServis();
     private final QrServis qrServis = new QrServis();
+    private AppLogServis appLog = new AppLogServis();
 
     //Zaregistruje nového klienta
     public Long zaregistrujKlienta(
@@ -84,6 +86,7 @@ public class RegistraciaKlientaServis {
         try {
             klientHybridServis.aktualizujQrToken(id, token);
         } catch (IllegalStateException e) {
+            appLog.error("Zlyhalo ulozenie QR tokenu (DB/XML) | klientId=" + id, e);
             throw new IllegalStateException("Nepodarilo sa uložiť QR token | klientId=" + id, e);
         }
 
@@ -92,6 +95,7 @@ public class RegistraciaKlientaServis {
         try {
             qrCesta = qrServis.vygenerujAUlozQrObrazok(id, token);
         } catch (IllegalStateException e) {
+            appLog.error("Zlyhalo generovanie/ulozenie QR obrazka | klientId=" + id, e);
             throw new IllegalStateException("Nepodarilo sa vygenerovať/uložiť QR obrázok | klientId=" + id, e);
         }
 
@@ -99,10 +103,9 @@ public class RegistraciaKlientaServis {
         try {
             klientHybridServis.aktualizujQrCestu(id, qrCesta);
         } catch (IllegalStateException e) {
+            appLog.error("Zlyhalo ulozenie QR cesty (DB/XML) | klientId=" + id, e);
             throw new IllegalStateException("Nepodarilo sa uložiť QR cestu | klientId=" + id, e);
         }
-
-        System.out.println("Klient zaregistrovaný úspešne: " + krstneMeno + " " + priezvisko);
         return id;
     }
 }

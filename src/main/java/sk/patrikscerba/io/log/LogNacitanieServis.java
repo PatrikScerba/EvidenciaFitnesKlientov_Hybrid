@@ -1,32 +1,41 @@
-package sk.patrikscerba.servis;
+package sk.patrikscerba.io.log;
 
 import java.io.BufferedReader;
+import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
-// Servis pre čítanie systémových logov
-public class SystemLogServis {
+// Servisná trieda slúži na načítanie systémových logov zo súboru
+public class LogNacitanieServis {
 
     private static final String LOG_SUBOR = "data/app_log.txt";
+    private final AppLogServis appLog = new AppLogServis();
 
     public List<String> nacitajRiadky() {
 
         List<String> riadky = new ArrayList<>();
 
-        try (BufferedReader bufferedReader = new BufferedReader(new FileReader(LOG_SUBOR))) {
+        File file = new File(LOG_SUBOR);
+
+        if (!file.exists()) {
+            return riadky;
+        }
+
+        try (BufferedReader bufferedReader =
+                     new BufferedReader(new FileReader(LOG_SUBOR))) {
 
             String riadok;
 
+            // Postupné načítanie všetkých riadkov zo súboru
             while ((riadok = bufferedReader.readLine()) != null) {
                 riadky.add(riadok);
             }
 
         } catch (IOException e) {
-            e.printStackTrace();
+            appLog.error("Chyba pri nacitani suboru app_log.txt" + LOG_SUBOR, e);
         }
-
         return riadky;
     }
 }

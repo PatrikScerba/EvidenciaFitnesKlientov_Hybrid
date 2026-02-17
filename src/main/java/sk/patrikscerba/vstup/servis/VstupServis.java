@@ -28,12 +28,12 @@ public class VstupServis {
     public boolean skontrolujVstup(Long klientId, String qrToken) {
 
         if (klientId == null) {
-            zapisNeuspesnyVstup(null, null, "Chýba klientId");
+            zapisNeuspesnyVstup(null, null, "Chyba klientId");
             return false;
         }
 
         if (qrToken == null || qrToken.isBlank()) {
-            zapisNeuspesnyVstup(null, klientId, "Chýba QR token");
+            zapisNeuspesnyVstup(null, klientId, "Chyba QR token");
             return false;
         }
 
@@ -49,13 +49,13 @@ public class VstupServis {
         // Token zdroj: OFFLINE = XML, ONLINE = DB (alebo fallback z XML)
         String tokenZdroj = klient.getQrToken();
         if (tokenZdroj == null || tokenZdroj.isBlank()) {
-            zapisNeuspesnyVstup(klient, klientId, "Klient nemá uložený QR token");
+            zapisNeuspesnyVstup(klient, klientId, "Klient nema ulozeny QR token");
             return false;
         }
 
         // Presné porovnanie QR tokenu zo systému s tokenom zo skenu
         if (!tokenZdroj.equals(qrToken.trim())) {
-            zapisNeuspesnyVstup(klient, klientId, "Neplatný QR token");
+            zapisNeuspesnyVstup(klient, klientId, "Neplatny QR token");
             return false;
         }
 
@@ -81,7 +81,7 @@ public class VstupServis {
             return Optional.ofNullable(klient);
 
         } catch (Exception e) {
-            appLog.error("DB chyba pri získaj Klienta, fallback na XML | klientId=" + klientId, e);
+            appLog.error("DB chyba pri nacitani klienta, fallback na XML | klientId=" + klientId, e);
             return xmlNacitanieServis.najdiKlientaVXmlPodlaId(klientId);
         }
     }
@@ -91,13 +91,13 @@ public class VstupServis {
 
         // Kontrola platnosti permanentky klienta.
         if (!maPlatnuPermanentku(klientId, klient)) {
-            zapisNeuspesnyVstup(klient, klientId, "Neplatná alebo chýbajúca permanentka");
+            zapisNeuspesnyVstup(klient, klientId, "Neplatna alebo chybajuca permanentka");
             return false;
         }
 
         // Duplicitný vstup - klient môže vstúpiť len raz denne
         if (malDnesVstup(klientId)) {
-            zapisNeuspesnyVstup(klient, klientId, "Klient už dnes mal vstup");
+            zapisNeuspesnyVstup(klient, klientId, "Klient uz dnes mal vstup");
             return false;
         }
 
@@ -145,10 +145,13 @@ public class VstupServis {
             appLog.info("ZAPIS: ONLINE -> XML CACHE OK | klientId=" + klientId);
 
         } catch (Exception e) {
-            appLog.error("Zlyhanie zápisu do DB, použije sa XML fallback | klientId=" + klientId + " | chyba=", e);
-
-            // fallback: aspoň XML nech je offline stopa
+            appLog.error("VSTUP: DB zlyhala, pouzije sa XML fallback | klientId=" + klientId, e);
+        }
+        // fallback: aspoň XML nech je offline stopa
+        try {
             vstupXmlServis.zapisVstupXML(klientId, datum, cas);
+        } catch (Exception ex) {
+            appLog.error("VSTUP: zlyhal aj XML fallback | klientId=" + klientId, ex);
         }
     }
 
@@ -165,7 +168,7 @@ public class VstupServis {
                         klient = identita;
                     }
                 } catch (Exception e) {
-                    appLog.error("DB chyba pri dotiahnutí identity do logu | klientId= " + klientId, e);
+                    appLog.error("DB chyba pri dotiahnuti identity do logu | klientId=" + klientId, e);
                 }
             }
         }
@@ -190,7 +193,7 @@ public class VstupServis {
 
         VstupLogServis.zapisLog(
                 "USPECH | klientId=" + klientId + identita +
-                        " | dovod=Platná permanentka a vstup povolený" +
+                        " | dovod=Platna permanentka a vstup povoleny" +
                         " | rezim=" + (SystemRezim.isOffline() ? "OFFLINE_XML" : "ONLINE_DB")
         );
     }

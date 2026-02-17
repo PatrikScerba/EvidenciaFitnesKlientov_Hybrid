@@ -1,5 +1,6 @@
 package sk.patrikscerba.qr;
 
+import sk.patrikscerba.io.log.AppLogServis;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -10,6 +11,7 @@ public class QrVystupServis {
 
     private static final String VYSTUP_PRIECINOK = "vystup";
     private static final String QR_VYSTUP_SUBOR = "qr_vystup.png";
+    private final AppLogServis appLog = new AppLogServis();
 
     public QrVystupServis() {
         pripravPriecinok();
@@ -23,6 +25,7 @@ public class QrVystupServis {
                 Files.createDirectories(folder);
             }
         } catch (IOException e) {
+            appLog.error("Nepodarilo sa vytvorit vystupny priecinok | path=" + VYSTUP_PRIECINOK, e);
             throw new IllegalStateException("Chyba pri vytváraní výstupného priečinka", e);
         }
     }

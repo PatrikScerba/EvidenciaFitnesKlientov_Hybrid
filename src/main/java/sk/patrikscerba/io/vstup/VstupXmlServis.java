@@ -4,6 +4,7 @@ import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.NodeList;
 import org.xml.sax.SAXException;
+import sk.patrikscerba.io.log.AppLogServis;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
@@ -21,6 +22,7 @@ import java.time.format.DateTimeParseException;
 
 public class VstupXmlServis {
 
+    private final AppLogServis appLog = new AppLogServis();
     private static final String XML_SUBOR = "data/vstupy.xml";
 
     // XML slúži ako offline evidencia vstupov v hybridnom režime aplikácie
@@ -49,6 +51,7 @@ public class VstupXmlServis {
             return documentBuilder.parse(file);
 
         } catch (ParserConfigurationException | SAXException | IOException | TransformerException e) {
+            appLog.error("Nepodarilo sa nacitat alebo vytvorit vstupy.xml | subor=" + XML_SUBOR, e);
             throw new IllegalStateException("Nepodarilo sa načítať alebo vytvoriť vstupy.xml.", e);
         }
     }
@@ -82,9 +85,11 @@ public class VstupXmlServis {
             return false;
 
         } catch (NumberFormatException | DateTimeParseException e) {
+            appLog.warn("Poskodene data vo vstupy.xml (klientId/datum) | subor=" + XML_SUBOR, e);;
             return false;
 
         } catch (IllegalStateException e) {
+            appLog.error("Chyba pri kontrole dnesneho vstupu z XML | klientId=" + klientId, e);
             return false;
         }
     }
@@ -112,15 +117,13 @@ public class VstupXmlServis {
             ulozXml(document);
 
         } catch (IllegalStateException e) {
+            appLog.error("Chyba pri zapise vstupu do XML | klientId=" + klientId, e);
             throw e;
 
         } catch (TransformerException e) {
+            appLog.error("Chyba pri ulozeni vstupy.xml (transformer) | subor=" + XML_SUBOR, e);
             throw new IllegalStateException("Nepodarilo sa uložiť vstupy.xml.", e);
         }
     }
 }
-
-
-
-
 

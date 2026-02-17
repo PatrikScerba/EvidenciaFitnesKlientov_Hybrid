@@ -55,6 +55,9 @@ public class AppLogServis {
     }
 
     //Zapíše varovnú správu do log súboru(menej závažné problémy, podozrivé situácie)
+    public void warn(String sprava, Throwable e) {
+        zapis("WARN", sprava, null);
+    }
     public void warn(String sprava) {
         zapis("WARN", sprava, null);
     }
@@ -62,5 +65,9 @@ public class AppLogServis {
     //Zapíše chybovú správu spolu s výnimkou do log súboru(závažné problémy)
     public void error(String sprava, Throwable e) {
         zapis("ERROR", sprava, e);
+    }
+
+    public void error(String sprava) {
+        zapis("ERROR", sprava, null);
     }
 }

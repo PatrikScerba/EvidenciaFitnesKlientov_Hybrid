@@ -2,6 +2,7 @@ package sk.patrikscerba.ui;
 
 import sk.patrikscerba.dao.KlientDao;
 import sk.patrikscerba.dao.KlientDaoImpl;
+import sk.patrikscerba.io.log.AppLogServis;
 import sk.patrikscerba.io.xml.XMLZapisServis;
 import sk.patrikscerba.model.Klient;
 import sk.patrikscerba.qr.QrVystupServis;
@@ -22,6 +23,7 @@ import java.util.Optional;
 public class DetailKlienta extends JFrame {
 
     private final XMLZapisServis xmlZapisServis = new XMLZapisServis();
+    private final AppLogServis appLog = new AppLogServis();
     private JPanel mainPanel;
 
     private JLabel labKrstneMeno;
@@ -213,6 +215,8 @@ public class DetailKlienta extends JFrame {
             JOptionPane.showMessageDialog(this, "Údaje boli uložené.");
 
         } catch (IllegalArgumentException ex) {
+            appLog.error("Zlyhalo ulozenie uprav klienta (DB/XML) | klientId=" + klientId, ex);
+
             JOptionPane.showMessageDialog(
                     this,
                     "Chyba: " + ex.getMessage(),
@@ -268,11 +272,15 @@ public class DetailKlienta extends JFrame {
                 JOptionPane.showMessageDialog(this,
                         "Permanentka predĺžená do: " + novaPlatnost);
             } else {
+                appLog.warn("DB nepredlzila permanentku (0 riadkov) | klientId=" + klientId);
+
                 JOptionPane.showMessageDialog(this,
                         "Permanentku sa nepodarilo predĺžiť.");
             }
 
         } catch (IllegalArgumentException | IllegalStateException ex) {
+            appLog.error("Zlyhalo predlzenie permanentky (DB/XML) | klientId=" + klientId, ex);
+
             JOptionPane.showMessageDialog(
                     this,
                     "Chyba: " + ex.getMessage(),
@@ -376,6 +384,8 @@ public class DetailKlienta extends JFrame {
                         "Chyba", JOptionPane.ERROR_MESSAGE);
 
             } catch (Exception e) {
+                appLog.error("Neznama chyba pri vymazani klienta | klientId=" + klientId, e);
+
                 JOptionPane.showMessageDialog(this,
                         "Neznáma chyba pri vymazaní klienta:\n" + e.getMessage(),
                         "Chyba", JOptionPane.ERROR_MESSAGE);
@@ -418,6 +428,8 @@ public class DetailKlienta extends JFrame {
                 zobrazQrObrazok();
 
             } catch (IllegalArgumentException | IllegalStateException e) {
+                appLog.error("Zlyhalo generovanie nového QR kodu | klientId=" + klientId, e);
+
                 JOptionPane.showMessageDialog(this,
                         "Chyba: " + e.getMessage(),
                         "Chyba", JOptionPane.ERROR_MESSAGE);
@@ -438,16 +450,22 @@ public class DetailKlienta extends JFrame {
             Desktop.getDesktop().open(suborNaTlac.getParent().toFile());
 
         } catch (IllegalArgumentException | IllegalStateException e) {
+            appLog.error("Zlyhala priprava QR na tlac (servis/cesta) | klientId=" + klientId, e);
+
             JOptionPane.showMessageDialog(this,
                     e.getMessage(),
                     "Chyba", JOptionPane.ERROR_MESSAGE);
 
         } catch (IOException e) {
+            appLog.error("Zlyhalo otvorenie priecinka pre tlac QR | klientId=" + klientId, e);
+
             JOptionPane.showMessageDialog(this,
                     "Nepodarilo sa otvoriť priečinok so súborom na tlač:\n" + e.getMessage(),
                     "Chyba", JOptionPane.ERROR_MESSAGE);
 
         } catch (Exception e) {
+            appLog.error("Neznama chyba pri priprave QR na tlac | klientId=" + klientId, e);
+
             JOptionPane.showMessageDialog(this,
                     "Neznáma chyba pri príprave QR kódu na tlač:\n" + e.getMessage(),
                     "Chyba", JOptionPane.ERROR_MESSAGE);

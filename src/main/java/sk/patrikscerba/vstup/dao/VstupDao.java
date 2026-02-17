@@ -12,7 +12,7 @@ import java.time.LocalDate;
 
 public class VstupDao {
 
-    private final AppLogServis applog = new AppLogServis();
+    private final AppLogServis appLog = new AppLogServis();
 
     private final DatabazaPripojenie databazaPripojenie;
 
@@ -34,7 +34,7 @@ public class VstupDao {
             preparedStatement.executeUpdate();
 
         } catch (SQLException e) {
-            applog.error("Chyba pri zápise vstupu do DB | klientId=" + klientId, e);
+            appLog.error("Chyba pri zapise vstupu do DB | klientId=" + klientId + " | datum=" + datum, e);
             throw new IllegalStateException("Nepodarilo sa zapísať vstup do databázy.", e);
         }
     }
@@ -59,7 +59,7 @@ public class VstupDao {
             return false;
 
         } catch (SQLException e) {
-            applog.error("Chyba pri kontrole dnešného vstupu | klientId=" + klientId, e);
+            appLog.error("Chyba pri kontrole dnesneho vstupu | klientId=" + klientId + " | datum=" + datum, e);
             throw new IllegalStateException("Nepodarilo sa overiť dnešný vstup klienta.", e);
         }
     }

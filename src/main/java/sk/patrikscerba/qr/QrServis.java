@@ -5,7 +5,7 @@ import com.google.zxing.MultiFormatWriter;
 import com.google.zxing.WriterException;
 import com.google.zxing.client.j2se.MatrixToImageWriter;
 import com.google.zxing.common.BitMatrix;
-
+import sk.patrikscerba.io.log.AppLogServis;
 import java.awt.image.BufferedImage;
 import java.io.IOException;
 import java.nio.file.Files;
@@ -17,6 +17,7 @@ public class QrServis {
 
     private static final int SIZE = 270;
     private static final String QR_PRIECINOK = "qr_kody";
+    private final AppLogServis appLog = new AppLogServis();
 
     // Vytvorí priečinok pre QR kódy, ak neexistuje
     public QrServis() {
@@ -29,6 +30,7 @@ public class QrServis {
         try {
             Files.createDirectories(Path.of(QR_PRIECINOK));
         } catch (IOException e) {
+            appLog.error("Nepodarilo sa vytvorit priecinok pre QR kody | path=" + QR_PRIECINOK, e);
             throw new IllegalStateException("Chyba pri vytváraní priečinka pre QR kódy.", e);
         }
     }
@@ -65,7 +67,10 @@ public class QrServis {
         Path cestaKSuboru = Path.of(QR_PRIECINOK, nazovSuboru);
 
         boolean zapisane = javax.imageio.ImageIO.write(qrObrazok, "PNG", cestaKSuboru.toFile());
+
         if (!zapisane) {
+            appLog.error("ImageIO.write vratilo false pri ukladani PNG | klientId=" + klientId
+                    + " | subor=" + cestaKSuboru, null);
             throw new IllegalStateException("Nepodarilo sa zapísať PNG (ImageIO.write vrátilo false). Súbor: " + cestaKSuboru);
         }
         return cestaKSuboru.toString(); //uložená cesta pre DB
@@ -80,9 +85,12 @@ public class QrServis {
             return ulozQrObrazok(klientId, qrObrazok);
 
         } catch (WriterException e) {
+            appLog.error("Zlyhalo generovanie QR (ZXing) | klientId=" + klientId, e);
             throw new IllegalStateException("Chyba pri generovaní alebo ukladaní QR kódu pre klienta ID: " + klientId, e);
 
         } catch (IOException e) {
+            appLog.error("Zlyhalo ulozenie QR na disk | klientId=" + klientId
+                    + " | priecinok=" + QR_PRIECINOK, e);
             throw new IllegalStateException("Chyba pri ukladaní QR obrázka na disk pre klienta ID: " + klientId, e);
         }
     }

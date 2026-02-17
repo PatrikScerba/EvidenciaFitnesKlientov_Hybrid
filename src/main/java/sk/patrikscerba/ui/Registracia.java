@@ -1,5 +1,6 @@
 package sk.patrikscerba.ui;
 
+import sk.patrikscerba.io.log.AppLogServis;
 import sk.patrikscerba.servis.DetailKlientaServis;
 import sk.patrikscerba.servis.KlientHybridServis;
 import sk.patrikscerba.servis.RegistraciaKlientaServis;
@@ -7,6 +8,8 @@ import javax.swing.*;
 
 // Okno pre registráciu nového klienta
 public class Registracia extends JFrame {
+
+    private final AppLogServis appLog = new AppLogServis();
 
     private JButton buttonRegistrovat;
     private JTextField jTextKrstneMeno;
@@ -77,11 +80,16 @@ public class Registracia extends JFrame {
                     "Chyba vstupu", JOptionPane.ERROR_MESSAGE);
 
         } catch (IllegalStateException ex) {
+            appLog.error("Chyba systemu pri registracii klienta | meno="
+                    + jTextKrstneMeno.getText() + " " + jTextPriezvisko.getText(), ex);
+
             JOptionPane.showMessageDialog(
                     this, "Chyba systému pri registrácii:\n" + ex.getMessage(),
                     "Chyba", JOptionPane.ERROR_MESSAGE);
 
         } catch (Exception ex) {
+            appLog.error("Neocakavana chyba pri registracii klienta", ex);
+
             JOptionPane.showMessageDialog(
                     this, "Nastala neočakávaná chyba pri registrácii.",
                     "Chyba", JOptionPane.ERROR_MESSAGE);

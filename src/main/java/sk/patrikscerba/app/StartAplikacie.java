@@ -24,6 +24,7 @@ public class StartAplikacie {
             new HlavneOkno();
             informujOfflineRezim();
         });
+        appLog.info("Aplikacia bola spustena.");
     }
 
     // Nastavenie slovenských textov pre dialógy
@@ -39,7 +40,7 @@ public class StartAplikacie {
         try {
             UIManager.setLookAndFeel(new FlatMacDarkLaf());
         } catch (Exception e) {
-            appLog.error("Nepodarilo sa nastaviť vzhľad aplikácie. ", e);
+            appLog.error("Nepodarilo sa nastavit vzhlad aplikacie. ", e);
         }
     }
 
@@ -50,9 +51,9 @@ public class StartAplikacie {
         SystemRezim.setOffline(!dostupnaDb);
 
         if (!dostupnaDb) {
-            appLog.info("Databáza je nedostupná - offline režim");
+            appLog.info("Databaza je nedostupna - offline rezim");
         } else {
-            appLog.info("Databáza je dostupná - online režim");
+            appLog.info("Databaza je dostupna - online rezim");
         }
     }
 

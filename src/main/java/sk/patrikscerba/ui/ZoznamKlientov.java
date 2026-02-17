@@ -1,5 +1,6 @@
 package sk.patrikscerba.ui;
 
+import sk.patrikscerba.io.log.AppLogServis;
 import sk.patrikscerba.model.Klient;
 import sk.patrikscerba.servis.ZoznamKlientovServis;
 import sk.patrikscerba.vstup.servis.PermanentkaVstupServis;
@@ -17,6 +18,7 @@ public class ZoznamKlientov extends JFrame {
 
     private final ZoznamKlientovServis zoznamKlientovServis = new ZoznamKlientovServis();
     private final PermanentkaVstupServis permanentkaVstupServis = new PermanentkaVstupServis();
+    private final AppLogServis appLog = new AppLogServis();
 
     private static final DateTimeFormatter FORMAT_DATUMU = DateTimeFormatter.ofPattern("dd.MM.yyyy");
 
@@ -102,12 +104,16 @@ public class ZoznamKlientov extends JFrame {
             tabulka.setModel(model);
 
         } catch (IllegalArgumentException | IllegalStateException ex) {
+            appLog.error("Chyba systemu pri nacítani zoznamu klientov | okno=ZoznamKlientov", ex);
+
             JOptionPane.showMessageDialog(this,
                     "Chyba pri načítaní klientov: " + ex.getMessage(),
                     "Chyba",
                     JOptionPane.ERROR_MESSAGE);
 
         } catch (Exception ex) {
+            appLog.error("Neocakavana chyba pri nacitani zoznamu klientov | okno=ZoznamKlientov", ex);
+
             JOptionPane.showMessageDialog(this,
                     "Nastala neočakávaná chyba pri načítaní klientov.",
                     "Chyba",

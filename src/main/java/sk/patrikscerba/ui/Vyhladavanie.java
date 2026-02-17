@@ -1,5 +1,6 @@
 package sk.patrikscerba.ui;
 
+import sk.patrikscerba.io.log.AppLogServis;
 import sk.patrikscerba.model.Klient;
 import sk.patrikscerba.servis.DetailKlientaServis;
 import sk.patrikscerba.servis.KlientHybridServis;
@@ -21,6 +22,7 @@ public class Vyhladavanie extends JFrame {
 
     private final boolean zobrazit;
     private final VyhladavanieKlientovServis vyhladavanieKlientovServis = new VyhladavanieKlientovServis();
+    private final AppLogServis appLog = new AppLogServis();
 
     // Nastavenie okna pre vyhľadávanie klientov
     public Vyhladavanie(boolean zobrazit) {
@@ -63,6 +65,9 @@ public class Vyhladavanie extends JFrame {
             return;
 
         } catch (IllegalStateException e) {
+            appLog.error("Chyba systemu pri vyhladavani klientov | meno="
+                    + hladaneMeno + " priezvisko=" + hladanePriezvisko, e);
+
             JOptionPane.showMessageDialog(this,
                     "Chyba pri vyhľadávaní klientov: " + e.getMessage(),
                     "Chyba",
@@ -70,6 +75,9 @@ public class Vyhladavanie extends JFrame {
             return;
 
         } catch (Exception e) {
+            appLog.error("Neocakavana chyba pri vyhladavani klientov | meno="
+                    + hladaneMeno + " priezvisko=" + hladanePriezvisko, e);
+
             JOptionPane.showMessageDialog(this,
                     "Nastala neočakávaná chyba.",
                     "Chyba",

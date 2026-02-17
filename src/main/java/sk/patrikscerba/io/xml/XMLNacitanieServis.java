@@ -83,9 +83,9 @@ public class XMLNacitanieServis {
                 klienti.add(klient);
             }
         } catch (NumberFormatException | DateTimeParseException e) {
-
+            applog.error("Poskodene data v klienti.xml (zle cislo/datum). Vrati prazdny zoznam.", e);
         } catch (ParserConfigurationException | SAXException | IOException e) {
-            applog.error("Chyba pri načítaní klientov zo súboru XML. Vráti prázdny zoznam", e);
+            applog.error("Chyba pri nacitani klientov zo suboru XML. Vrati prazdny zoznam", e);
         }
         return klienti;
     }
@@ -128,6 +128,3 @@ public class XMLNacitanieServis {
         return null;
     }
 }
-
-
-

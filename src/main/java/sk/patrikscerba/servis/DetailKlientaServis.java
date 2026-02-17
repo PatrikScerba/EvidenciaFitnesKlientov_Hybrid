@@ -1,5 +1,6 @@
 package sk.patrikscerba.servis;
 
+import sk.patrikscerba.io.log.AppLogServis;
 import sk.patrikscerba.io.xml.XMLZapisServis;
 import sk.patrikscerba.model.Klient;
 import sk.patrikscerba.qr.QrServis;
@@ -17,6 +18,7 @@ public class DetailKlientaServis {
     private final KlientHybridServis klientHybridServis;
     private final XMLZapisServis xmlZapisServis = new XMLZapisServis();
     private final QrServis qrServis = new QrServis();
+    private final AppLogServis appLog = new AppLogServis();
 
     // Konštruktor s injektovaným hybridným servisom pre prácu s detailom klienta
     public DetailKlientaServis(KlientHybridServis klientHybridServis) {
@@ -86,11 +88,13 @@ public class DetailKlientaServis {
         boolean ok = klientHybridServis.aktualizujKlienta(klient);
 
         if (!ok) {
+            appLog.warn("DB neaktualizovala klienta (0 riadkov) | klientId=" + klientId);
             throw new IllegalStateException("Aktualizácia klienta sa nepodarila (0 riadkov).");
         }
         try {
             xmlZapisServis.aktualizujKlientaVXml(klient);
         } catch (IllegalStateException e) {
+            appLog.error("DB aktualizovana, ale XML zlyhalo | klientId=" + klientId, e);
             throw new IllegalStateException("Aktualizácia klienta v XML sa nepodarila.", e);
         }
     }
@@ -100,6 +104,7 @@ public class DetailKlientaServis {
         boolean vymazane = klientHybridServis.vymazatKlienta(klientId);
 
         if (!vymazane) {
+            appLog.warn("Mazanie klienta zlyhalo (0 riadkov) | klientId=" + klientId);
             throw new IllegalStateException("Klienta sa nepodarilo vymazať.");
         }
     }
@@ -125,6 +130,7 @@ public class DetailKlientaServis {
             return qrCesta;
 
         } catch (IllegalStateException e) {
+            appLog.error("Zlyhalo generovanie / ulozenie QR | klientId=" + klientId, e);
             throw new IllegalStateException("Nepodarilo sa vygenerovať/uložiť QR kód | klientId=" + klientId, e);
         }
     }
@@ -165,6 +171,4 @@ public class DetailKlientaServis {
         }
     }
 }
-
-
 

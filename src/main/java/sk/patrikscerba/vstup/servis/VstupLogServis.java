@@ -11,7 +11,7 @@ import java.time.format.DateTimeFormatter;
 //Trieda na zápis logov súvisiacich so vstupmi klientov
 public class VstupLogServis {
 
-    private  static final AppLogServis log = new AppLogServis();
+    private  static final AppLogServis appLog = new AppLogServis();
 
     //Cesta k logovaciemu súboru + formát dátumu a času použitý v logu
     private static final String LOG_SUBOR = "data/vstupy_log.txt";
@@ -23,11 +23,11 @@ public class VstupLogServis {
         try (FileWriter writer = new FileWriter(LOG_SUBOR, true)) {
 
             String cas = LocalDateTime.now().format(FORMATTER);
-            writer.write(cas + "| " + sprava + "\n");
+            writer.write("[" + cas + "] | " + sprava + "\n");
             writer.flush();
 
         } catch (IOException e) {
-            log.error("Nepodarilo sa zapísať log:", e);
+            appLog.error("Zlyhal zapis do vstup log suboru | subor=" + LOG_SUBOR, e);
         }
     }
 }
