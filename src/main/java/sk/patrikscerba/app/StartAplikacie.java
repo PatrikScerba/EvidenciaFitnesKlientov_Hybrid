@@ -7,6 +7,7 @@ import sk.patrikscerba.system.SystemRezim;
 import sk.patrikscerba.ui.HlavneOkno;
 
 import javax.swing.*;
+import java.awt.*;
 
 
 // Trieda zabezpečí správny štart aplikácie
@@ -38,6 +39,11 @@ public class StartAplikacie {
     // Nastavenie vzhľadu aplikácie na FlatLaf s tmavým režimom
     private static void nastavVzhlad() {
         try {
+            UIManager.put("Panel.background", new Color(30,30,30));
+            UIManager.put("Button.background", new Color(70,70,70));
+            UIManager.put("Component.background", new Color(37,37,37));
+            UIManager.put("Button.hoverBackground", new Color(60,170,210));
+
             UIManager.setLookAndFeel(new FlatMacDarkLaf());
         } catch (Exception e) {
             appLog.error("Nepodarilo sa nastavit vzhlad aplikacie. ", e);
