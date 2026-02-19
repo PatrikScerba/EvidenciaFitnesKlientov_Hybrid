@@ -18,7 +18,7 @@ import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.util.Optional;
 
-
+// UI: Okno DetailKlienta je v procese redizajnu (upravuje sa rozloženie, práca s poliami a panelmi)
 // Trieda slúži len  na zobrazenie detailov klienta
 public class DetailKlienta extends JFrame {
 
