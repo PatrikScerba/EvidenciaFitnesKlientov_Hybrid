@@ -56,6 +56,23 @@ public class DetailKlienta extends JFrame {
     private JTextField upravitTelefonneCislo;
     private JTextField upravitDatumNarodenia;
 
+    private JTextField txtVek;
+    private JTextField txtDatumRegistracie;
+    private JTextField txtPermanentkaStav;
+    private JTextField txtPlatnostPermanentky;
+    private JPanel HlavnyPanel1;
+    private JPanel PanelButton;
+    private JPanel HlavnyPanelll;
+    private JLabel udajeLabel;
+    private JPanel headerPanel;
+    private JPanel leftHeaderPnael;
+    private JLabel NadpisLabel;
+    private JPanel cyanLine;
+    private JPanel qrPanel;
+    private JPanel qrPanelObrazok;
+    private JPanel stlpec;
+
+
     private Klient klient;
     private boolean rezim = false;
     private final Long klientId;
@@ -71,6 +88,7 @@ public class DetailKlienta extends JFrame {
 
         // Nastavenie okna
         nastavOkno();
+        nastavPopisyPoli();
         nacitajKlientaAleboZavri();
         nastavAkcieTlacidiel();
 
@@ -85,9 +103,21 @@ public class DetailKlienta extends JFrame {
     private void nastavOkno() {
         setContentPane(mainPanel);
         setTitle("Detail klienta");
-        setSize(500, 550);
+        setSize(900, 520);
         setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
         setLocationRelativeTo(null);
+    }
+
+    private void nastavPopisyPoli() {
+        if (labKrstneMeno != null) labKrstneMeno.setText("Meno:");
+        if (labPriezvisko != null) labPriezvisko.setText("Priezvisko:");
+        if (labEmail != null) labEmail.setText("Email:");
+        if (labAdresa != null) labAdresa.setText("Adresa:");
+        if (labTelefonneCislo != null) labTelefonneCislo.setText("Telefónne číslo:");
+        if (labDatumNarodenia != null) labDatumNarodenia.setText("Dátum narodenia:");
+        if (labDatumRegistracie != null) labDatumRegistracie.setText("Dátum registrácie:");
+        if (labVek != null) labVek.setText("Vek:");
+
     }
 
     // Načítanie klienta podľa ID, ak neexistuje, zavrie okno
@@ -101,7 +131,8 @@ public class DetailKlienta extends JFrame {
         }
 
         this.klient = klientOpt.get();
-        zobrazUdaje(this.klient);
+        zobrazUdajeDoPoli(this.klient);
+        obnovZobrazeniePermanentky(this.klient);
     }
 
     // Nastavenie akcií tlačidiel
@@ -115,13 +146,14 @@ public class DetailKlienta extends JFrame {
 
         upravitButton.addActionListener(e -> {
             if (!rezim) {
-                prepniDoUprav();
+                nastavRezim(true);
             } else {
                 ulozZmeny();
             }
         });
 
         zrusitUpravyButton.addActionListener(e -> {
+            zobrazUdajeDoPoli(this.klient);
             nastavRezim(false);
             zobrazQrObrazok();
         });
@@ -136,8 +168,8 @@ public class DetailKlienta extends JFrame {
     private void nastavRezim(boolean uprav) {
         rezim = uprav;
 
-        nastavViditelnosPoliUprav(uprav);
-        zobrazLabely(!uprav);
+        nastavEditovatelnostPoli(uprav);
+
 
         predlzitPermanentkuButton.setVisible(!uprav);
         historiaKlientaButton.setVisible(!uprav);
@@ -145,7 +177,6 @@ public class DetailKlienta extends JFrame {
         zatvoritButton.setVisible(!uprav);
         vymazatKlientaButton.setVisible(!uprav);
         upravitButton.setText(uprav ? "Uložiť zmeny" : "Upraviť");
-        mainPanel.setBackground(uprav ? new Color(47, 39, 39) : null);
         qrObrazokLabel.setVisible(!uprav);
         znovaGenerovatQrButton.setVisible(uprav);
         vytlacitQrButton.setVisible(!uprav);
@@ -154,61 +185,103 @@ public class DetailKlienta extends JFrame {
         mainPanel.repaint();
     }
 
+    private void nastavEditovatelnostPoli(boolean edit) {
+        JTextField[] polia = {
+                upravitKrstneMeno,
+                upravitPriezvisko,
+                upravitEmail,
+                upravitAdresa,
+                upravitTelefonneCislo,
+                upravitDatumNarodenia
+
+        };
+
+        for (JTextField pole : polia) {
+            if (pole == null) continue;
+
+            pole.setEditable(edit);
+            pole.setFocusable(edit);
+
+            // aby sa vo view režime neukazoval caret a nepôsobilo to editovateľne
+            if (!edit) {
+                pole.setCaretPosition(0);
+            }
+        }
+
+    JTextField[] readOnly = { txtVek, txtDatumRegistracie, txtPermanentkaStav, txtPlatnostPermanentky };
+    for (JTextField pole : readOnly) {
+        if (pole == null) continue;
+        pole.setEditable(false);
+        pole.setFocusable(false);
+        pole.setCaretPosition(0);
+    }
+}
+
     // Prepne režim do režimu úprav
-    private void prepniDoUprav() {
+    private void zobrazUdajeDoPoli(Klient klient) {
+        upravitKrstneMeno.setText(bezpecnyText(klient.getKrstneMeno()));
+        upravitPriezvisko.setText(bezpecnyText(klient.getPriezvisko()));
+        upravitEmail.setText(bezpecnyText(klient.getEmail()));
+        upravitAdresa.setText(bezpecnyText(klient.getAdresa()));
+        upravitTelefonneCislo.setText(bezpecnyText(klient.getTelefonneCislo()));
 
-        // Naplnenie polí
-        upravitKrstneMeno.setText(klient.getKrstneMeno());
-        upravitPriezvisko.setText(klient.getPriezvisko());
-        upravitEmail.setText(klient.getEmail());
-        upravitAdresa.setText(klient.getAdresa());
-        upravitTelefonneCislo.setText(klient.getTelefonneCislo());
+        upravitDatumNarodenia.setText(
+                klient.getDatumNarodenia() != null ? klient.getDatumNarodenia().format(FORMATTER) : ""
+        );
 
-        upravitDatumNarodenia.setText(klient.getDatumNarodenia() != null ? klient.getDatumNarodenia().format(FORMATTER) : "");
+        // Vek a registrácia môžu ostať ako info labely viditeľné
+        if (txtVek != null) {
+            txtVek.setText(String.valueOf(klient.getVek()));
+        }
+        if (txtDatumRegistracie != null) {
+            txtDatumRegistracie.setText(klient.getDatumRegistracie() != null ? klient.getDatumRegistracie().format(FORMATTER) : "-");
 
-        nastavRezim(true);
+        }
     }
 
-    // Zobrazí alebo skryje polia na úpravu podľa režimu
-    private void nastavViditelnosPoliUprav(boolean viditelne) {
-        upravitKrstneMeno.setVisible(viditelne);
-        upravitPriezvisko.setVisible(viditelne);
-        upravitEmail.setVisible(viditelne);
-        upravitAdresa.setVisible(viditelne);
-        upravitTelefonneCislo.setVisible(viditelne);
-        upravitDatumNarodenia.setVisible(viditelne);
+    private String bezpecnyText(String s) {
+        return s == null ? "" : s;
     }
 
-    // Zobrazí alebo skryje labely podľa režimu
-    private void zobrazLabely(boolean viditelne) {
-        labKrstneMeno.setVisible(viditelne);
-        labPriezvisko.setVisible(viditelne);
-        labEmail.setVisible(viditelne);
-        labAdresa.setVisible(viditelne);
-        labTelefonneCislo.setVisible(viditelne);
-        labDatumNarodenia.setVisible(viditelne);
-        labDatumRegistracie.setVisible(viditelne);
-        labVek.setVisible(viditelne);
-        labPermanentkaStav.setVisible(viditelne);
-        labPlatnostPermanentky.setVisible(viditelne);
-    }
-
-    //Uloženie zmien po úprave klienta
+    // Uloženie zmien po úprave klienta
     private void ulozZmeny() {
         try {
-            //servis uloží do DB/XML cez hybrid servis (validácie sú v servise)
-            detailKlientaServis.ulozUpravyKlienta(klientId, upravitKrstneMeno.getText(), upravitPriezvisko.getText(), upravitDatumNarodenia.getText(), upravitTelefonneCislo.getText(), upravitAdresa.getText(), upravitEmail.getText());
+            String meno = upravitKrstneMeno.getText();
+            String priezvisko = upravitPriezvisko.getText();
+            String datumNarodeniaText = upravitDatumNarodenia.getText();
+            String telefon = upravitTelefonneCislo.getText();
+            String adresa = upravitAdresa.getText();
+            String email = upravitEmail.getText();
+
+            // servis uloží do DB/XML cez hybrid servis (validácie sú v servise)
+            detailKlientaServis.ulozUpravyKlienta(
+                    klientId,
+                    meno,
+                    priezvisko,
+                    datumNarodeniaText,
+                    telefon,
+                    adresa,
+                    email
+            );
 
             // UI: aktualizácia aktuálneho klienta
-            this.klient.setKrstneMeno(upravitKrstneMeno.getText().trim());
-            this.klient.setPriezvisko(upravitPriezvisko.getText().trim());
-            this.klient.setEmail(upravitEmail.getText().trim());
-            this.klient.setAdresa(upravitAdresa.getText().trim());
-            this.klient.setTelefonneCislo(upravitTelefonneCislo.getText().trim());
-            this.klient.setDatumNarodenia(LocalDate.parse(upravitDatumNarodenia.getText().trim(), FORMATTER));
+            this.klient.setKrstneMeno(meno != null ? meno.trim() : "");
+            this.klient.setPriezvisko(priezvisko != null ? priezvisko.trim() : "");
+            this.klient.setEmail(email != null ? email.trim() : "");
+            this.klient.setAdresa(adresa != null ? adresa.trim() : "");
+            this.klient.setTelefonneCislo(telefon != null ? telefon.trim() : "");
+
+            // dátum narodenia: povoliť prázdne
+            if (datumNarodeniaText == null || datumNarodeniaText.trim().isBlank()) {
+                this.klient.setDatumNarodenia(null);
+            } else {
+                this.klient.setDatumNarodenia(LocalDate.parse(datumNarodeniaText.trim(), FORMATTER));
+            }
 
             // UI zobrazí aktualizované údaje
-            zobrazUdaje(this.klient);
+            zobrazUdajeDoPoli(this.klient);
+            obnovZobrazeniePermanentky(this.klient);
+
             nastavRezim(false);
             zobrazQrObrazok();
 
@@ -321,19 +394,19 @@ public class DetailKlienta extends JFrame {
         LocalDate platnaDo = klient.getPermanentkaPlatnaDo();
 
         if (platnaDo == null) {
-            labPermanentkaStav.setText("Nemá");
-            labPlatnostPermanentky.setText("—");
+            txtPermanentkaStav.setText("Nemá");
+            txtPlatnostPermanentky.setText("—");
             return;
         }
 
         long dni = permanentkaServis.zostavaDni(platnaDo);
 
         if (permanentkaServis.jePlatnaPermanentka(platnaDo)) {
-            labPermanentkaStav.setText("Permanentka: Aktívna");
-            labPlatnostPermanentky.setText("Platná do: " + platnaDo.format(FORMATTER) + " (" + dni + " dní)");
+            txtPermanentkaStav.setText("Aktívna");
+            txtPlatnostPermanentky.setText("Platná do: " + platnaDo.format(FORMATTER) + " (" + dni + " dní)");
         } else {
-            labPermanentkaStav.setText("Permanentka: Neplatná");
-            labPlatnostPermanentky.setText("Vypršala: " + platnaDo.format(FORMATTER) + " (" + Math.abs(dni) + " dní po)");
+            txtPermanentkaStav.setText("Neplatná");
+            txtPlatnostPermanentky.setText("Vypršala: " + platnaDo.format(FORMATTER) + " (" + Math.abs(dni) + " dní po)");
         }
     }
 
@@ -471,7 +544,10 @@ public class DetailKlienta extends JFrame {
                     "Chyba", JOptionPane.ERROR_MESSAGE);
         }
     }
-}
+
+
+    }
+
 
 
 
