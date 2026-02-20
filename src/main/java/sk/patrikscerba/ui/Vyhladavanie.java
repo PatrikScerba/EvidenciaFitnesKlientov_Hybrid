@@ -19,6 +19,12 @@ public class Vyhladavanie extends JFrame {
 
     private JLabel krstneMenoLabel;
     private JLabel priezviskoLabel;
+    private JPanel nadpis;
+    private JPanel vyhladavanie;
+    private JLabel vyhladavanieNadpis;
+    private JPanel panelHladanie;
+    private JPanel krstneMenoPanel;
+    private JPanel priezviskoPanel;
 
     private final boolean zobrazit;
     private final VyhladavanieKlientovServis vyhladavanieKlientovServis = new VyhladavanieKlientovServis();
@@ -29,7 +35,8 @@ public class Vyhladavanie extends JFrame {
         this.zobrazit = zobrazit;
         setContentPane(mainPanel);
         setTitle("Vyhľadávanie klienta");
-        setSize(400, 300);
+        setSize(400, 330);
+        setResizable(false);
         setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
         setLocationRelativeTo(null);
 
