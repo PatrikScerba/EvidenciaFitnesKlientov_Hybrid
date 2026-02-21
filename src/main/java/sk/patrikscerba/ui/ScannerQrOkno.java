@@ -16,6 +16,10 @@ public class ScannerQrOkno extends JFrame {
     private JPanel panel;
     private JTextField textKlientId;
     private JButton skenovatButton;
+    private JPanel panelButton;
+    private JPanel panelId;
+    private JPanel panelPopis;
+    private JLabel popisLabel;
 
     private final VstupServis vstupServis = new VstupServis();
     private static final String NAZOV_OKNA = "Simulácia vstupu (QR)";
@@ -27,6 +31,7 @@ public class ScannerQrOkno extends JFrame {
         setContentPane(panel);
         setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
         setSize(400, 300);
+        setResizable(false);
         setLocationRelativeTo(null);
 
         skenovatButton.addActionListener(this::spracujSken);
