@@ -18,6 +18,7 @@ public class SystemLogOkno extends JFrame {
         setTitle("Záznamy systémových logov");
         setSize(800, 450);
         setLocationRelativeTo(null);
+        setResizable(false);
         setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
 
         add(new JScrollPane(tabulka));
@@ -40,5 +41,9 @@ public class SystemLogOkno extends JFrame {
             model.addRow(new Object[]{riadok});
         }
         tabulka.setModel(model);
+
+        tabulka.setAutoResizeMode(JTable.AUTO_RESIZE_OFF);
+        tabulka.getColumnModel().getColumn(0).setPreferredWidth(800);
+        tabulka.setRowHeight(24);
     }
 }

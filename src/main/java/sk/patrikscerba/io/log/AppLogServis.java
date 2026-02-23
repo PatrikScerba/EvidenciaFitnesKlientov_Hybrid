@@ -6,6 +6,7 @@ import java.io.FileWriter;
 import java.io.PrintWriter;
 import java.io.StringWriter;
 import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 
 //systemové logovanie do súboru app_log.txt
 public class AppLogServis {
@@ -31,7 +32,9 @@ public class AppLogServis {
     private void zapis(String level, String sprava, Throwable e) {
         vytvorPriecinokDataAkTreba();
 
-        String cas = LocalDateTime.now().toString();
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
+
+        String cas = LocalDateTime.now().format(formatter).toString();
         String riadok = "[" + cas + "] [" + level + "] " + sprava;
 
         try (BufferedWriter bufferedWriter = new BufferedWriter(new FileWriter(CESTA_SUBORU, true))) {

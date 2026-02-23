@@ -18,17 +18,23 @@ public class HistoriaVstupov extends JFrame {
         setTitle("Globálna história vstupov klientov");
         setSize(900, 450);
         setLocationRelativeTo(null);
+        setResizable(false);
         setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
 
         // Pridanie tabuľky do okna s posuvníkom
         add(new JScrollPane(tabulka));
 
-        List<String> riadky =new java.util.ArrayList<>(
-                historiaVstupovServis.nacitajRiadky() );
+        List<String> riadky = new java.util.ArrayList<>(
+                historiaVstupovServis.nacitajRiadky());
         Collections.reverse(riadky);
 
         //Model tabuľky (stĺpce + riadky)
-        DefaultTableModel model = new DefaultTableModel();
+        DefaultTableModel model = new DefaultTableModel() {
+            @Override
+            public boolean isCellEditable(int row, int column) {
+                return false;
+            }
+        };
         model.addColumn("Záznamy vstupov");
 
         for (String riadok : riadky) {
@@ -36,5 +42,9 @@ public class HistoriaVstupov extends JFrame {
         }
 
         tabulka.setModel(model);
+
+        tabulka.setAutoResizeMode(JTable.AUTO_RESIZE_OFF);
+        tabulka.getColumnModel().getColumn(0).setPreferredWidth(900);
+        tabulka.setRowHeight(24);
     }
 }

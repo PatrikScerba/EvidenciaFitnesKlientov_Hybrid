@@ -22,6 +22,7 @@ public class HistoriaKlienta extends JFrame {
         setTitle("História klienta");
         setSize(900, 400);
         setLocationRelativeTo(null);
+        setResizable(false);
         setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
 
         tabulka = new JTable();
@@ -43,7 +44,12 @@ public class HistoriaKlienta extends JFrame {
 
         Collections.reverse(strings);
 
-        DefaultTableModel model = new DefaultTableModel();
+        DefaultTableModel model = new DefaultTableModel() {
+            @Override
+            public boolean isCellEditable(int row, int column) {
+                return false;
+            }
+        };
         model.addColumn("Záznam vstupu");
 
         for (String riadok : strings) {
@@ -52,6 +58,10 @@ public class HistoriaKlienta extends JFrame {
             });
         }
         tabulka.setModel(model);
+
+        tabulka.setAutoResizeMode(JTable.AUTO_RESIZE_OFF);
+        tabulka.getColumnModel().getColumn(0).setPreferredWidth(900);
+        tabulka.setRowHeight(24);
 
     }
 
