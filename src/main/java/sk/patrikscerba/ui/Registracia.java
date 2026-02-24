@@ -11,7 +11,7 @@ public class Registracia extends JFrame {
 
     private final AppLogServis appLog = new AppLogServis();
 
-    private JButton buttonRegistrovat;
+    private JButton jButtonRegistrovat;
     private JTextField jTextKrstneMeno;
     private JTextField jTextPriezvisko;
     private JTextField jTextDatumNarodenia;
@@ -27,18 +27,29 @@ public class Registracia extends JFrame {
     private JLabel emailLabel;
 
     private JPanel mainPanel;
+    private JPanel krstneMenoPanel;
+    private JPanel priezviskoPanel;
+    private JPanel datumPanel;
+    private JPanel telefonPanel;
+    private JPanel adresaPanel;
+    private JPanel emailPanel;
+    private JPanel tlacidloPanel;
+    private JPanel nadpisPanel;
+    private JLabel nadpisLabel;
+    private JPanel cyanPanel;
 
     // Konštruktor okna pre registráciu klienta
     public Registracia() {
         setContentPane(mainPanel);
         setTitle("Registrácia klienta");
-        setSize(400, 600);
+        setSize(480, 480);
+        setResizable(false);
         setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
         setLocationRelativeTo(null);
         setVisible(true);
 
         // Pridanie akcie na tlačidlo registrácie
-        buttonRegistrovat.addActionListener(e -> registrujKlienta());
+        jButtonRegistrovat.addActionListener(e -> registrujKlienta());
     }
 
     // Registrácia klienta pomocou servisnej vrstvy
