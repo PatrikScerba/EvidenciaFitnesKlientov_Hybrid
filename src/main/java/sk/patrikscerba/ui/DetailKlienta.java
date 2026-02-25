@@ -11,6 +11,7 @@ import sk.patrikscerba.system.SystemRezim;
 import sk.patrikscerba.vstup.servis.PermanentkaVstupServis;
 
 import javax.swing.*;
+import javax.swing.text.JTextComponent;
 import java.awt.*;
 import java.io.IOException;
 import java.nio.file.Path;
@@ -52,7 +53,7 @@ public class DetailKlienta extends JFrame {
     private JTextField upravitKrstneMeno;
     private JTextField upravitPriezvisko;
     private JTextField upravitEmail;
-    private JTextField upravitAdresa;
+    private JTextArea  upravitAdresa;
     private JTextField upravitTelefonneCislo;
     private JTextField upravitDatumNarodenia;
 
@@ -60,17 +61,20 @@ public class DetailKlienta extends JFrame {
     private JTextField txtDatumRegistracie;
     private JTextField txtPermanentkaStav;
     private JTextField txtPlatnostPermanentky;
-    private JPanel HlavnyPanel1;
-    private JPanel PanelButton;
-    private JPanel HlavnyPanelll;
-    private JLabel udajeLabel;
-    private JPanel headerPanel;
-    private JPanel leftHeaderPnael;
-    private JLabel NadpisLabel;
-    private JPanel cyanLine;
-    private JPanel qrPanel;
-    private JPanel qrPanelObrazok;
+    private JPanel udajePanel;
+    private JPanel buttonPanel;
+    private JPanel nadpisPanel1;
+    private JPanel nadpisLPanel;
+    private JLabel nadpisLabel1;
+    private JPanel cyanPanel1;
+    private JPanel qrHlavnyPanel;
+    private JPanel qrObrazokPanel;
     private JPanel stlpec;
+    private JPanel nadpisPanel2;
+    private JPanel nadpisPPanel;
+    private JLabel nadpisLabel2;
+    private JPanel cyanPanel2;
+    private JScrollPane JSrollPane;
 
 
     private Klient klient;
@@ -103,13 +107,15 @@ public class DetailKlienta extends JFrame {
     private void nastavOkno() {
         setContentPane(mainPanel);
         setTitle("Detail klienta");
-        setSize(900, 520);
+        setSize(850, 543);
+        setResizable(false);
         setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
         setLocationRelativeTo(null);
+
     }
 
     private void nastavPopisyPoli() {
-        if (labKrstneMeno != null) labKrstneMeno.setText("Meno:");
+        if (labKrstneMeno != null) labKrstneMeno.setText("Krstné meno:");
         if (labPriezvisko != null) labPriezvisko.setText("Priezvisko:");
         if (labEmail != null) labEmail.setText("Email:");
         if (labAdresa != null) labAdresa.setText("Adresa:");
@@ -186,7 +192,7 @@ public class DetailKlienta extends JFrame {
     }
 
     private void nastavEditovatelnostPoli(boolean edit) {
-        JTextField[] polia = {
+        JTextComponent[] polia = {
                 upravitKrstneMeno,
                 upravitPriezvisko,
                 upravitEmail,
@@ -196,7 +202,7 @@ public class DetailKlienta extends JFrame {
 
         };
 
-        for (JTextField pole : polia) {
+        for (JTextComponent pole : polia) {
             if (pole == null) continue;
 
             pole.setEditable(edit);
@@ -343,7 +349,7 @@ public class DetailKlienta extends JFrame {
                 obnovZobrazeniePermanentky(klient);
 
                 JOptionPane.showMessageDialog(this,
-                        "Permanentka predĺžená do: " + novaPlatnost);
+                        "Permanentka predĺžená do : " + novaPlatnost);
             } else {
                 appLog.warn("DB nepredlzila permanentku (0 riadkov) | klientId=" + klientId);
 
@@ -544,9 +550,9 @@ public class DetailKlienta extends JFrame {
                     "Chyba", JOptionPane.ERROR_MESSAGE);
         }
     }
+}
 
 
-    }
 
 
 

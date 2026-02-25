@@ -1,213 +1,483 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <form xmlns="http://www.intellij.com/uidesigner/form/" version="1" bind-to-class="sk.patrikscerba.ui.DetailKlienta">
-  <grid id="27dc6" binding="mainPanel" layout-manager="GridLayoutManager" row-count="11" column-count="6" same-size-horizontally="false" same-size-vertically="false" hgap="-1" vgap="-1">
-    <margin top="0" left="0" bottom="0" right="0"/>
+  <grid id="27dc6" binding="mainPanel" layout-manager="GridLayoutManager" row-count="7" column-count="20" same-size-horizontally="false" same-size-vertically="false" hgap="-1" vgap="-1">
+    <margin top="16" left="20" bottom="16" right="20"/>
     <constraints>
-      <xy x="20" y="20" width="743" height="400"/>
+      <xy x="20" y="23" width="1417" height="700"/>
     </constraints>
     <properties/>
-    <border type="none"/>
+    <border type="bevel-raised"/>
     <children>
-      <component id="3f490" class="javax.swing.JLabel" binding="labKrstneMeno">
+      <grid id="79367" binding="udajePanel" layout-manager="GridLayoutManager" row-count="8" column-count="4" same-size-horizontally="false" same-size-vertically="false" hgap="0" vgap="5">
+        <margin top="15" left="10" bottom="65" right="10"/>
         <constraints>
-          <grid row="0" column="1" row-span="1" col-span="4" vsize-policy="0" hsize-policy="0" anchor="8" fill="0" indent="0" use-parent-layout="false"/>
-        </constraints>
-        <properties>
-          <text value="Label"/>
-        </properties>
-      </component>
-      <component id="471fe" class="javax.swing.JLabel" binding="labPriezvisko">
-        <constraints>
-          <grid row="1" column="1" row-span="1" col-span="4" vsize-policy="0" hsize-policy="0" anchor="8" fill="0" indent="0" use-parent-layout="false"/>
-        </constraints>
-        <properties>
-          <text value="Label"/>
-        </properties>
-      </component>
-      <component id="5d093" class="javax.swing.JLabel" binding="labAdresa">
-        <constraints>
-          <grid row="3" column="1" row-span="1" col-span="4" vsize-policy="0" hsize-policy="0" anchor="8" fill="0" indent="0" use-parent-layout="false"/>
-        </constraints>
-        <properties>
-          <text value="Label"/>
-        </properties>
-      </component>
-      <component id="cb2ca" class="javax.swing.JLabel" binding="labEmail">
-        <constraints>
-          <grid row="4" column="1" row-span="1" col-span="4" vsize-policy="0" hsize-policy="0" anchor="8" fill="0" indent="0" use-parent-layout="false"/>
-        </constraints>
-        <properties>
-          <text value="Label"/>
-        </properties>
-      </component>
-      <component id="211ce" class="javax.swing.JLabel" binding="labDatumNarodenia">
-        <constraints>
-          <grid row="5" column="1" row-span="1" col-span="4" vsize-policy="0" hsize-policy="0" anchor="8" fill="0" indent="0" use-parent-layout="false"/>
-        </constraints>
-        <properties>
-          <text value="Label"/>
-        </properties>
-      </component>
-      <component id="7ce36" class="javax.swing.JLabel" binding="labTelefonneCislo">
-        <constraints>
-          <grid row="6" column="1" row-span="1" col-span="4" vsize-policy="0" hsize-policy="0" anchor="8" fill="0" indent="0" use-parent-layout="false"/>
-        </constraints>
-        <properties>
-          <text value="Label"/>
-        </properties>
-      </component>
-      <component id="3a7da" class="javax.swing.JLabel" binding="labDatumRegistracie">
-        <constraints>
-          <grid row="7" column="1" row-span="1" col-span="4" vsize-policy="0" hsize-policy="0" anchor="8" fill="0" indent="0" use-parent-layout="false"/>
-        </constraints>
-        <properties>
-          <text value="Label"/>
-        </properties>
-      </component>
-      <component id="87d4a" class="javax.swing.JButton" binding="zatvoritButton">
-        <constraints>
-          <grid row="10" column="1" row-span="1" col-span="1" vsize-policy="0" hsize-policy="3" anchor="0" fill="1" indent="0" use-parent-layout="false"/>
-        </constraints>
-        <properties>
-          <text value="Button"/>
-        </properties>
-      </component>
-      <component id="9b52a" class="javax.swing.JLabel" binding="labPermanentkaStav">
-        <constraints>
-          <grid row="8" column="1" row-span="1" col-span="1" vsize-policy="0" hsize-policy="0" anchor="8" fill="0" indent="0" use-parent-layout="false"/>
-        </constraints>
-        <properties>
-          <text value="Label"/>
-        </properties>
-      </component>
-      <component id="8a2df" class="javax.swing.JLabel" binding="labPlatnostPermanentky">
-        <constraints>
-          <grid row="9" column="1" row-span="1" col-span="1" vsize-policy="0" hsize-policy="0" anchor="8" fill="0" indent="0" use-parent-layout="false"/>
-        </constraints>
-        <properties>
-          <text value="Label"/>
-        </properties>
-      </component>
-      <component id="310ed" class="javax.swing.JLabel" binding="labVek">
-        <constraints>
-          <grid row="2" column="1" row-span="1" col-span="1" vsize-policy="0" hsize-policy="0" anchor="8" fill="0" indent="0" use-parent-layout="false"/>
-        </constraints>
-        <properties>
-          <text value="Label"/>
-        </properties>
-      </component>
-      <component id="77086" class="javax.swing.JButton" binding="predlzitPermanentkuButton">
-        <constraints>
-          <grid row="10" column="2" row-span="1" col-span="1" vsize-policy="0" hsize-policy="3" anchor="0" fill="1" indent="0" use-parent-layout="false"/>
-        </constraints>
-        <properties>
-          <text value="Button"/>
-        </properties>
-      </component>
-      <component id="ebcb1" class="javax.swing.JButton" binding="historiaKlientaButton">
-        <constraints>
-          <grid row="10" column="3" row-span="1" col-span="1" vsize-policy="0" hsize-policy="3" anchor="0" fill="1" indent="0" use-parent-layout="false"/>
-        </constraints>
-        <properties>
-          <text value="Button"/>
-        </properties>
-      </component>
-      <component id="1dbca" class="javax.swing.JButton" binding="upravitButton">
-        <constraints>
-          <grid row="10" column="4" row-span="1" col-span="1" vsize-policy="0" hsize-policy="3" anchor="0" fill="1" indent="0" use-parent-layout="false"/>
-        </constraints>
-        <properties>
-          <text value="Button"/>
-        </properties>
-      </component>
-      <component id="d8109" class="javax.swing.JTextField" binding="upravitKrstneMeno">
-        <constraints>
-          <grid row="0" column="0" row-span="1" col-span="1" vsize-policy="0" hsize-policy="6" anchor="8" fill="1" indent="0" use-parent-layout="false">
-            <preferred-size width="150" height="-1"/>
-          </grid>
+          <grid row="4" column="1" row-span="1" col-span="3" vsize-policy="3" hsize-policy="3" anchor="1" fill="1" indent="0" use-parent-layout="false"/>
         </constraints>
         <properties/>
-      </component>
-      <component id="51c0a" class="javax.swing.JTextField" binding="upravitPriezvisko">
-        <constraints>
-          <grid row="1" column="0" row-span="1" col-span="1" vsize-policy="0" hsize-policy="6" anchor="8" fill="1" indent="0" use-parent-layout="false">
-            <preferred-size width="150" height="-1"/>
+        <border type="bevel-lowered" title="">
+          <title-color color="-2104859"/>
+        </border>
+        <children>
+          <component id="51c0a" class="javax.swing.JTextField" binding="upravitPriezvisko">
+            <constraints>
+              <grid row="1" column="3" row-span="1" col-span="1" vsize-policy="0" hsize-policy="0" anchor="8" fill="1" indent="0" use-parent-layout="false">
+                <preferred-size width="145" height="-1"/>
+              </grid>
+            </constraints>
+            <properties>
+              <font size="13"/>
+            </properties>
+          </component>
+          <component id="471fe" class="javax.swing.JLabel" binding="labPriezvisko">
+            <constraints>
+              <grid row="1" column="0" row-span="1" col-span="1" vsize-policy="0" hsize-policy="0" anchor="8" fill="0" indent="0" use-parent-layout="false"/>
+            </constraints>
+            <properties>
+              <font size="13" style="1"/>
+              <text value="Priezvisko"/>
+            </properties>
+          </component>
+          <component id="310ed" class="javax.swing.JLabel" binding="labVek">
+            <constraints>
+              <grid row="2" column="0" row-span="1" col-span="1" vsize-policy="0" hsize-policy="0" anchor="8" fill="0" indent="0" use-parent-layout="false"/>
+            </constraints>
+            <properties>
+              <font size="13" style="1"/>
+              <text value="Vek"/>
+            </properties>
+          </component>
+          <component id="3f490" class="javax.swing.JLabel" binding="labKrstneMeno">
+            <constraints>
+              <grid row="0" column="0" row-span="1" col-span="1" vsize-policy="0" hsize-policy="0" anchor="8" fill="0" indent="0" use-parent-layout="false"/>
+            </constraints>
+            <properties>
+              <font size="13" style="1"/>
+              <text value="Krstné meno"/>
+            </properties>
+          </component>
+          <component id="5d093" class="javax.swing.JLabel" binding="labAdresa">
+            <constraints>
+              <grid row="3" column="0" row-span="1" col-span="1" vsize-policy="0" hsize-policy="0" anchor="9" fill="0" indent="0" use-parent-layout="false"/>
+            </constraints>
+            <properties>
+              <font size="13" style="1"/>
+              <text value="Adresa"/>
+            </properties>
+          </component>
+          <component id="cb2ca" class="javax.swing.JLabel" binding="labEmail">
+            <constraints>
+              <grid row="4" column="0" row-span="1" col-span="1" vsize-policy="0" hsize-policy="0" anchor="8" fill="0" indent="0" use-parent-layout="false"/>
+            </constraints>
+            <properties>
+              <font size="13" style="1"/>
+              <text value="Email"/>
+            </properties>
+          </component>
+          <component id="a8bf9" class="javax.swing.JTextField" binding="txtVek">
+            <constraints>
+              <grid row="2" column="3" row-span="1" col-span="1" vsize-policy="0" hsize-policy="0" anchor="8" fill="1" indent="0" use-parent-layout="false">
+                <preferred-size width="150" height="-1"/>
+              </grid>
+            </constraints>
+            <properties>
+              <font size="13"/>
+            </properties>
+          </component>
+          <component id="870e9" class="javax.swing.JTextField" binding="upravitDatumNarodenia">
+            <constraints>
+              <grid row="5" column="3" row-span="1" col-span="1" vsize-policy="0" hsize-policy="0" anchor="8" fill="1" indent="0" use-parent-layout="false">
+                <preferred-size width="150" height="-1"/>
+              </grid>
+            </constraints>
+            <properties>
+              <font size="13"/>
+            </properties>
+          </component>
+          <component id="211ce" class="javax.swing.JLabel" binding="labDatumNarodenia">
+            <constraints>
+              <grid row="5" column="0" row-span="1" col-span="1" vsize-policy="0" hsize-policy="0" anchor="8" fill="0" indent="0" use-parent-layout="false"/>
+            </constraints>
+            <properties>
+              <font size="13" style="1"/>
+              <horizontalAlignment value="11"/>
+              <text value="Dátum narodenia"/>
+            </properties>
+          </component>
+          <component id="73f72" class="javax.swing.JTextField" binding="upravitTelefonneCislo">
+            <constraints>
+              <grid row="6" column="3" row-span="1" col-span="1" vsize-policy="0" hsize-policy="0" anchor="8" fill="1" indent="0" use-parent-layout="false">
+                <preferred-size width="150" height="-1"/>
+              </grid>
+            </constraints>
+            <properties>
+              <font size="13"/>
+            </properties>
+          </component>
+          <component id="7ce36" class="javax.swing.JLabel" binding="labTelefonneCislo">
+            <constraints>
+              <grid row="6" column="0" row-span="1" col-span="1" vsize-policy="0" hsize-policy="0" anchor="8" fill="0" indent="0" use-parent-layout="false"/>
+            </constraints>
+            <properties>
+              <font size="13" style="1"/>
+              <text value="Telefónne číslo"/>
+            </properties>
+          </component>
+          <component id="87293" class="javax.swing.JTextField" binding="txtDatumRegistracie">
+            <constraints>
+              <grid row="7" column="3" row-span="1" col-span="1" vsize-policy="0" hsize-policy="4" anchor="8" fill="1" indent="0" use-parent-layout="false">
+                <preferred-size width="145" height="-1"/>
+              </grid>
+            </constraints>
+            <properties>
+              <font size="13"/>
+            </properties>
+          </component>
+          <component id="3a7da" class="javax.swing.JLabel" binding="labDatumRegistracie">
+            <constraints>
+              <grid row="7" column="0" row-span="1" col-span="1" vsize-policy="0" hsize-policy="0" anchor="8" fill="0" indent="0" use-parent-layout="false"/>
+            </constraints>
+            <properties>
+              <font size="13" style="1"/>
+              <text value="Dátum registrácie"/>
+            </properties>
+          </component>
+          <component id="b9aae" class="javax.swing.JTextField" binding="upravitEmail">
+            <constraints>
+              <grid row="4" column="3" row-span="1" col-span="1" vsize-policy="0" hsize-policy="0" anchor="8" fill="1" indent="0" use-parent-layout="false">
+                <preferred-size width="150" height="-1"/>
+              </grid>
+            </constraints>
+            <properties>
+              <font size="13"/>
+            </properties>
+          </component>
+          <component id="d8109" class="javax.swing.JTextField" binding="upravitKrstneMeno">
+            <constraints>
+              <grid row="0" column="3" row-span="1" col-span="1" vsize-policy="0" hsize-policy="0" anchor="8" fill="1" indent="0" use-parent-layout="false">
+                <preferred-size width="145" height="-1"/>
+              </grid>
+            </constraints>
+            <properties>
+              <font size="13"/>
+            </properties>
+          </component>
+          <vspacer id="ec379">
+            <constraints>
+              <grid row="0" column="1" row-span="8" col-span="1" vsize-policy="6" hsize-policy="1" anchor="4" fill="2" indent="0" use-parent-layout="false">
+                <preferred-size width="10" height="-1"/>
+              </grid>
+            </constraints>
+          </vspacer>
+          <grid id="4eacb" layout-manager="GridLayoutManager" row-count="1" column-count="1" same-size-horizontally="false" same-size-vertically="false" hgap="-1" vgap="-1">
+            <margin top="0" left="0" bottom="0" right="0"/>
+            <constraints>
+              <grid row="3" column="3" row-span="1" col-span="1" vsize-policy="7" hsize-policy="7" anchor="0" fill="3" indent="0" use-parent-layout="false"/>
+            </constraints>
+            <properties/>
+            <border type="none"/>
+            <children>
+              <scrollpane id="60005" binding="JSrollPane">
+                <constraints>
+                  <grid row="0" column="0" row-span="1" col-span="1" vsize-policy="7" hsize-policy="7" anchor="0" fill="3" indent="0" use-parent-layout="false"/>
+                </constraints>
+                <properties>
+                  <horizontalScrollBarPolicy value="31"/>
+                  <verticalScrollBarPolicy value="20"/>
+                </properties>
+                <border type="none"/>
+                <children>
+                  <component id="65cac" class="javax.swing.JTextArea" binding="upravitAdresa">
+                    <constraints/>
+                    <properties>
+                      <columns value="0"/>
+                      <editable value="true"/>
+                      <font size="13"/>
+                      <lineWrap value="true"/>
+                      <rows value="3"/>
+                      <text value=""/>
+                      <wrapStyleWord value="true"/>
+                    </properties>
+                  </component>
+                </children>
+              </scrollpane>
+            </children>
           </grid>
-        </constraints>
-        <properties/>
-      </component>
-      <component id="f341e" class="javax.swing.JTextField" binding="upravitAdresa">
+        </children>
+      </grid>
+      <grid id="5f4ef" binding="nadpisPanel1" layout-manager="BorderLayout" hgap="0" vgap="0">
         <constraints>
-          <grid row="3" column="0" row-span="1" col-span="1" vsize-policy="0" hsize-policy="6" anchor="8" fill="1" indent="0" use-parent-layout="false">
-            <preferred-size width="150" height="-1"/>
-          </grid>
-        </constraints>
-        <properties/>
-      </component>
-      <component id="b9aae" class="javax.swing.JTextField" binding="upravitEmail">
-        <constraints>
-          <grid row="4" column="0" row-span="1" col-span="1" vsize-policy="0" hsize-policy="6" anchor="8" fill="1" indent="0" use-parent-layout="false">
-            <preferred-size width="150" height="-1"/>
-          </grid>
-        </constraints>
-        <properties/>
-      </component>
-      <component id="870e9" class="javax.swing.JTextField" binding="upravitDatumNarodenia">
-        <constraints>
-          <grid row="5" column="0" row-span="1" col-span="1" vsize-policy="0" hsize-policy="6" anchor="8" fill="1" indent="0" use-parent-layout="false">
-            <preferred-size width="150" height="-1"/>
-          </grid>
-        </constraints>
-        <properties/>
-      </component>
-      <component id="73f72" class="javax.swing.JTextField" binding="upravitTelefonneCislo">
-        <constraints>
-          <grid row="6" column="0" row-span="1" col-span="1" vsize-policy="0" hsize-policy="6" anchor="8" fill="1" indent="0" use-parent-layout="false">
-            <preferred-size width="150" height="-1"/>
-          </grid>
-        </constraints>
-        <properties/>
-      </component>
-      <component id="3b3ec" class="javax.swing.JButton" binding="zrusitUpravyButton">
-        <constraints>
-          <grid row="6" column="5" row-span="1" col-span="1" vsize-policy="0" hsize-policy="3" anchor="0" fill="1" indent="0" use-parent-layout="false"/>
+          <grid row="0" column="0" row-span="1" col-span="4" vsize-policy="3" hsize-policy="2" anchor="0" fill="3" indent="0" use-parent-layout="false"/>
         </constraints>
         <properties>
-          <text value="Button"/>
+          <background color="-15789544"/>
         </properties>
-      </component>
-      <component id="2697" class="javax.swing.JButton" binding="vymazatKlientaButton">
+        <border type="bevel-raised"/>
+        <children>
+          <grid id="466dd" binding="nadpisLPanel" layout-manager="FlowLayout" hgap="5" vgap="5" flow-align="1">
+            <constraints border-constraint="West"/>
+            <properties>
+              <background color="-15789544"/>
+            </properties>
+            <border type="none"/>
+            <children>
+              <component id="77b58" class="javax.swing.JLabel" binding="nadpisLabel1">
+                <constraints/>
+                <properties>
+                  <font size="14"/>
+                  <foreground color="-12801326"/>
+                  <horizontalAlignment value="2"/>
+                  <text value="Údaje klienta"/>
+                  <verticalAlignment value="3"/>
+                </properties>
+              </component>
+            </children>
+          </grid>
+        </children>
+      </grid>
+      <grid id="4f0c7" binding="cyanPanel1" layout-manager="GridLayoutManager" row-count="1" column-count="1" same-size-horizontally="false" same-size-vertically="false" hgap="-1" vgap="-1">
+        <margin top="0" left="0" bottom="0" right="0"/>
         <constraints>
-          <grid row="8" column="5" row-span="1" col-span="1" vsize-policy="0" hsize-policy="3" anchor="0" fill="1" indent="0" use-parent-layout="false"/>
+          <grid row="1" column="1" row-span="1" col-span="3" vsize-policy="0" hsize-policy="3" anchor="0" fill="3" indent="0" use-parent-layout="false">
+            <preferred-size width="0" height="2"/>
+          </grid>
         </constraints>
         <properties>
-          <text value="Button"/>
+          <background color="-12801326"/>
+          <foreground color="-12801326"/>
         </properties>
-      </component>
-      <component id="d5cf" class="javax.swing.JLabel" binding="qrObrazokLabel">
+        <border type="none"/>
+        <children/>
+      </grid>
+      <grid id="5a2ee" binding="qrHlavnyPanel" layout-manager="GridLayoutManager" row-count="3" column-count="3" same-size-horizontally="false" same-size-vertically="false" hgap="-1" vgap="-1">
+        <margin top="20" left="20" bottom="10" right="20"/>
         <constraints>
-          <grid row="4" column="5" row-span="1" col-span="1" vsize-policy="0" hsize-policy="0" anchor="8" fill="0" indent="0" use-parent-layout="false"/>
+          <grid row="2" column="8" row-span="3" col-span="5" vsize-policy="3" hsize-policy="3" anchor="0" fill="3" indent="0" use-parent-layout="false"/>
+        </constraints>
+        <properties/>
+        <border type="bevel-raised">
+          <title-color color="-2104859"/>
+          <size top="10" left="20" bottom="2" right="0"/>
+        </border>
+        <children>
+          <component id="3b8e" class="javax.swing.JTextField" binding="txtPermanentkaStav">
+            <constraints>
+              <grid row="1" column="1" row-span="1" col-span="2" vsize-policy="0" hsize-policy="4" anchor="8" fill="1" indent="0" use-parent-layout="false">
+                <preferred-size width="200" height="-1"/>
+              </grid>
+            </constraints>
+            <properties>
+              <font size="13"/>
+              <horizontalAlignment value="2"/>
+            </properties>
+          </component>
+          <component id="9b52a" class="javax.swing.JLabel" binding="labPermanentkaStav">
+            <constraints>
+              <grid row="1" column="0" row-span="1" col-span="1" vsize-policy="0" hsize-policy="0" anchor="8" fill="0" indent="0" use-parent-layout="false"/>
+            </constraints>
+            <properties>
+              <font size="13" style="1"/>
+              <text value="Stav permanentky:"/>
+            </properties>
+          </component>
+          <component id="97e1e" class="javax.swing.JTextField" binding="txtPlatnostPermanentky">
+            <constraints>
+              <grid row="2" column="1" row-span="1" col-span="2" vsize-policy="0" hsize-policy="4" anchor="8" fill="1" indent="0" use-parent-layout="false">
+                <preferred-size width="200" height="-1"/>
+              </grid>
+            </constraints>
+            <properties>
+              <font size="13"/>
+              <horizontalAlignment value="2"/>
+            </properties>
+          </component>
+          <component id="8a2df" class="javax.swing.JLabel" binding="labPlatnostPermanentky">
+            <constraints>
+              <grid row="2" column="0" row-span="1" col-span="1" vsize-policy="0" hsize-policy="0" anchor="8" fill="0" indent="0" use-parent-layout="false"/>
+            </constraints>
+            <properties>
+              <font size="13" style="1"/>
+              <text value="Platnosť permanentky:"/>
+            </properties>
+          </component>
+          <grid id="e3e0" binding="qrObrazokPanel" layout-manager="BorderLayout" hgap="0" vgap="0">
+            <constraints>
+              <grid row="0" column="0" row-span="1" col-span="3" vsize-policy="3" hsize-policy="3" anchor="0" fill="3" indent="0" use-parent-layout="false">
+                <preferred-size width="8" height="10"/>
+              </grid>
+            </constraints>
+            <properties/>
+            <border type="line">
+              <font/>
+              <title-color color="-2104859"/>
+              <size top="0" left="0" bottom="0" right="0"/>
+              <color color="-12801326"/>
+            </border>
+            <children>
+              <component id="d5cf" class="javax.swing.JLabel" binding="qrObrazokLabel">
+                <constraints border-constraint="Center"/>
+                <properties>
+                  <horizontalAlignment value="0"/>
+                  <horizontalTextPosition value="0"/>
+                  <text value="- QR -"/>
+                  <verticalAlignment value="0"/>
+                </properties>
+              </component>
+            </children>
+          </grid>
+        </children>
+      </grid>
+      <grid id="36270" binding="buttonPanel" layout-manager="GridBagLayout">
+        <constraints>
+          <grid row="6" column="1" row-span="1" col-span="8" vsize-policy="0" hsize-policy="0" anchor="0" fill="3" indent="0" use-parent-layout="false">
+            <preferred-size width="700" height="40"/>
+          </grid>
         </constraints>
         <properties>
-          <text value="Label"/>
+          <background color="-15061696"/>
         </properties>
-      </component>
-      <component id="45c62" class="javax.swing.JButton" binding="znovaGenerovatQrButton">
+        <border type="line">
+          <size top="1" left="0" bottom="12" right="0"/>
+          <color color="-12801326"/>
+        </border>
+        <children>
+          <component id="ebcb1" class="javax.swing.JButton" binding="historiaKlientaButton">
+            <constraints>
+              <grid row="0" column="3" row-span="1" col-span="1" vsize-policy="0" hsize-policy="3" anchor="0" fill="1" indent="0" use-parent-layout="false">
+                <preferred-size width="31" height="32"/>
+              </grid>
+              <gridbag weightx="0.1" weighty="1.0"/>
+            </constraints>
+            <properties>
+              <text value="História klienta"/>
+            </properties>
+          </component>
+          <component id="2697" class="javax.swing.JButton" binding="vymazatKlientaButton">
+            <constraints>
+              <grid row="0" column="5" row-span="1" col-span="1" vsize-policy="0" hsize-policy="3" anchor="0" fill="1" indent="0" use-parent-layout="false"/>
+              <gridbag weightx="0.0" weighty="0.0"/>
+            </constraints>
+            <properties>
+              <hideActionText value="false"/>
+              <text value="Vymazať klienta"/>
+            </properties>
+          </component>
+          <component id="45c62" class="javax.swing.JButton" binding="znovaGenerovatQrButton">
+            <constraints>
+              <grid row="0" column="4" row-span="1" col-span="1" vsize-policy="0" hsize-policy="3" anchor="0" fill="1" indent="0" use-parent-layout="false"/>
+              <gridbag weightx="0.0" weighty="0.0"/>
+            </constraints>
+            <properties>
+              <text value="Znovu vygenerovať QR"/>
+            </properties>
+          </component>
+          <component id="3b3ec" class="javax.swing.JButton" binding="zrusitUpravyButton">
+            <constraints>
+              <grid row="0" column="6" row-span="1" col-span="1" vsize-policy="0" hsize-policy="3" anchor="0" fill="1" indent="0" use-parent-layout="false">
+                <preferred-size width="214" height="32"/>
+              </grid>
+              <gridbag weightx="0.0" weighty="0.0"/>
+            </constraints>
+            <properties>
+              <text value="Zrušiť úpravy"/>
+            </properties>
+          </component>
+          <component id="87d4a" class="javax.swing.JButton" binding="zatvoritButton">
+            <constraints>
+              <grid row="0" column="7" row-span="1" col-span="1" vsize-policy="0" hsize-policy="3" anchor="0" fill="1" indent="0" use-parent-layout="false"/>
+              <gridbag weightx="0.0" weighty="0.0"/>
+            </constraints>
+            <properties>
+              <text value="Zatvoriť"/>
+            </properties>
+          </component>
+          <component id="1dbca" class="javax.swing.JButton" binding="upravitButton">
+            <constraints>
+              <grid row="0" column="0" row-span="1" col-span="1" vsize-policy="0" hsize-policy="3" anchor="0" fill="1" indent="0" use-parent-layout="false"/>
+              <gridbag weightx="0.1" weighty="0.0"/>
+            </constraints>
+            <properties>
+              <text value="Upraviť klienta"/>
+            </properties>
+          </component>
+          <component id="c491f" class="javax.swing.JButton" binding="vytlacitQrButton">
+            <constraints>
+              <grid row="0" column="1" row-span="1" col-span="1" vsize-policy="0" hsize-policy="3" anchor="0" fill="1" indent="0" use-parent-layout="false"/>
+              <gridbag weightx="0.1" weighty="0.0"/>
+            </constraints>
+            <properties>
+              <text value="Vytlačiť QR"/>
+            </properties>
+          </component>
+          <component id="77086" class="javax.swing.JButton" binding="predlzitPermanentkuButton">
+            <constraints>
+              <grid row="0" column="2" row-span="1" col-span="1" vsize-policy="0" hsize-policy="3" anchor="0" fill="1" indent="0" use-parent-layout="false">
+                <preferred-size width="214" height="32"/>
+              </grid>
+              <gridbag weightx="0.1" weighty="0.0"/>
+            </constraints>
+            <properties>
+              <text value="Predĺžiť permanentku"/>
+            </properties>
+          </component>
+        </children>
+      </grid>
+      <grid id="174f0" binding="nadpisPanel2" layout-manager="BorderLayout" hgap="0" vgap="0">
         <constraints>
-          <grid row="10" column="5" row-span="1" col-span="1" vsize-policy="0" hsize-policy="3" anchor="0" fill="1" indent="0" use-parent-layout="false"/>
+          <grid row="0" column="7" row-span="1" col-span="6" vsize-policy="3" hsize-policy="2" anchor="0" fill="3" indent="0" use-parent-layout="false"/>
         </constraints>
         <properties>
-          <text value="Znovu vygenerovať QR"/>
+          <background color="-15789544"/>
         </properties>
-      </component>
-      <component id="c491f" class="javax.swing.JButton" binding="vytlacitQrButton">
+        <border type="bevel-raised"/>
+        <children>
+          <grid id="cd58e" binding="nadpisPPanel" layout-manager="FlowLayout" hgap="5" vgap="5" flow-align="1">
+            <constraints border-constraint="West"/>
+            <properties>
+              <background color="-15789544"/>
+            </properties>
+            <border type="none"/>
+            <children>
+              <component id="8b334" class="javax.swing.JLabel" binding="nadpisLabel2">
+                <constraints/>
+                <properties>
+                  <font size="14"/>
+                  <foreground color="-12801326"/>
+                  <text value="QR klienta"/>
+                </properties>
+              </component>
+            </children>
+          </grid>
+        </children>
+      </grid>
+      <grid id="262a7" binding="cyanPanel2" layout-manager="GridBagLayout">
         <constraints>
-          <grid row="10" column="0" row-span="1" col-span="1" vsize-policy="0" hsize-policy="3" anchor="0" fill="1" indent="0" use-parent-layout="false"/>
+          <grid row="1" column="7" row-span="1" col-span="6" vsize-policy="0" hsize-policy="3" anchor="0" fill="3" indent="0" use-parent-layout="false">
+            <preferred-size width="0" height="2"/>
+          </grid>
         </constraints>
         <properties>
-          <text value="Vytlačiť QR"/>
+          <background color="-12801326"/>
+          <foreground color="-12801326"/>
         </properties>
-      </component>
+        <border type="none"/>
+        <children/>
+      </grid>
+      <grid id="d8b2a" binding="stlpec" layout-manager="GridLayoutManager" row-count="1" column-count="1" same-size-horizontally="false" same-size-vertically="false" hgap="-1" vgap="-1">
+        <margin top="0" left="0" bottom="0" right="0"/>
+        <constraints>
+          <grid row="0" column="5" row-span="5" col-span="1" vsize-policy="1" hsize-policy="1" anchor="0" fill="3" indent="0" use-parent-layout="false"/>
+        </constraints>
+        <properties>
+          <background color="-14999511"/>
+        </properties>
+        <border type="line" title-justification="2"/>
+        <children/>
+      </grid>
+      <vspacer id="ccaf3">
+        <constraints>
+          <grid row="3" column="1" row-span="1" col-span="1" vsize-policy="6" hsize-policy="1" anchor="0" fill="2" indent="0" use-parent-layout="false"/>
+        </constraints>
+      </vspacer>
     </children>
   </grid>
 </form>
