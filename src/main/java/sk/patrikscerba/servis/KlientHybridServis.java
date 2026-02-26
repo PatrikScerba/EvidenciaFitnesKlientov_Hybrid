@@ -7,7 +7,6 @@ import sk.patrikscerba.io.xml.XMLNacitanieServis;
 import sk.patrikscerba.io.xml.XMLZapisServis;
 import sk.patrikscerba.model.Klient;
 import sk.patrikscerba.system.SystemRezim;
-import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
 
@@ -112,39 +111,6 @@ public class KlientHybridServis {
 
             appLog.error("Nekonzistencia: klient zmazany z DB, ale nenasiel sa v XML | klientId=" + id);
             throw new IllegalStateException("Klient sa nenašiel v XML.");
-        }
-
-        return true;
-    }
-
-    // Nastavenie platnosti permanentky je povolené len v online režime
-    public boolean nastavPermanentkuPlatnuDo(Long klientId, LocalDate platnaDo) {
-
-        if (SystemRezim.isOffline()) {
-            throw new IllegalStateException("Nastavenie permanentky nie je možné v offline režime.");
-        }
-        var klientOptional = klientDao.najdiKlientaPodlaId(klientId);
-
-        // Skontroluj, či je klient registrovaný
-        if (klientOptional.isEmpty() || klientOptional.get().getDatumRegistracie() == null) {
-            throw new IllegalStateException("Klient nie je registrovaný – nemožno priradiť permanentku.");
-        }
-        Klient klient = klientOptional.get();
-
-        // Aktualizuj platnosť permanentky v databáze
-        boolean databazaOnlineOk = klientDao.aktualizujPermanentkuPlatnuDo(klientId, platnaDo);
-
-        if (!databazaOnlineOk) {
-            appLog.warn("Databaza neaktualizovala platnost permanentky, zrusenie operacie | klientId=" + klientId);
-            return false;
-        }
-        klient.setPermanentkaPlatnaDo(platnaDo);
-
-        try {
-            xmlZapisServis.aktualizujKlientaVXml(klient);
-        } catch (IllegalStateException e) {
-            appLog.error("Chyba pri aktualizacii permanentky v XML | klientId=" + klientId, e);
-            throw new IllegalStateException("Chyba pri aktualizácii permanentky v XML.", e);
         }
 
         return true;

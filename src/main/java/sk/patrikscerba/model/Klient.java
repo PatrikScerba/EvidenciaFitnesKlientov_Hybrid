@@ -2,7 +2,6 @@ package sk.patrikscerba.model;
 
 import java.time.LocalDate;
 import java.time.Period;
-import java.time.format.DateTimeFormatter;
 
 
 public class Klient {
@@ -18,9 +17,6 @@ public class Klient {
     private LocalDate permanentkaPlatnaDo;
     private String qrCesta;
     private String qrToken;
-
-    private static final DateTimeFormatter FORMATTER = DateTimeFormatter.ofPattern("dd.MM.yyyy");
-
 
     public Klient() {
     }

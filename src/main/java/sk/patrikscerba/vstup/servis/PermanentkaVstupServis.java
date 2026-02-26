@@ -26,17 +26,6 @@ public class PermanentkaVstupServis {
         return zaklad.plusDays(dni);
     }
 
-    //vypočíta nový dátum platnosti pri predĺžení o mesiace
-    public LocalDate predlzOMesiace(LocalDate platnaDo, int mesiace) {
-        LocalDate dnes = LocalDate.now();
-
-        LocalDate zaklad =
-                (platnaDo != null && !platnaDo.isBefore(dnes)) ?
-                        platnaDo :
-                        dnes;
-
-        return zaklad.plusMonths(mesiace);
-    }
     // vypočíta, koľko dní zostáva (môže byť aj záporné)
     public long zostavaDni(LocalDate platnaDo) {
         if (platnaDo == null) {

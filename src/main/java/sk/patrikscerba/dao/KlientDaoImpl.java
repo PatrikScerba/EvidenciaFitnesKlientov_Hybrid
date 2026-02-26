@@ -43,9 +43,9 @@ public class KlientDaoImpl implements KlientDao {
             preparedStatement.setString(5, klient.getAdresa());
             preparedStatement.setString(6, klient.getEmail());
 
-            int rows=preparedStatement.executeUpdate();
+            int rows = preparedStatement.executeUpdate();
 
-            if(rows==0){
+            if (rows == 0) {
 
                 applog.warn("INSERT klienta nevlozil riadok (0 rows) | email=" + klient.getEmail());
                 throw new IllegalStateException("Klient sa neuložil (0 riadkov).");
@@ -70,7 +70,7 @@ public class KlientDaoImpl implements KlientDao {
     @Override
     public Optional<Klient> najdiKlientaPodlaId(Long id) {
 
-        String sql =  "SELECT * FROM klienti WHERE id = ?" ;
+        String sql = "SELECT * FROM klienti WHERE id = ?";
 
         try (Connection connection = databazaPripojenie.getConnection();
              PreparedStatement preparedStatement = connection.prepareStatement(sql)) {
@@ -214,26 +214,6 @@ public class KlientDaoImpl implements KlientDao {
 
     }
 
-    // Overí, či klient s daným ID existuje v DB
-    public boolean existujeKlient(long klientId) {
-
-        String sql = "SELECT 1 FROM klienti WHERE id = ? LIMIT 1";
-
-        try (Connection connection = databazaPripojenie.getConnection();
-             PreparedStatement ps = connection.prepareStatement(sql)) {
-
-            ps.setLong(1, klientId);
-
-            try (ResultSet rs = ps.executeQuery()) {
-                return rs.next(); // true = existuje
-            }
-
-        } catch (SQLException e) {
-            applog.error("Chyba pri overeni klienta v DB: ", e);
-            throw new IllegalStateException("Chyba pri overení existencie klienta v DB.", e);
-        }
-    }
-
     // Načíta len krstné meno a priezvisko klienta podľa ID (použité pre logovanie)
     public Klient nacitajIdentituKlienta(Long klientId) {
         String sql = "SELECT krstne_meno, priezvisko, qr_token FROM klienti WHERE id = ? LIMIT 1";
@@ -304,7 +284,6 @@ public class KlientDaoImpl implements KlientDao {
             throw new IllegalStateException("Chyba pri načítaní platnosti permanentky z DB.", e);
         }
     }
-
 
     // Aktualizuje cestu k QR kódu klienta podľa ID
     @Override

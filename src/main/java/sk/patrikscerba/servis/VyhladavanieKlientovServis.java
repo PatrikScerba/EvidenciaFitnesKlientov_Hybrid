@@ -8,10 +8,9 @@ import java.util.List;
 public class VyhladavanieKlientovServis {
 
     private final KlientHybridServis klientHybridServis = new KlientHybridServis();
-    private  final ValidaciaKlientaServis validaciaKlientaServis = new ValidaciaKlientaServis();
 
     // Vyhľadávanie klientov podľa mena alebo priezviska
-    public  List<Klient>vyhladaj(String meno, String priezvisko) {
+    public List<Klient> vyhladaj(String meno, String priezvisko) {
 
         String hladaneMeno = ValidaciaKlientaServis.normalizujText(meno);
         String hladanePriezvisko = ValidaciaKlientaServis.normalizujText(priezvisko);
@@ -39,10 +38,10 @@ public class VyhladavanieKlientovServis {
                 zhoda = menoZhoda && priezviskoZhoda;
             }
 
-            if (zhoda){
+            if (zhoda) {
                 zhodniKlienti.add(k);
+            }
         }
-    }
         return zhodniKlienti;
     }
 }

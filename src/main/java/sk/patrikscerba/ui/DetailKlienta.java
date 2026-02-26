@@ -123,7 +123,6 @@ public class DetailKlienta extends JFrame {
         if (labDatumNarodenia != null) labDatumNarodenia.setText("Dátum narodenia:");
         if (labDatumRegistracie != null) labDatumRegistracie.setText("Dátum registrácie:");
         if (labVek != null) labVek.setText("Vek:");
-
     }
 
     // Načítanie klienta podľa ID, ak neexistuje, zavrie okno
@@ -369,30 +368,6 @@ public class DetailKlienta extends JFrame {
         }
     }
 
-    // Zobrazí údaje klienta v labeloch
-    private void zobrazUdaje(Klient klient) {
-        labKrstneMeno.setText("Meno: " + klient.getKrstneMeno());
-        labPriezvisko.setText("Priezvisko: " + klient.getPriezvisko());
-        labVek.setText("Vek: " + klient.getVek());
-        labEmail.setText("Email: " + klient.getEmail());
-        labAdresa.setText("Adresa: " + klient.getAdresa());
-        labTelefonneCislo.setText("Telefónne číslo: " + klient.getTelefonneCislo());
-
-        if (klient.getDatumNarodenia() != null) {
-            labDatumNarodenia.setText("Dátum narodenia: " + klient.getDatumNarodenia().format(FORMATTER));
-        } else {
-            labDatumNarodenia.setText("Dátum narodenia: -");
-        }
-
-        if (klient.getDatumRegistracie() != null) {
-            labDatumRegistracie.setText("Dátum registrácie: " + klient.getDatumRegistracie().format(FORMATTER));
-        } else {
-            labDatumRegistracie.setText("Dátum registrácie: -");
-        }
-
-        obnovZobrazeniePermanentky(klient);
-    }
-
     // Obnoví zobrazenie stavu permanentky podľa aktuálnych údajov klienta
     private void obnovZobrazeniePermanentky(Klient klient) {
         PermanentkaVstupServis permanentkaServis = new PermanentkaVstupServis();
@@ -551,13 +526,4 @@ public class DetailKlienta extends JFrame {
         }
     }
 }
-
-
-
-
-
-
-
-
-
 
