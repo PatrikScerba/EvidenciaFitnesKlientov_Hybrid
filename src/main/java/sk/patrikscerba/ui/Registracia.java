@@ -6,7 +6,7 @@ import sk.patrikscerba.servis.KlientHybridServis;
 import sk.patrikscerba.servis.RegistraciaKlientaServis;
 import javax.swing.*;
 
-// Okno pre registráciu nového klienta
+// UI okno pre registráciu nového klienta
 public class Registracia extends JFrame {
 
     private final AppLogServis appLog = new AppLogServis();

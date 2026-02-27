@@ -3,10 +3,10 @@ package sk.patrikscerba.vstup.servis;
 import java.time.LocalDate;
 import java.time.temporal.ChronoUnit;
 
-//logika pre kontrolu a predlžovanie platnosti permanentky klienta pri vstupe
+// Logika pre kontrolu a predlžovanie platnosti permanentky klienta pri vstupe
 public class PermanentkaVstupServis {
 
-    //kontrola platnosti permanentky
+    // Kontrola platnosti permanentky
     public boolean jePlatnaPermanentka(LocalDate platnaDo) {
         if (platnaDo == null) {
             return false;
@@ -14,7 +14,7 @@ public class PermanentkaVstupServis {
         return !platnaDo.isBefore(LocalDate.now());
     }
 
-    // vypočíta nový dátum platnosti pri predĺžení o X dní
+    // Vypočíta nový dátum platnosti pri predĺžení o X dní
     public LocalDate predlzODni(LocalDate platnaDo, int dni) {
         LocalDate dnes = LocalDate.now();
 
@@ -26,7 +26,7 @@ public class PermanentkaVstupServis {
         return zaklad.plusDays(dni);
     }
 
-    // vypočíta, koľko dní zostáva (môže byť aj záporné)
+    // Vypočíta, koľko dní zostáva (môže byť aj záporné)
     public long zostavaDni(LocalDate platnaDo) {
         if (platnaDo == null) {
             return 0;

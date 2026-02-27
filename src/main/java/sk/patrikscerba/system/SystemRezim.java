@@ -1,5 +1,6 @@
 package sk.patrikscerba.system;
 
+// Trieda spravujúca aktuálny režim systému (offline / online).
 public class SystemRezim {
 
     // ak je true → systém je v offline režime

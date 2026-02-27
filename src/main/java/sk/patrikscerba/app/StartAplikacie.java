@@ -9,12 +9,12 @@ import sk.patrikscerba.ui.HlavneOkno;
 import javax.swing.*;
 import java.awt.*;
 
-
 // Trieda zabezpečí správny štart aplikácie
 public class StartAplikacie {
 
     private static final AppLogServis appLog = new AppLogServis();
 
+    // Vykoná inicializáciu prostredia a spustí hlavné okno aplikácie
     public static  void spusti(){
 
         nastavVzhlad();

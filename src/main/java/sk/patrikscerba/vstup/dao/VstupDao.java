@@ -9,7 +9,7 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.time.LocalDate;
 
-
+// DAO pre zápis a overovanie vstupov klientov v databáze
 public class VstupDao {
 
     private final AppLogServis appLog = new AppLogServis();

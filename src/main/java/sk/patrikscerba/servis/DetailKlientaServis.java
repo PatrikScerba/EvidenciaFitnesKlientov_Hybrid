@@ -25,12 +25,12 @@ public class DetailKlientaServis {
         this.klientHybridServis = klientHybridServis;
     }
 
-    //Načítanie detail klienta podľa ID
+    // Načítanie detail klienta podľa ID
     public Optional<Klient> nacitajDetailKlienta(Long klientId) {
         return klientHybridServis.najdiKlientaPodlaId(klientId);
     }
 
-    //Uloženie úprav klienta s validáciou vstupných údajov
+    // Uloženie úprav klienta s validáciou vstupných údajov
     public void ulozUpravyKlienta(
             Long klientId,
             String krstneMeno,

@@ -11,7 +11,6 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 
-
 // Servisná trieda pre generovanie a ukladanie QR kódov
 public class QrServis {
 
@@ -25,6 +24,7 @@ public class QrServis {
         pripravPriecinok();
     }
 
+    // Zabezpečí existenciu priečinka pre ukladanie QR kódov
     private void pripravPriecinok() {
 
         try {

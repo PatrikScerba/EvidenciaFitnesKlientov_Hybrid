@@ -19,8 +19,7 @@ import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.util.Optional;
 
-// UI: Okno DetailKlienta je v procese redizajnu (upravuje sa rozloženie, práca s poliami a panelmi)
-// Trieda slúži len  na zobrazenie detailov klienta
+// UI okno pre kompletnú správu klienta (údaje, permanentka, história, QR)
 public class DetailKlienta extends JFrame {
 
     private final XMLZapisServis xmlZapisServis = new XMLZapisServis();
@@ -76,14 +75,12 @@ public class DetailKlienta extends JFrame {
     private JPanel cyanPanel2;
     private JScrollPane JSrollPane;
 
-
     private Klient klient;
     private boolean rezim = false;
     private final Long klientId;
     private final DetailKlientaServis detailKlientaServis;
     private static final DateTimeFormatter FORMATTER = DateTimeFormatter.ofPattern("dd.MM.yyyy");
     private final QrVystupServis qrVystupServis = new QrVystupServis();
-
 
     // Nastavenie okna + načítanie a zobrazenie detailu klienta
     public DetailKlienta(Long klientId, DetailKlientaServis detailKlientaServis) {
@@ -96,8 +93,7 @@ public class DetailKlienta extends JFrame {
         nacitajKlientaAleboZavri();
         nastavAkcieTlacidiel();
 
-
-        //štandardne v zobrazovacom režime
+        // Štandardne v zobrazovacom režime
         nastavRezim(false);
         nastavDostupnostAkciiPodlaRezimu();
         zobrazQrObrazok();
@@ -114,6 +110,7 @@ public class DetailKlienta extends JFrame {
 
     }
 
+    // Nastavenie popisov polí v UI
     private void nastavPopisyPoli() {
         if (labKrstneMeno != null) labKrstneMeno.setText("Krstné meno:");
         if (labPriezvisko != null) labPriezvisko.setText("Priezvisko:");
@@ -169,12 +166,11 @@ public class DetailKlienta extends JFrame {
         vytlacitQrButton.addActionListener(e -> pripravQrNaTlac());
     }
 
-    //Režim zobrazenia alebo úprav
+    // Režim zobrazenia alebo úprav
     private void nastavRezim(boolean uprav) {
         rezim = uprav;
 
         nastavEditovatelnostPoli(uprav);
-
 
         predlzitPermanentkuButton.setVisible(!uprav);
         historiaKlientaButton.setVisible(!uprav);
@@ -190,6 +186,7 @@ public class DetailKlienta extends JFrame {
         mainPanel.repaint();
     }
 
+    // Nastaví editovateľnosť polí formulára podľa režimu
     private void nastavEditovatelnostPoli(boolean edit) {
         JTextComponent[] polia = {
                 upravitKrstneMeno,
@@ -207,7 +204,7 @@ public class DetailKlienta extends JFrame {
             pole.setEditable(edit);
             pole.setFocusable(edit);
 
-            // aby sa vo view režime neukazoval caret a nepôsobilo to editovateľne
+            // Skryje kurzor v režime zobrazenia
             if (!edit) {
                 pole.setCaretPosition(0);
             }
@@ -244,6 +241,7 @@ public class DetailKlienta extends JFrame {
         }
     }
 
+    // Ošetrí null hodnotu a vráti bezpečný text pre zobrazenie
     private String bezpecnyText(String s) {
         return s == null ? "" : s;
     }
@@ -313,7 +311,7 @@ public class DetailKlienta extends JFrame {
         }
     }
 
-    //Predĺženie permanentky klienta s výberom počtu dní
+    // Predĺženie permanentky klienta s výberom počtu dní
     private void predlzPermanentku() {
 
         int potvrdenie = JOptionPane.showConfirmDialog(this, "Naozaj chcete predĺžiť permanentku?", "Predĺženie permanentky", JOptionPane.YES_NO_OPTION);
@@ -391,7 +389,7 @@ public class DetailKlienta extends JFrame {
         }
     }
 
-    //Podľa režimu systému nastaví dostupnosť akcií upraviť a predĺžiť permanentku pre klienta
+    // Podľa režimu systému nastaví dostupnosť akcií upraviť a predĺžiť permanentku pre klienta
     private void nastavDostupnostAkciiPodlaRezimu() {
         boolean offline = SystemRezim.isOffline();
 

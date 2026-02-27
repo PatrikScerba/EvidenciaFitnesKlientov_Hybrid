@@ -13,6 +13,7 @@ public class LogNacitanieServis {
     private static final String LOG_SUBOR = "data/app_log.txt";
     private final AppLogServis appLog = new AppLogServis();
 
+    // Načíta riadky zo súboru systémového logu a vráti ich ako zoznam
     public List<String> nacitajRiadky() {
 
         List<String> riadky = new ArrayList<>();

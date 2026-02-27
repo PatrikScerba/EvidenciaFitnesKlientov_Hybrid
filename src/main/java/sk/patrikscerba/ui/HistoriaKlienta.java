@@ -10,7 +10,7 @@ import java.awt.*;
 import java.util.Collections;
 import java.util.List;
 
-// Okno zobrazujúce históriu vstupov konkrétneho klienta
+// UI okno zobrazujúce históriu vstupov konkrétneho klienta
 public class HistoriaKlienta extends JFrame {
 
     private final HistoriaVstupovServis historiaVstupovServis = new HistoriaVstupovServis();
@@ -44,6 +44,7 @@ public class HistoriaKlienta extends JFrame {
 
         Collections.reverse(strings);
 
+        // Zabráni úprave buniek v tabuľke (tabuľka je iba na čítanie)
         DefaultTableModel model = new DefaultTableModel() {
             @Override
             public boolean isCellEditable(int row, int column) {

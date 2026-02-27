@@ -13,6 +13,7 @@ public class QrVystupServis {
     private static final String QR_VYSTUP_SUBOR = "qr_vystup.png";
     private final AppLogServis appLog = new AppLogServis();
 
+    // Konštruktor – zabezpečí vytvorenie výstupného priečinka
     public QrVystupServis() {
         pripravPriecinok();
     }

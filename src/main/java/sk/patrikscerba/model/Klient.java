@@ -3,7 +3,7 @@ package sk.patrikscerba.model;
 import java.time.LocalDate;
 import java.time.Period;
 
-
+// Modelová trieda reprezentujúca klienta systému
 public class Klient {
 
     private Long id;
@@ -21,7 +21,7 @@ public class Klient {
     public Klient() {
     }
 
-    // konštruktor pre databázu
+    // Konštruktor pre databázu
     public Klient(Long id, String krstneMeno, String priezvisko, LocalDate datumNarodenia,
                   String telefonneCislo, String adresa, String email, LocalDate datumRegistracie, String qrCesta, String qrToken) {
         this.id = id;
@@ -37,7 +37,7 @@ public class Klient {
 
     }
 
-    // konštruktor pre registráciu nového klienta
+    // Konštruktor pre registráciu nového klienta
     public Klient(String krstneMeno, String priezvisko, LocalDate datumNarodenia,
                   String telefonneCislo, String adresa, String email) {
         this.krstneMeno = krstneMeno;
@@ -49,6 +49,7 @@ public class Klient {
 
     }
 
+    // Gettery a settery pre všetky atribúty klienta
     public Klient(Long id) {
         this.id = id;
     }
@@ -125,7 +126,7 @@ public class Klient {
         this.permanentkaPlatnaDo = permanentkaPlatnaDo;
     }
 
-    //Vypočíta sa vek a vráti vypočítaný vek klienta na základe dátumu narodenia
+    // Vypočíta sa vek a vráti vypočítaný vek klienta na základe dátumu narodenia
     public int getVek() {
         if (datumNarodenia == null) {
             return 0;

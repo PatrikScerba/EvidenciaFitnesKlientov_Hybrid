@@ -7,13 +7,13 @@ import javax.swing.table.DefaultTableModel;
 import java.util.Collections;
 import java.util.List;
 
-// Zobrazenie histórie vstupov klienta
+// UI okno zobrazujúce globálnu históriu vstupov klientov
 public class HistoriaVstupov extends JFrame {
 
     private final HistoriaVstupovServis historiaVstupovServis = new HistoriaVstupovServis();
     private final JTable tabulka = new JTable();
 
-    //História vstupov klientov
+    // Nastaví a zobrazí globálnu históriu vstupov klientov
     public HistoriaVstupov() {
         setTitle("Globálna história vstupov klientov");
         setSize(900, 450);
@@ -28,7 +28,7 @@ public class HistoriaVstupov extends JFrame {
                 historiaVstupovServis.nacitajRiadky());
         Collections.reverse(riadky);
 
-        //Model tabuľky (stĺpce + riadky)
+        // Zabráni úprave buniek v tabuľke (tabuľka je iba na čítanie)
         DefaultTableModel model = new DefaultTableModel() {
             @Override
             public boolean isCellEditable(int row, int column) {

@@ -21,6 +21,7 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.List;
 
+// Servisná trieda zodpovedná za zápis klientov do XML súboru
 public class XMLZapisServis {
 
     private final AppLogServis appLog = new AppLogServis();
@@ -160,7 +161,7 @@ public class XMLZapisServis {
         zapisXML(document, xmlSubor);
     }
 
-    // Aktualizácia klienta
+    // Aktualizuje údaje klienta v XML súbore
     public boolean aktualizujKlientaVXml(Klient aktualizovany) {
         try {
             XMLNacitanieServis xmlNacitanieServis = new XMLNacitanieServis();

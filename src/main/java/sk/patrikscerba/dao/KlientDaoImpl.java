@@ -10,7 +10,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
-
 // Trieda zabezpečuje databázové operácie nad klientmi a mapovanie databázových dát na objekt Klient.
 public class KlientDaoImpl implements KlientDao {
 
@@ -26,12 +25,12 @@ public class KlientDaoImpl implements KlientDao {
     @Override
     public Long ulozKlienta(Klient klient) {
 
-        //Použitie PreparedStatement kvôli bezpečnosti ( SQL injection )
+        // Použitie PreparedStatement kvôli bezpečnosti ( SQL injection )
         String sql = """
                 INSERT INTO klienti (krstne_meno, priezvisko, datum_narodenia, telefonne_cislo, adresa, email)
                 VALUES (?, ?, ?, ?, ?, ?)
                 """;
-        //try-with-resources = Connection aj PreparedStatement s automatický zatvoria
+        // try-with-resources = Connection aj PreparedStatement s automatický zatvoria
         try (Connection connection = databazaPripojenie.getConnection();
              PreparedStatement preparedStatement = connection.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS)) {
 
@@ -168,7 +167,7 @@ public class KlientDaoImpl implements KlientDao {
 
             preparedStatement.setLong(1, id);
 
-            //Ak sa v databáze vymazal aspoň 1 riadok tak vymazanie prebehlo
+            // Ak sa v databáze vymazal aspoň 1 riadok tak vymazanie prebehlo
             int rows = preparedStatement.executeUpdate();
 
             if (rows == 0) {

@@ -8,7 +8,6 @@ import sk.patrikscerba.servis.VyhladavanieKlientovServis;
 import javax.swing.*;
 import java.util.List;
 
-
 // UI okno pre vyhľadávanie klientov podľa mena a priezviska
 public class Vyhladavanie extends JFrame {
 

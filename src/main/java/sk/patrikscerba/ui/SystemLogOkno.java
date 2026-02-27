@@ -6,7 +6,7 @@ import javax.swing.table.DefaultTableModel;
 import java.util.Collections;
 import java.util.List;
 
-// Okno zobrazujúce záznamy systémových logov aplikácie v tabuľke
+// UI Okno zobrazujúce záznamy systémových logov aplikácie v tabuľke
 public class SystemLogOkno extends JFrame {
 
     private JTable tabulka = new JTable();
@@ -29,7 +29,7 @@ public class SystemLogOkno extends JFrame {
 
         Collections.reverse(riadky);
 
-        // Model tabuľky (stĺpce + riadky) - záznamy systémových logov len na čítanie
+        // Zabráni úprave buniek v tabuľke (tabuľka je iba na čítanie)
         DefaultTableModel model = new DefaultTableModel(new Object[]{"Záznamy"}, 0) {
             @Override
             public boolean isCellEditable(int row, int column) {

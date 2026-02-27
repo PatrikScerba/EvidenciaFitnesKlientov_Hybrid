@@ -3,6 +3,7 @@ package sk.patrikscerba.ui;
 import javax.swing.*;
 import java.awt.*;
 
+// UI hlavné okno aplikácie obsahujúce menu a navigačné tlačidlá
 public class HlavneOkno extends JFrame {
 
     private JPanel mainPanel;
@@ -25,8 +26,7 @@ public class HlavneOkno extends JFrame {
     private JPanel Stlpec;
     private JPanel panelPozadie;
 
-
-    //Nastavenie hlavného okna aplikácie.
+    // Nastavenie hlavného okna aplikácie
     public HlavneOkno() {
 
         setContentPane(mainPanel);
@@ -59,7 +59,7 @@ public class HlavneOkno extends JFrame {
         }
     }
 
-    //Nastavenie akcií tlačidiel v hlavnom okne
+    // Nastavenie akcií tlačidiel v hlavnom okne
     private void nastavAkcieTlacidiel() {
         registracia.addActionListener(e -> new Registracia().setVisible(true));
         vyhladanie.addActionListener(e -> new Vyhladavanie(false).setVisible(true));
@@ -69,6 +69,7 @@ public class HlavneOkno extends JFrame {
         systemLog.addActionListener(e -> new SystemLogOkno().setVisible(true));
     }
 
+    // Načíta logo z resources a vráti jeho zmenšenú verziu ako ImageIcon
     private ImageIcon vytvorLogoIkonu() {
         java.net.URL url = getClass().getResource("/obrazok/Logo.png");
         if (url == null) return null;

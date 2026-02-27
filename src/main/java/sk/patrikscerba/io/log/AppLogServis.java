@@ -8,7 +8,7 @@ import java.io.StringWriter;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 
-//systemové logovanie do súboru app_log.txt
+// Systémove logovanie do súboru app_log.txt
 public class AppLogServis {
 
     private static final String CESTA_SUBORU = "data/app_log.txt";
@@ -21,14 +21,14 @@ public class AppLogServis {
         }
     }
 
-    //Umožňuje zapísať detailné informácie o chybe do log súboru.
+    // Umožňuje zapísať detailné informácie o chybe do log súboru
     private String getStackTrace(Throwable e) {
         StringWriter stringWriter = new StringWriter();
         e.printStackTrace(new PrintWriter(stringWriter));
         return stringWriter.toString();
     }
 
-    //Zápis logu do súboru s časom a úrovňou logu
+    // Zápis logu do súboru s časom a úrovňou logu
     private void zapis(String level, String sprava, Throwable e) {
         vytvorPriecinokDataAkTreba();
 
@@ -47,17 +47,17 @@ public class AppLogServis {
             }
         } catch (Exception ex) {
 
-            // posledná záchrana – ak zlyhá zápis do log súboru, vypíšeme chybu do konzoly
+            // Posledná záchrana – ak zlyhá zápis do log súboru, vypíšeme chybu do konzoly
             System.err.println("Zlyhalo zapisovanie do app_log.txt: " + ex.getMessage());
         }
     }
 
-    //Zapíše onformačnú správu do log súboru(bežny priebeh aplikácie)
+    // Zapíše informačnú správu do log súboru(bežný priebeh aplikácie)
     public void info(String sprava) {
         zapis("INFO", sprava, null);
     }
 
-    //Zapíše varovnú správu do log súboru(menej závažné problémy, podozrivé situácie)
+    // Zapíše varovnú správu do log súboru(menej závažné problémy, podozrivé situácie)
     public void warn(String sprava, Throwable e) {
         zapis("WARN", sprava, null);
     }
@@ -65,11 +65,12 @@ public class AppLogServis {
         zapis("WARN", sprava, null);
     }
 
-    //Zapíše chybovú správu spolu s výnimkou do log súboru(závažné problémy)
+    // Zapíše chybovú správu spolu s výnimkou do log súboru
     public void error(String sprava, Throwable e) {
         zapis("ERROR", sprava, e);
     }
 
+    // Zapíše chybovú správu do log súboru bez priloženej výnimky
     public void error(String sprava) {
         zapis("ERROR", sprava, null);
     }

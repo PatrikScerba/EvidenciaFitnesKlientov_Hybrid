@@ -7,7 +7,7 @@ import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.time.format.DateTimeParseException;
 
-//Trieda na registráciu nového klienta
+// Servis zodpovedný za registráciu nového klienta vrátane spracovania údajov a generovania QR kódu
 public class RegistraciaKlientaServis {
 
     private static final DateTimeFormatter FORMAT_DATUMU = DateTimeFormatter.ofPattern("dd.MM.yyyy");
@@ -15,7 +15,7 @@ public class RegistraciaKlientaServis {
     private final QrServis qrServis = new QrServis();
     private AppLogServis appLog = new AppLogServis();
 
-    //Zaregistruje nového klienta
+    // Zaregistruje nového klienta
     public Long zaregistrujKlienta(
             String krstneMeno,
             String priezvisko,

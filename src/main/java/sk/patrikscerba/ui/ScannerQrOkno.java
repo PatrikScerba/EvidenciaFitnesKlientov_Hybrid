@@ -7,8 +7,7 @@ import sk.patrikscerba.vstup.servis.VstupServis;
 import javax.swing.*;
 import java.awt.event.ActionEvent;
 
-
-// Okno simulujúce vstup klienta cez QR skener.
+// UI okno simulujúce vstup klienta cez QR skener.
 // Desktop verzia bez fyzickej čítačky – zadáva sa iba klientId.
 // QR token sa neskenuje, systém používa uložený token priradený ku klientovi.
 public class ScannerQrOkno extends JFrame {

@@ -21,6 +21,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
+// Servisná trieda pre načítanie údajov o klientoch z XML súboru
 public class XMLNacitanieServis {
 
     private final AppLogServis applog = new AppLogServis();
@@ -31,7 +32,7 @@ public class XMLNacitanieServis {
     private static final String PRIECINOK_DATA = "data";
     private static final String SUBOR_KLIENTI_XML = "klienti.xml";
 
-    // Načítanie klientov zo súboru XML
+    // Načíta zoznam klientov zo XML súboru
     public List<Klient> nacitajKlientovZoXML() {
         List<Klient> klienti = new ArrayList<>();
 
@@ -41,6 +42,7 @@ public class XMLNacitanieServis {
         if (!xmlSubor.exists() || xmlSubor.length() == 0) {
             return klienti;
         }
+
         try {
             DocumentBuilderFactory documentBuilderFactory = DocumentBuilderFactory.newInstance();
             DocumentBuilder documentBuilder = documentBuilderFactory.newDocumentBuilder();
@@ -82,15 +84,17 @@ public class XMLNacitanieServis {
 
                 klienti.add(klient);
             }
+
         } catch (NumberFormatException | DateTimeParseException e) {
             applog.error("Poskodene data v klienti.xml (zle cislo/datum). Vrati prazdny zoznam.", e);
+
         } catch (ParserConfigurationException | SAXException | IOException e) {
             applog.error("Chyba pri nacitani klientov zo suboru XML. Vrati prazdny zoznam", e);
         }
         return klienti;
     }
 
-    //Vyhľadanie klienta v XML podľa ID
+    // Vyhľadanie klienta v XML podľa ID
     public Optional<Klient> najdiKlientaVXmlPodlaId(Long id) {
 
         List<Klient> klienti = nacitajKlientovZoXML();
@@ -118,11 +122,13 @@ public class XMLNacitanieServis {
 
         try {
             return LocalDate.parse(text, FORMAT_DB);
+
         } catch (DateTimeParseException ignored) {
         }
 
         try {
             return LocalDate.parse(text, FORMAT_V1);
+
         } catch (DateTimeParseException ignored) {
         }
         return null;

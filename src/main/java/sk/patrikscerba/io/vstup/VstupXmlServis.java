@@ -20,12 +20,13 @@ import java.time.LocalDate;
 import java.time.LocalTime;
 import java.time.format.DateTimeParseException;
 
+// Servisná trieda zodpovedná za načítanie a zápis vstupov do XML súboru
 public class VstupXmlServis {
 
     private final AppLogServis appLog = new AppLogServis();
     private static final String XML_SUBOR = "data/vstupy.xml";
 
-    // XML slúži ako offline evidencia vstupov v hybridnom režime aplikácie
+    // Načíta XML evidenciu vstupov používanú v hybridnom (offline) režime aplikácie.
     private Document nacitajXml() {
 
         try {
@@ -66,7 +67,7 @@ public class VstupXmlServis {
         transformer.transform(new DOMSource(document), new StreamResult(new File(XML_SUBOR)));
     }
 
-    //Kontrola či mal klient dnes vstup
+    // Kontrola či mal klient dnes vstup
     public boolean malDnesVstup(Long klientId, LocalDate datum) {
         try {
             Document document = nacitajXml();
@@ -94,13 +95,13 @@ public class VstupXmlServis {
         }
     }
 
-    //Zapísanie nového vstupu do XML
+    // Zapísanie nového vstupu do XML
     public void zapisVstupXML(Long klientId, LocalDate datum, LocalTime cas) {
 
         try {
             Document document = nacitajXml();
 
-            //Poistka ak by náhodou koreňový element neexistoval(vytvoríme nový)
+            // Poistka ak by náhodou koreňový element neexistoval(vytvoríme nový)
             Element root = document.getDocumentElement();
 
             if (root == null) {

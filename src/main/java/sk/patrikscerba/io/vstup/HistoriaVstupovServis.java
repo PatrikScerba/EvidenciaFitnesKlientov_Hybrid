@@ -12,6 +12,7 @@ public class HistoriaVstupovServis {
     private static final String CESTA = "data/vstupy_log.txt";
     private static final AppLogServis appLog = new AppLogServis();
 
+    // Načíta históriu vstupov zo súboru a vráti ju ako zoznam riadkov.
     public List<String> nacitajRiadky() {
         try {
             Path path = Path.of(CESTA);

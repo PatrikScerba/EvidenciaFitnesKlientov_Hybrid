@@ -5,11 +5,12 @@ import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.time.format.DateTimeParseException;
 
+// Servis zodpovedný za validáciu vstupných údajov klienta
 public class ValidaciaKlientaServis {
 
     private static final DateTimeFormatter FORMATTER = DateTimeFormatter.ofPattern("dd.MM.yyyy");
 
-    //Overí, či je text prázdny alebo null
+    // Overí, či je text prázdny alebo null
     public static boolean jePrazdne(String text) {
         return text == null || text.trim().isEmpty();
     }
@@ -20,19 +21,19 @@ public class ValidaciaKlientaServis {
         return text.trim().matches("[\\p{L}]+(\\s+[\\p{L}]+)*");
     }
 
-    //Overí správne zadanie emailu
+    // Overí správne zadanie emailu
     public static boolean jePlatnyEmail(String email) {
         if (jePrazdne(email)) return false;
         return email.matches("^[\\w._%+-]+@[\\w.-]+\\.[a-zA-Z]{2,}$");
     }
 
-    //Overí správne zadanie telefónneho čísla (povolí +421 a medzery)
+    // Overí správne zadanie telefónneho čísla (povolí +421 a medzery)
     public static boolean jePlatnyTelefon(String telefon) {
         if (jePrazdne(telefon)) return false;
         return telefon.matches("^\\+?\\d(?:[\\d\\s-]{8,15})$");
     }
 
-    //Overí správne zadanie dátumu vo formáte dd.MM.yyyy
+    // Overí správne zadanie dátumu vo formáte dd.MM.yyyy
     public static boolean jePlatnyDatum(String datumText) {
         if (jePrazdne(datumText)) return false;
         try {
@@ -52,5 +53,4 @@ public class ValidaciaKlientaServis {
                 .toLowerCase()
                 .trim();
     }
-
 }

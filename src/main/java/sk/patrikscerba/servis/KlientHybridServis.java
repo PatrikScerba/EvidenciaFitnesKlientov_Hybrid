@@ -10,7 +10,7 @@ import sk.patrikscerba.system.SystemRezim;
 import java.util.List;
 import java.util.Optional;
 
-
+// Servis pre správu klientov s podporou hybridného režimu (online databáza / offline XML)
 public class KlientHybridServis {
 
     private final KlientDao klientDao = new KlientDaoImpl();
@@ -21,18 +21,18 @@ public class KlientHybridServis {
     // Získanie všetkých klientov s podporou hybridného režimu (DB / XML)
     public List<Klient> ziskajVsetkychKlientov() {
 
-        //Ofline rezim - nacitanie z XML súboru
+        // Offline režim-načítanie z XML súboru
         if (SystemRezim.isOffline()) {
             return xmlNacitanieServis.nacitajKlientovZoXML();
         }
-        //Online režim-načítanie z databázy
+        // Online režim-načítanie z databázy
         return klientDao.ziskajVsetkychKlientov();
     }
 
     // Vyhľadanie klienta podľa ID s podporou hybridného režimu (DB / XML)
     public Optional<Klient> najdiKlientaPodlaId(Long id) {
 
-        //Ak systém je OFFLINE načíta cez XML
+        // Ak systém je OFFLINE načíta cez XML
         if (SystemRezim.isOffline()) {
             return xmlNacitanieServis.najdiKlientaVXmlPodlaId(id);
         }
@@ -153,7 +153,7 @@ public class KlientHybridServis {
             return false;
         }
 
-        // zosúladenie XML
+        // Zosúladenie XML
         Klient klient = najdiKlientaPodlaId(klientId)
                 .orElseThrow(() -> new IllegalStateException("Klient sa nenašiel | klientId=" + klientId));
 

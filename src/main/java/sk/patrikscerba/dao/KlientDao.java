@@ -5,6 +5,7 @@ import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
 
+// Rozhranie DAO pre klientov, ktoré definuje základné operácie CRUD a aktualizácie špecifických polí
 public interface KlientDao {
 
     Long ulozKlienta(Klient klient);

@@ -14,8 +14,7 @@ import java.time.Period;
 import java.time.format.DateTimeFormatter;
 import java.util.List;
 
-
-//UI Okno pre zobrazenie zoznamu klientov v tabuľke
+// UI okno pre zobrazenie zoznamu klientov v tabuľke
 public class ZoznamKlientov extends JFrame {
 
     private final ZoznamKlientovServis zoznamKlientovServis = new ZoznamKlientovServis();
@@ -37,7 +36,7 @@ public class ZoznamKlientov extends JFrame {
         tabulka = new JTable();
         add(new JScrollPane(tabulka));
 
-        //Model tabuľky (stĺpce + riadky)
+        // Zabráni úprave buniek v tabuľke (tabuľka je iba na čítanie)
         DefaultTableModel model = new DefaultTableModel(){
         @Override
         public boolean isCellEditable ( int row, int column){
@@ -114,6 +113,7 @@ public class ZoznamKlientov extends JFrame {
             tabulka.setAutoResizeMode(JTable.AUTO_RESIZE_OFF);
             tabulka.setRowHeight(26);
 
+            // Konfigurácia vzhľadu tabuľky (šírky stĺpcov a zarovnanie buniek)
             TableColumnModel columnModel = tabulka.getColumnModel();
             columnModel.getColumn(0).setMinWidth(60); // Poradie
             columnModel.getColumn(0).setMaxWidth(60);
