@@ -86,6 +86,7 @@ Používa sa napríklad pri strate alebo kompromitovaní pôvodného identifiká
 Pri použití funkcie vytlačiť QR aplikácia uloží QR kód klienta ako obrázok do výstupného priečinka aplikácie, odkiaľ je možné ho následne vytlačiť.
 
 ![18_vystup_QR kódu.png](../screenshots/18_vystup.png)
+
 Ilustračný príklad uloženého QR kódu vo výstupnom priečinku aplikácie.
 
 ### Skenovanie vstupu
@@ -128,7 +129,7 @@ Zobrazuje chronologický prehľad všetkých vstupov konkrétneho klienta do sys
 Obsahuje informácie o čase vstupu, výsledku kontroly a použitom režime systému
 (online databáza alebo offline XML záloha).
 
-![14_Historia_Klienta.png](../screenshots/14_Historia_Klienta.png)
+![14_Historia_Klienta.png](../screenshots/14_Historia_klienta.png)
 
 ---
 
