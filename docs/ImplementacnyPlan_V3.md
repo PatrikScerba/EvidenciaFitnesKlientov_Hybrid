@@ -66,6 +66,7 @@
 - UI dizajn ladenie
 - Zarovnanie layoutov
 
+Link: [Späť na hlavné README.md](../README.md)
 
 
 
